@@ -1,0 +1,36 @@
+{
+ "fit": {
+  "bias_rate_hz": 99.00625,
+  "gate_rms": 0.008107142079833037,
+  "gate_square_rms": 0.01466714060445339,
+  "speed_across_max": 0.7412019972480589,
+  "speed_direction_spread": 1.0999184206983057,
+  "speed_full_cells_s": 9.472160190345795,
+  "velocity_rms": 0.00578814052165998,
+  "velocity_value_at_full_speed": 0.31573867301152647
+ },
+ "settings": {
+  "base": "calibration_N200_f120_p200_e60_seed1_fractional.npz",
+  "format": 1,
+  "qdot_ref": 1.0,
+  "seconds": 131.4,
+  "seed": 1,
+  "threads": 8,
+  "velocity_scale": 1.5
+ },
+ "sheet": {
+  "anchor_gain": 8.0,
+  "anchor_offset": 32.0,
+  "cell_units": 1.5,
+  "extent": 1.2,
+  "shift": 3.0,
+  "size": 48,
+  "velocity_cells": 8,
+  "velocity_rate_hz": 12.0,
+  "velocity_rest": 0.19,
+  "velocity_span": 0.3,
+  "velocity_tau_ms": 3.0,
+  "velocity_weight": 300.0,
+  "window": 2
+ }
+}

@@ -1,0 +1,89 @@
+{
+ "source": "docs/results/data/static/<model>.json of the SO-3 repo (branch fk-chain, 2026-10-05): orientation error of the end effector over the 300 random held poses, degrees",
+ "models": {
+  "generic2": {
+   "poses": 300,
+   "median": 0.4344,
+   "p90": 0.7833,
+   "max": 1.2859,
+   "neurons": 1860
+  },
+  "generic3": {
+   "poses": 300,
+   "median": 0.6028,
+   "p90": 1.0404,
+   "max": 1.4353,
+   "neurons": 4420
+  },
+  "generic4": {
+   "poses": 300,
+   "median": 0.7671,
+   "p90": 1.224,
+   "max": 2.0586,
+   "neurons": 7500
+  },
+  "generic5": {
+   "poses": 300,
+   "median": 0.9091,
+   "p90": 1.4459,
+   "max": 2.2439,
+   "neurons": 10580
+  },
+  "generic6": {
+   "poses": 300,
+   "median": 0.9707,
+   "p90": 1.5706,
+   "max": 2.4772,
+   "neurons": 13660
+  },
+  "generic7": {
+   "poses": 300,
+   "median": 1.0608,
+   "p90": 1.8003,
+   "max": 2.7365,
+   "neurons": 16740
+  },
+  "tiago2": {
+   "poses": 300,
+   "median": 0.4394,
+   "p90": 0.7521,
+   "max": 1.259,
+   "neurons": 1860
+  },
+  "tiago3": {
+   "poses": 300,
+   "median": 0.6199,
+   "p90": 1.1029,
+   "max": 1.7166,
+   "neurons": 4420
+  },
+  "tiago4": {
+   "poses": 300,
+   "median": 0.7995,
+   "p90": 1.2887,
+   "max": 1.9579,
+   "neurons": 7500
+  },
+  "tiago5": {
+   "poses": 300,
+   "median": 0.9141,
+   "p90": 1.4748,
+   "max": 2.6343,
+   "neurons": 10580
+  },
+  "tiago6": {
+   "poses": 300,
+   "median": 1.0277,
+   "p90": 1.6575,
+   "max": 2.4848,
+   "neurons": 13660
+  },
+  "tiago7": {
+   "poses": 300,
+   "median": 1.142,
+   "p90": 1.6935,
+   "max": 2.6227,
+   "neurons": 16740
+  }
+ }
+}
