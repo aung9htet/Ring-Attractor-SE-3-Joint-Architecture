@@ -2,7 +2,8 @@
 
 The marks were fixed in the plan before any test pose was run. Results:
 [`results.md`](results.md); every table: [`results/tables.md`](results/tables.md); how to run
-things: the top-level [`README.md`](../README.md), section 3.
+things: the top-level [`README.md`](../README.md), section 3. The tests of the inverse
+kinematics have their own page: [`ik/tests.md`](ik/tests.md).
 
 ## Terms
 
@@ -96,3 +97,4 @@ Nothing was changed after the test runs to meet them.
 | `tests/test_nest_parts.py` | test 3 with few points; a 2-joint pose end to end with both switches; a network without the velocity path |
 | `tests/test_sim.py` | the simulator's loop and server with a stand-in network |
 | `tests/test_report.py` | the report's statistics, the delay estimate on a log with a known delay, the gap summary, and that the documents quote only numbers from the generated tables |
+| `tests/test_ik_rules.py`, `tests/test_ik_wiring.py`, `tests/test_ik_nest.py`, `tests/test_ik_sim.py` | the inverse kinematics ([`ik/tests.md`](ik/tests.md)) |

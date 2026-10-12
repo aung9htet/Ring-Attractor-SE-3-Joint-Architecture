@@ -1,7 +1,8 @@
 # How the network gives the pose
 
 What the network is made of and why. How to run it: the top-level
-[`README.md`](../README.md). What it achieves: [`results.md`](results.md).
+[`README.md`](../README.md). What it achieves: [`results.md`](results.md). The
+inverse-kinematics layer that sits on top of this network: [`ik/architecture.md`](ik/architecture.md).
 
 ![the pose network of the 7-joint arm](figures/architecture.png)
 
@@ -186,6 +187,12 @@ hold, the velocity the velocity populations hold, and the sheets' spikes.
 `set_anchor(on)` and `set_path_integration(on)` are the two switches. Option
 `anchor_lead_s` hands the gates the position plus velocity times that many seconds.
 
+Option `level` gives every sheet *level cells*, which hold the strength of its packet at a
+set point (`connect_level` in [`ring_se3/nest/sheet.py`](../ring_se3/nest/sheet.py)). It is
+off here, and every result of this page and of [`results.md`](results.md) is measured
+without it. The network with the inverse-kinematics layer switches it on
+([`ik/architecture.md`](ik/architecture.md), section 4).
+
 ## 8. What changed from the plan, and why
 
 Decided by measurement during the work; each is covered in [`results.md`](results.md).
@@ -221,3 +228,16 @@ unchanged, so that this repo runs on its own. `scripts/calibrate.py`, `docker/` 
 SO(3) calibration files are copied too. `ring_se3/` and everything else are new;
 `ring_se3/sim/page.py` is the SO(3) page with the position added, and
 `ring_se3/sim/server.py` extends the SO(3) server.
+
+For the inverse kinematics (2026-10-09) the orientation IK of that repo was copied as well,
+from its branch `ik-cascade`, unchanged: the folders `ring_so3/ik/` and `ring_so3/standard/`,
+`ring_so3/robots.py`, `ring_so3/nest/goal_ring.py`, `ring_so3/nest/goal_rig.py`,
+`ring_so3/nest/ik_calibrate.py`, `ring_so3/nest/ik_network.py`, `scripts/calibrate_ik.py` and
+the calibration file of the share halves; and for Gazebo as the robot (2026-10-10)
+`ring_so3/gazebo/link.py`, `gazebo/ring_ik.world` and the mode `gazebo` of `docker/run.bash`.
+`ring_so3/sim/` was left as it was, because the pose simulator builds on it. New for the pose IK: the folders `ring_se3/ik/` and
+`ring_se3/standard/`, `ring_se3/nest/ik_calibrate.py`, `ring_se3/nest/ik_network.py`,
+`ring_se3/sim/ik_page.py`, `ring_se3/sim/ik_server.py`, `ring_se3/gazebo/link.py`, and the
+scripts and tests whose names start with `ik_`, `run_ik_` or `test_ik_`, with
+`tests/test_robots.py`. Changed: `ring_se3/nest/sheet.py` and
+`ring_se3/nest/network.py`, by the level cells, which are off unless asked for.

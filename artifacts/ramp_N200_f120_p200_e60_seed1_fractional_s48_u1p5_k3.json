@@ -1,0 +1,49 @@
+{
+ "fit": {
+  "anchor_rms": 0.006746692273024995,
+  "check_bias": 5.867898182653617e-05,
+  "check_largest": 0.01761139697404468,
+  "check_median": 0.0035585772936144594,
+  "check_places": 120,
+  "check_rms": 0.005091489359886981,
+  "check_sheet_rate_sd_hz": 28.25206427506615,
+  "check_sheet_rate_smallest_hz": 388.0,
+  "places": 771,
+  "ramp_rms": 0.004196026220010221,
+  "samples": 2313,
+  "sheet_rate_largest_hz": 568.0,
+  "sheet_rate_median_hz": 490.0,
+  "sheet_rate_sd_hz": 37.79262926893777,
+  "sheet_rate_smallest_hz": 390.0,
+  "total_rate_hz": 1082.0
+ },
+ "settings": {
+  "check_grid": 6,
+  "format": 1,
+  "grid": 9,
+  "hold_ticks": 16,
+  "level": {
+   "gain_pa": 200.0,
+   "set_rate_hz": 500.0,
+   "span": 0.8,
+   "tau_ms": 100.0
+  },
+  "level_span": 0.7,
+  "measure_ticks": 10,
+  "neurons": 160,
+  "offsets_pa": [
+   0.0,
+   -25.0,
+   25.0
+  ],
+  "pose": "pose_N200_f120_p200_e60_seed1_fractional_s48_u1p5_k3.npz",
+  "radius": 1.3,
+  "ramp_span": 1.5,
+  "regularisation": 0.01,
+  "seconds": 289.7,
+  "seed": 1,
+  "tau_ms": 30.0,
+  "threads": 8,
+  "total_rate_hz": 1082.0
+ }
+}

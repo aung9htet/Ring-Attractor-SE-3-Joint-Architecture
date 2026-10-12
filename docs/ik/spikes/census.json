@@ -1,0 +1,456 @@
+{
+ "chain": "tiago4",
+ "task": "position",
+ "neurons": 35916,
+ "ik_neurons": 20948,
+ "seconds": 2.0,
+ "threads": 4,
+ "pair": 0,
+ "asked": {
+  "rows": [
+   {
+    "kind": "bias cell of the anchors",
+    "populations": 2,
+    "neurons": 16,
+    "fire": 16.0,
+    "rate_hz": 99.0,
+    "spikes_per_tick": 79.2,
+    "gaps_vary": null
+   },
+   {
+    "kind": "cos / sin of a joint",
+    "populations": 4,
+    "neurons": 120,
+    "fire": 70.0,
+    "rate_hz": 85.98214285714286,
+    "spikes_per_tick": 300.94375,
+    "gaps_vary": 0.017125287978607115
+   },
+   {
+    "kind": "forward sheet",
+    "populations": 3,
+    "neurons": 2304,
+    "fire": 42.0,
+    "rate_hz": 12.011904761904763,
+    "spikes_per_tick": 25.241666666666667,
+    "gaps_vary": null
+   },
+   {
+    "kind": "gain pair, one side",
+    "populations": 8,
+    "neurons": 200,
+    "fire": null,
+    "rate_hz": null,
+    "spikes_per_tick": 54.021875,
+    "gaps_vary": null
+   },
+   {
+    "kind": "gate of the forward sheets",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 30.0,
+    "rate_hz": 70.54444444444445,
+    "spikes_per_tick": 105.81666666666668,
+    "gaps_vary": 0.025147432655352825
+   },
+   {
+    "kind": "goal gate",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 29.666666666666668,
+    "rate_hz": 71.85955056179775,
+    "spikes_per_tick": 106.59166666666665,
+    "gaps_vary": 0.016689310399839462
+   },
+   {
+    "kind": "goal ring of a joint",
+    "populations": 4,
+    "neurons": 200,
+    "fire": 22.5,
+    "rate_hz": 91.82777777777778,
+    "spikes_per_tick": 103.30625,
+    "gaps_vary": null
+   },
+   {
+    "kind": "goal sheet",
+    "populations": 3,
+    "neurons": 2304,
+    "fire": 43.0,
+    "rate_hz": 12.321705426356589,
+    "spikes_per_tick": 26.508333333333333,
+    "gaps_vary": null
+   },
+   {
+    "kind": "joint ring",
+    "populations": 4,
+    "neurons": 200,
+    "fire": 27.25,
+    "rate_hz": 37.75229357798165,
+    "spikes_per_tick": 51.45,
+    "gaps_vary": null
+   },
+   {
+    "kind": "length of a pair (cos of pitch)",
+    "populations": 1,
+    "neurons": 120,
+    "fire": 58.0,
+    "rate_hz": 86.5603448275862,
+    "spikes_per_tick": 251.025,
+    "gaps_vary": 0.028068101854185516
+   },
+   {
+    "kind": "level cells of a sheet",
+    "populations": 6,
+    "neurons": 60,
+    "fire": 29.5,
+    "rate_hz": 64.14971751412429,
+    "spikes_per_tick": 94.6375,
+    "gaps_vary": 0.027136456740279077
+   },
+   {
+    "kind": "output ring",
+    "populations": 3,
+    "neurons": 100,
+    "fire": 41.666666666666664,
+    "rate_hz": 94.472,
+    "spikes_per_tick": 196.81666666666666,
+    "gaps_vary": null
+   },
+   {
+    "kind": "product, comparison and cascade",
+    "populations": 38,
+    "neurons": 200,
+    "fire": 114.23684210526316,
+    "rate_hz": 71.23404745450357,
+    "spikes_per_tick": 406.8986842105263,
+    "gaps_vary": 0.04397230755192014
+   },
+   {
+    "kind": "product, orientation of the links",
+    "populations": 26,
+    "neurons": 200,
+    "fire": 111.11538461538461,
+    "rate_hz": 81.72429906542057,
+    "spikes_per_tick": 454.0548076923077,
+    "gaps_vary": 0.019800139900648446
+   },
+   {
+    "kind": "ramp readout",
+    "populations": 6,
+    "neurons": 160,
+    "fire": 89.33333333333333,
+    "rate_hz": 56.11940298507463,
+    "spikes_per_tick": 250.73333333333335,
+    "gaps_vary": 0.0721409935253513
+   },
+   {
+    "kind": "share half",
+    "populations": 8,
+    "neurons": 60,
+    "fire": 33.375,
+    "rate_hz": 69.71910112359551,
+    "spikes_per_tick": 116.36250000000001,
+    "gaps_vary": 0.17287319001722778
+   },
+   {
+    "kind": "sum: direction c of a joint",
+    "populations": 11,
+    "neurons": 60,
+    "fire": 30.272727272727273,
+    "rate_hz": 72.43543543543544,
+    "spikes_per_tick": 109.64318181818182,
+    "gaps_vary": 0.02992112053438138
+   },
+   {
+    "kind": "sum: entry of a link's orientation",
+    "populations": 10,
+    "neurons": 60,
+    "fire": 30.7,
+    "rate_hz": 87.64983713355049,
+    "spikes_per_tick": 134.545,
+    "gaps_vary": 0.03727775125988264
+   },
+   {
+    "kind": "sum: lever of a joint",
+    "populations": 9,
+    "neurons": 60,
+    "fire": 30.666666666666668,
+    "rate_hz": 71.66123188405797,
+    "spikes_per_tick": 109.88333333333334,
+    "gaps_vary": 0.025581613393315557
+   },
+   {
+    "kind": "sum: position cell",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 30.0,
+    "rate_hz": 70.55555555555556,
+    "spikes_per_tick": 105.83333333333333,
+    "gaps_vary": 0.02154884849906791
+   },
+   {
+    "kind": "sum: the offset d",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 37.0,
+    "rate_hz": 53.61711711711712,
+    "spikes_per_tick": 99.20833333333333,
+    "gaps_vary": 0.25548371191931674
+   },
+   {
+    "kind": "sum: what is left of the offset",
+    "populations": 11,
+    "neurons": 60,
+    "fire": 31.454545454545453,
+    "rate_hz": 60.34826589595376,
+    "spikes_per_tick": 94.93181818181819,
+    "gaps_vary": 0.12167364070386033
+   }
+  ],
+  "spikes_per_tick": 39517.875,
+  "spikes_per_second": 790357.5,
+  "shares_rad": [
+   -0.08414746984715842,
+   0.005568762157405559,
+   -0.026036442970249662,
+   -0.015577076053364012
+  ],
+  "lead_indices": [
+   -6.169630335642408,
+   0.3551621160679016,
+   -0.770335028119882,
+   -1.1016262147883993
+  ],
+  "offset_reach": [
+   0.08053193681025013,
+   -0.05738120581124787,
+   -0.02701433589023609
+  ]
+ },
+ "at_goal": {
+  "rows": [
+   {
+    "kind": "bias cell of the anchors",
+    "populations": 2,
+    "neurons": 16,
+    "fire": 16.0,
+    "rate_hz": 99.03125,
+    "spikes_per_tick": 79.225,
+    "gaps_vary": null
+   },
+   {
+    "kind": "cos / sin of a joint",
+    "populations": 4,
+    "neurons": 120,
+    "fire": 70.25,
+    "rate_hz": 85.58718861209964,
+    "spikes_per_tick": 300.625,
+    "gaps_vary": 0.017041269048020762
+   },
+   {
+    "kind": "forward sheet",
+    "populations": 3,
+    "neurons": 2304,
+    "fire": 42.333333333333336,
+    "rate_hz": 11.996062992125983,
+    "spikes_per_tick": 25.416666666666664,
+    "gaps_vary": null
+   },
+   {
+    "kind": "gain pair, one side",
+    "populations": 8,
+    "neurons": 200,
+    "fire": null,
+    "rate_hz": null,
+    "spikes_per_tick": 53.9375,
+    "gaps_vary": null
+   },
+   {
+    "kind": "gate of the forward sheets",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 30.0,
+    "rate_hz": 70.56111111111112,
+    "spikes_per_tick": 105.84166666666665,
+    "gaps_vary": 0.023783866874726584
+   },
+   {
+    "kind": "goal gate",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 30.0,
+    "rate_hz": 70.63888888888889,
+    "spikes_per_tick": 105.95833333333333,
+    "gaps_vary": 0.017055319934403197
+   },
+   {
+    "kind": "goal ring of a joint",
+    "populations": 4,
+    "neurons": 200,
+    "fire": 23.0,
+    "rate_hz": 91.47282608695652,
+    "spikes_per_tick": 105.19375,
+    "gaps_vary": null
+   },
+   {
+    "kind": "goal sheet",
+    "populations": 3,
+    "neurons": 2304,
+    "fire": 41.666666666666664,
+    "rate_hz": 12.196,
+    "spikes_per_tick": 25.416666666666664,
+    "gaps_vary": null
+   },
+   {
+    "kind": "joint ring",
+    "populations": 4,
+    "neurons": 200,
+    "fire": 27.5,
+    "rate_hz": 37.31363636363636,
+    "spikes_per_tick": 51.3125,
+    "gaps_vary": null
+   },
+   {
+    "kind": "length of a pair (cos of pitch)",
+    "populations": 1,
+    "neurons": 120,
+    "fire": 58.0,
+    "rate_hz": 86.42241379310344,
+    "spikes_per_tick": 250.625,
+    "gaps_vary": 0.026347766395088332
+   },
+   {
+    "kind": "level cells of a sheet",
+    "populations": 6,
+    "neurons": 60,
+    "fire": 29.333333333333332,
+    "rate_hz": 63.48011363636363,
+    "spikes_per_tick": 93.125,
+    "gaps_vary": 0.03050045216715973
+   },
+   {
+    "kind": "output ring",
+    "populations": 3,
+    "neurons": 100,
+    "fire": 41.666666666666664,
+    "rate_hz": 93.912,
+    "spikes_per_tick": 195.65833333333333,
+    "gaps_vary": null
+   },
+   {
+    "kind": "product, comparison and cascade",
+    "populations": 38,
+    "neurons": 200,
+    "fire": 114.78947368421052,
+    "rate_hz": 70.65761118752866,
+    "spikes_per_tick": 405.55460526315784,
+    "gaps_vary": 0.043469025802117436
+   },
+   {
+    "kind": "product, orientation of the links",
+    "populations": 26,
+    "neurons": 200,
+    "fire": 111.11538461538461,
+    "rate_hz": 81.66476289373486,
+    "spikes_per_tick": 453.7240384615385,
+    "gaps_vary": 0.0194507303189377
+   },
+   {
+    "kind": "ramp readout",
+    "populations": 6,
+    "neurons": 160,
+    "fire": 90.33333333333333,
+    "rate_hz": 55.851476014760145,
+    "spikes_per_tick": 252.3375,
+    "gaps_vary": 0.08158193612511944
+   },
+   {
+    "kind": "share half",
+    "populations": 8,
+    "neurons": 60,
+    "fire": 33.375,
+    "rate_hz": 63.6310861423221,
+    "spikes_per_tick": 106.19375000000001,
+    "gaps_vary": 0.16301542982670075
+   },
+   {
+    "kind": "sum: direction c of a joint",
+    "populations": 11,
+    "neurons": 60,
+    "fire": 30.181818181818183,
+    "rate_hz": 72.57981927710843,
+    "spikes_per_tick": 109.52954545454546,
+    "gaps_vary": 0.028906080358061775
+   },
+   {
+    "kind": "sum: entry of a link's orientation",
+    "populations": 10,
+    "neurons": 60,
+    "fire": 30.7,
+    "rate_hz": 87.4071661237785,
+    "spikes_per_tick": 134.17249999999999,
+    "gaps_vary": 0.03861009597860708
+   },
+   {
+    "kind": "sum: lever of a joint",
+    "populations": 9,
+    "neurons": 60,
+    "fire": 30.444444444444443,
+    "rate_hz": 72.13868613138686,
+    "spikes_per_tick": 109.81944444444444,
+    "gaps_vary": 0.023637181804598856
+   },
+   {
+    "kind": "sum: position cell",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 30.0,
+    "rate_hz": 70.55555555555556,
+    "spikes_per_tick": 105.83333333333333,
+    "gaps_vary": 0.020080005869101754
+   },
+   {
+    "kind": "sum: the offset d",
+    "populations": 3,
+    "neurons": 60,
+    "fire": 36.0,
+    "rate_hz": 52.18981481481482,
+    "spikes_per_tick": 93.95833333333333,
+    "gaps_vary": 0.2543269481425909
+   },
+   {
+    "kind": "sum: what is left of the offset",
+    "populations": 11,
+    "neurons": 60,
+    "fire": 32.18181818181818,
+    "rate_hz": 57.943502824858754,
+    "spikes_per_tick": 93.24545454545455,
+    "gaps_vary": 0.12287781839473179
+   }
+  ],
+  "spikes_per_tick": 39334.2,
+  "spikes_per_second": 786683.9999999999,
+  "shares_rad": [
+   0.007492957954011686,
+   0.0033731182014762823,
+   -0.0012602390042123692,
+   -0.00905947682883159
+  ],
+  "lead_indices": [
+   0.4338918956662489,
+   0.15846565398773188,
+   -0.056751110388791305,
+   -0.6008165348882812
+  ],
+  "offset_reach": [
+   -0.004180655479602324,
+   0.006830698844516416,
+   -0.00011269602317783296
+  ]
+ },
+ "true_offset_reach": [
+  0.08140412333682896,
+  -0.06228743188325235,
+  -0.030314085727625093
+ ]
+}

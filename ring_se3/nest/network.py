@@ -37,7 +37,7 @@ from ..wiring import Mul, PoseWiring, pose_wiring
 from .calibrate import (BIAS_CELLS, MOVING_RAD_S, PoseCalibration, create_bias_cells, create_velocity_cells,
                         velocity_rest_current)
 from .rigs import velocity_input_weights
-from .sheet import Sheet, build_sheet, connect_anchor, connect_anchor_bias, connect_velocity_cells
+from .sheet import LevelDesign, Sheet, build_sheet, connect_anchor, connect_anchor_bias, connect_level, connect_velocity_cells
 
 SILENT_PA = -1.0e6
 
@@ -54,6 +54,10 @@ class PoseOptions(NetworkOptions):
     #: three more velocity populations whose values are set from outside (the shift-register experiment:
     #: a velocity taken from where the packets have just been, instead of from the joint velocities)
     trail: bool = False
+    #: give every sheet level cells, which hold the strength of its packet at a set point (the inverse kinematics
+    #: reads the packets' places and needs packets that are alike; off, the sheets are as they were measured)
+    level: bool = False
+    level_design: LevelDesign = field(default_factory=LevelDesign)
     sheet: SheetDesign = field(default_factory=SheetDesign)
 
 
@@ -90,11 +94,30 @@ def sheet_position(mapping: SheetMap, counts: np.ndarray) -> Tuple[np.ndarray, n
     return combine({name: mapping.centre(counts[i]) for i, (name, _, _) in enumerate(PLANES)})
 
 
+def switch_populations(backend: Any, populations: Sequence[Population], on: bool, threshold: float, rng: np.random.Generator) -> None:
+    """Silence populations, or give them their own currents back with every neuron at a fresh potential below threshold."""
+
+    for population in populations:
+        if on:
+            backend.SetStatus(population.neurons, [{"I_e": float(i), "V_m": float(v)}
+                                                   for i, v in zip(population.tuning.bias, rng.uniform(0.0, threshold, population.n))])
+        else:
+            backend.SetStatus(population.neurons, {"I_e": SILENT_PA})
+
+
 class PoseNetwork(FkNetwork):
     def __init__(self, backend: Any, chain: Chain, calibration: Calibration, pose_calibration: PoseCalibration,
-                 design: Optional[Design] = None, options: Optional[PoseOptions] = None) -> None:
+                 design: Optional[Design] = None, options: Optional[PoseOptions] = None,
+                 level_decoders: Optional[np.ndarray] = None) -> None:
+        """``level_decoders``: with ``options.level``, the readout of a sum population that stays at its bounds
+        (``bounded`` of :mod:`ring_so3.nest.ik_calibrate`), through which the level cells act on their sheet."""
+
         self.pose_calibration = pose_calibration
         self.pose_options = options or PoseOptions()
+        if self.pose_options.level and level_decoders is None:
+            raise ValueError("level cells need the bounded readout of the SO(3) inverse-kinematics calibration (level_decoders)")
+        self.level_decoders = level_decoders
+        self.level_cells: List[Population] = []
         self.pose: PoseWiring = pose_wiring(chain, self.pose_options.relay, self.pose_options.velocity)
         self.space = self.pose.space
         self.mapping = SheetMap(self.pose_options.sheet)
@@ -186,6 +209,9 @@ class PoseNetwork(FkNetwork):
                 for sign in (1, -1):
                     if (coordinate, sign) in self.velocity_cells:
                         connect_velocity_cells(b, sheet, self.velocity_cells[(coordinate, sign)], axis_in_plane, sign)
+            if o.level:
+                self.level_cells.append(connect_level(b, sheet, self.design, self.level_decoders, o.level_design,
+                                                      seed=46000 + len(self.sheets), record=o.record))
             self.sheets.append(sheet)
 
         if o.noise_pa > 0.0:
@@ -220,6 +246,7 @@ class PoseNetwork(FkNetwork):
             b.SetStatus(self.bias_cells, [{"I_e": self.bias_current, "V_m": float(v)} for v in rng.uniform(0.0, model.V_th, BIAS_CELLS)])
         else:
             b.SetStatus(self.bias_cells, {"I_e": SILENT_PA})
+        switch_populations(b, self.level_cells, on, model.V_th, rng)          # they correct the anchor's height: off with it
         self.anchor_on = bool(on)
 
     def set_path_integration(self, on: bool) -> None:
@@ -286,6 +313,7 @@ class PoseNetwork(FkNetwork):
         n += sum(p.n for p in self.muls.values()) + sum(p.n for p in self.relays.values())
         n += sum(p.n for p in self.qdot) + sum(p.n for p in self.gates) + 2 * sum(p.n for p in self.trail_sources)
         n += len(self.velocity_cells) * int(self.pose_options.sheet.velocity_cells) + len(self.sheets) * self.mapping.count + BIAS_CELLS
+        n += sum(p.n for p in self.level_cells)
         return int(n)
 
     def silence_sheets(self, fraction: float, seed: int = 0) -> int:
@@ -301,4 +329,4 @@ class PoseNetwork(FkNetwork):
         return dead
 
 
-__all__ = ["PoseNetwork", "PoseOptions", "PoseTick", "sheet_position"]
+__all__ = ["PoseNetwork", "PoseOptions", "PoseTick", "SILENT_PA", "sheet_position", "switch_populations"]

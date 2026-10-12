@@ -7,7 +7,10 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 
+from ring_so3.design import Design
+from ring_so3.nest.populations import Population, connect_weights, create_population
 from ring_so3.nest.ring import RING_NEURON, STIMULUS_WEIGHT
+from ring_so3.neurons import NeuronModel, Tuning, make_tuning
 
 from ..sheet import SheetMap
 
@@ -68,6 +71,8 @@ class Sheet:
     first_id: int
     counts: np.ndarray = field(default_factory=lambda: np.zeros(0))
     history: List[np.ndarray] = field(default_factory=list)
+    #: the level cells that hold the packet's strength at its set point (:func:`connect_level`), when the sheet has them
+    level: Any = None
 
     def write(self, backend: Any, scaled: Optional[Sequence[float]], radius_cells: float = 2.0, rate_hz: float = 200.0) -> None:
         """Stimulate the neurons around a place directly (tests and calibration: a packet without an anchor);
@@ -146,5 +151,61 @@ def connect_velocity_cells(backend: Any, sheet: Sheet, cells: Any, axis_in_plane
     backend.Connect(cells, targets, "all_to_all", {"weight": -abs(float(sheet.mapping.design.velocity_weight)), "receptor_type": GATE})
 
 
-__all__ = ["ANCHOR", "ANCHOR_TAU_MS", "EXCITATORY", "GATE", "INHIBITORY", "Sheet", "build_sheet", "charge", "connect_anchor", "connect_anchor_bias", "connect_signed",
-           "connect_velocity_cells", "current_weights", "sheet_neuron"]
+@dataclass(frozen=True)
+class LevelDesign:
+    """The *level cells* of a sheet: they hold the strength of its packet at a set point (:func:`connect_level`)."""
+
+    #: the spikes per second a packet should send
+    set_rate_hz: float = 500.0
+    #: the cells hold (rate / set_rate - 1) / span: they are full when the packet is this share too strong or too weak
+    span: float = 0.8
+    #: the current (pA) the full cells send to every sheet neuron: taken away when the packet is too strong, added
+    #: when too weak.  Larger is tighter; with a faster synapse than ``tau_ms`` 300 pA already makes the strength swing
+    gain_pa: float = 200.0
+    #: time constant (ms) of the synapses from the sheet onto the cells.  Slow on purpose: the error of the anchor's
+    #: height changes only as fast as the anchored place moves, and a fast loop swings
+    tau_ms: float = 100.0
+
+    def describe(self) -> Dict[str, float]:
+        return {"set_rate_hz": self.set_rate_hz, "span": self.span, "gain_pa": self.gain_pa, "tau_ms": self.tau_ms}
+
+
+def level_tuning(design: Design, tau_ms: float) -> Tuning:
+    """The network's sum population (the same neurons, so that its readouts hold) with the slow synapse that reads a sheet."""
+
+    model = NeuronModel(design.model.C_m, design.model.tau_m, design.model.t_ref, design.model.V_th, float(tau_ms))
+    return make_tuning("scalar", design.sizes.entry, design.entry.seed, model)
+
+
+def connect_level(backend: Any, sheet: Sheet, design: Design, decoders: np.ndarray, level: Optional[LevelDesign] = None,
+                  seed: int = 0, record: bool = False) -> Population:
+    """Give ``sheet`` its level cells: a population that holds how far the packet's strength is from its set point
+    and sends every sheet neuron the same current against it.
+
+    The anchor's height is a small difference of large currents and is off by some tens of pA from place to
+    place, which makes a packet much stronger at some places than at others, at a few so weak that it goes out.
+    An error of the height is the same current at every neuron, so the same current at every neuron takes it
+    back.  ``decoders``: the readout of the sum population that stays at -1 and +1 outside its range.
+    Silencing the cells (as the anchor's gates are silenced) switches this off: a silent population sends nothing.
+    """
+
+    level = level or LevelDesign()
+    tuning = level_tuning(design, level.tau_ms)
+    cells = create_population(backend, tuning, "level_" + sheet.name, seed=seed, record=record)
+    per_hz = 1.0 / (float(level.set_rate_hz) * float(level.span))
+    connect_weights(backend, sheet.neurons, cells.neurons,
+                    tuning.input_weights(np.ones((1, 1))) @ np.full((1, sheet.mapping.count), per_hz) / cells.charge)
+    constant = tuning.input_weights(np.array([[-1.0 / float(level.span)]]))[:, 0]
+    current = np.asarray(backend.GetStatus(cells.neurons, "I_e"), dtype=float) + constant
+    backend.SetStatus(cells.neurons, [{"I_e": float(c)} for c in current])
+    cells.tuning = Tuning(tuning.kind, tuning.n, tuning.dims, tuning.radius, tuning.encoders, tuning.gain, current, tuning.model, tuning.seed)
+    weights = -float(level.gain_pa) * np.asarray(decoders, dtype=float)[:, 0] / float(np.e * ANCHOR_TAU_MS * 1e-3)
+    backend.Connect(cells.neurons, sheet.neurons, {"rule": "all_to_all"},
+                    {"weight": np.ascontiguousarray(np.tile(weights[None, :], (sheet.mapping.count, 1))), "delay": 1.0,
+                     "receptor_type": ANCHOR})
+    sheet.level = cells
+    return cells
+
+
+__all__ = ["ANCHOR", "ANCHOR_TAU_MS", "EXCITATORY", "GATE", "INHIBITORY", "LevelDesign", "Sheet", "build_sheet", "charge", "connect_anchor",
+           "connect_anchor_bias", "connect_level", "connect_signed", "connect_velocity_cells", "current_weights", "level_tuning", "sheet_neuron"]

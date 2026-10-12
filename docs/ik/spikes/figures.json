@@ -1,0 +1,55 @@
+{
+ "place": [
+  0.35,
+  -0.25,
+  0.4
+ ],
+ "step_pa": -30.0,
+ "without": {
+  "rate_before_hz": 552.0,
+  "rate_during_hz": 344.0,
+  "read_error_before": 0.015801828811592634,
+  "read_error_during": 0.0886116009125292,
+  "read_error_largest": 0.10824200056566699
+ },
+ "with": {
+  "rate_before_hz": 509.6666666666667,
+  "rate_during_hz": 462.6666666666667,
+  "read_error_before": 0.011216365757060422,
+  "read_error_during": 0.015169446408464599,
+  "read_error_largest": 0.025155488719236414,
+  "added_before_pa": -5.277299906131789,
+  "added_during_pa": 17.642360427188038,
+  "back_at_nine_tenths_after_s": 0.2
+ },
+ "follow": {
+  "speed_units_per_s": 0.3,
+  "travelled_units": 0.45,
+  "packets_behind_s": 0.06184250423380919,
+  "readouts_behind_s": 0.1081631540148576,
+  "readouts_off_at_rest": 0.010814663785095909,
+  "readout_sd_from_tick_to_tick": 0.027311118103783293
+ },
+ "weights": {
+  "sheet_to_ramp": {
+   "median_pa": 5.973304406079617,
+   "largest_pa": 71.4088849707943
+  },
+  "sheet_to_level": {
+   "median_pa": 7.028634154929186,
+   "largest_pa": 53.394654547334326
+  },
+  "level_to_sheet": {
+   "median_pa": 0.9609488368726922,
+   "largest_pa": 7.54419735091134
+  },
+  "ramp_total_rate_hz": 1082.0,
+  "ramp_pulse_ms": 81.54845485377135,
+  "ramp_pulses_at_once": 88.2354281517806,
+  "level_pulse_ms": 271.8281828459045,
+  "level_constant_pa": {
+   "median_pa": 955.2904251115301,
+   "largest_pa": 7257.08595964335
+  }
+ }
+}

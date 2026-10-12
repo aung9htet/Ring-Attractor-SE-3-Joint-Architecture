@@ -6,6 +6,9 @@ test asks and its pass mark: [`tests.md`](tests.md). Every table in full:
 [`results/tables.md`](results/tables.md); the data: [`results/data/`](results/data/README.md).
 How to rerun any of it: the top-level [`README.md`](../README.md), section 3.
 
+This page is the forward network: the pose read from the joint rings. Taking the hand to a
+pose goal with it is measured on its own page, [`ik/results.md`](ik/results.md).
+
 Position error is the distance between the decoded and the true end point, as a share of
 the arm's reach (0.806 m for the 7-joint TIAGo arm). Numbers are given as median / 90th
 percentile / largest.
