@@ -15,6 +15,9 @@ Start here. Details: [`docs/architecture.md`](docs/architecture.md) (how it work
 [`docs/results.md`](docs/results.md) (what came out),
 [`docs/future-ik.md`](docs/future-ik.md) (ideas for inverse kinematics, and which are built).
 The mathematics and derivations of every part: [`TECHNICAL.md`](TECHNICAL.md).
+One account of all three repos (SO(2), SO(3), SE(3)): the idea, every model with its
+derivation, and how each derivation runs as spikes:
+[`Ring_Attractor_Kinematics.md`](Ring_Attractor_Kinematics.md).
 
 Inverse kinematics: [`docs/ik/README.md`](docs/ik/README.md) (how to give the demonstration),
 [`docs/ik/architecture.md`](docs/ik/architecture.md) (what is built),
