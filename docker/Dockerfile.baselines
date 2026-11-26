@@ -1,0 +1,9 @@
+# The baselines image: the pinned model image (ROS Noetic, Gazebo 11 with the TIAGo, NEST, Python 3.8) plus PyTorch for
+# the learned baselines (mpc_nn_dynamics, pets). torch 2.4.1 is the last release for Python 3.8; the CUDA 12.1 wheel runs
+# on any NVIDIA driver from 525 on. Build it once (needs the network), then record its digest in docker/image.env:
+#
+#   docker/run.bash build-baselines
+ARG MODEL_IMAGE
+FROM ${MODEL_IMAGE}
+RUN python3 -m pip install --no-cache-dir torch==2.4.1 --index-url https://download.pytorch.org/whl/cu121 \
+ && python3 -c "import torch; print('torch', torch.__version__, 'cuda', torch.version.cuda)"
