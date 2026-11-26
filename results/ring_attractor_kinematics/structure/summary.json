@@ -1,0 +1,443 @@
+{
+ "arms": [
+  {
+   "arm": "tiago4",
+   "budget": {
+    "lead": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 2400,
+     "level cells": 360,
+     "motor rings": 800,
+     "orientation observer": 0,
+     "readout rings": 420,
+     "ring attractors": 800,
+     "total": 36716,
+     "value populations": 16400,
+     "warm/cold comparison": 1140
+    },
+    "matrix": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 2400,
+     "level cells": 360,
+     "motor rings": 0,
+     "orientation observer": 0,
+     "readout rings": 420,
+     "ring attractors": 800,
+     "total": 35916,
+     "value populations": 16400,
+     "warm/cold comparison": 1140
+    }
+   },
+   "caps_rad": [
+    0.15708,
+    0.15209,
+    0.29172,
+    0.15708
+   ],
+   "divisors": [
+    5.54138,
+    5.00288,
+    1.43,
+    1.64498
+   ],
+   "forward_neurons": 14968,
+   "forward_wiring": {
+    "depth": 6,
+    "entries": 10,
+    "joints": 4,
+    "products": 26
+   },
+   "ik_wiring": {
+    "products": 38,
+    "share_populations": 8,
+    "sheet_readouts": 6,
+    "sum_populations": 34
+   },
+   "joints": 4,
+   "observer": {
+    "cue norms": 240,
+    "joint velocities": 240,
+    "observer cos/sin, now and delayed": 1440,
+    "observer rings (2 charts \u00d7 3)": 1200,
+    "products": 12000,
+    "shift cells": 2400,
+    "sums, selector, fallback and matrix gates": 4380,
+    "total": 21900
+   },
+   "parts": {
+    "direction": {
+     "halves": 0,
+     "products": 16,
+     "sums": 11
+    },
+    "goal": {
+     "halves": 0,
+     "products": 0,
+     "sums": 0
+    },
+    "levers": {
+     "halves": 0,
+     "products": 0,
+     "sums": 9
+    },
+    "offset": {
+     "halves": 0,
+     "products": 0,
+     "sums": 3
+    },
+    "rest": {
+     "halves": 0,
+     "products": 11,
+     "sums": 11
+    },
+    "share": {
+     "halves": 8,
+     "products": 11,
+     "sums": 0
+    },
+    "turn": {
+     "halves": 0,
+     "products": 0,
+     "sums": 0
+    }
+   },
+   "reach_m": 0.60974,
+   "relaxation": {
+    "largest": 1.57977,
+    "largest_by_joint": [
+     1.57977,
+     1.09344,
+     0.56834,
+     0.39209
+    ],
+    "median_by_joint": [
+     0.82993,
+     0.90744,
+     0.34445,
+     0.39209
+    ],
+    "share_above_2": 0.0,
+    "stages_above_2": 0
+   },
+   "task": "position"
+  },
+  {
+   "arm": "tiago7",
+   "budget": {
+    "lead": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 4200,
+     "level cells": 360,
+     "motor rings": 1400,
+     "orientation observer": 0,
+     "readout rings": 420,
+     "ring attractors": 2000,
+     "total": 70436,
+     "value populations": 46520,
+     "warm/cold comparison": 1140
+    },
+    "matrix": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 4200,
+     "level cells": 360,
+     "motor rings": 0,
+     "orientation observer": 0,
+     "readout rings": 420,
+     "ring attractors": 2000,
+     "total": 69036,
+     "value populations": 46520,
+     "warm/cold comparison": 1140
+    },
+    "observer": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 4200,
+     "level cells": 360,
+     "motor rings": 0,
+     "orientation observer": 23880,
+     "readout rings": 420,
+     "ring attractors": 2000,
+     "total": 92916,
+     "value populations": 46520,
+     "warm/cold comparison": 1140
+    }
+   },
+   "caps_rad": [
+    0.15708,
+    0.15209,
+    0.29172,
+    0.15708,
+    0.23936,
+    0.16157,
+    0.23936
+   ],
+   "divisors": [
+    5.0487,
+    5.03073,
+    1.96791,
+    2.6586,
+    1.0129,
+    1.02933,
+    1.0
+   ],
+   "forward_neurons": 24208,
+   "forward_wiring": {
+    "depth": 12,
+    "entries": 28,
+    "joints": 7,
+    "products": 62
+   },
+   "ik_wiring": {
+    "products": 128,
+    "share_populations": 14,
+    "sheet_readouts": 6,
+    "sum_populations": 80
+   },
+   "joints": 7,
+   "observer": {
+    "cue norms": 240,
+    "joint velocities": 420,
+    "observer cos/sin, now and delayed": 1440,
+    "observer rings (2 charts \u00d7 3)": 1200,
+    "products": 13800,
+    "shift cells": 2400,
+    "sums, selector, fallback and matrix gates": 4380,
+    "total": 23880
+   },
+   "parts": {
+    "direction": {
+     "halves": 0,
+     "products": 28,
+     "sums": 17
+    },
+    "goal": {
+     "halves": 0,
+     "products": 14,
+     "sums": 4
+    },
+    "levers": {
+     "halves": 0,
+     "products": 0,
+     "sums": 15
+    },
+    "offset": {
+     "halves": 0,
+     "products": 0,
+     "sums": 3
+    },
+    "rest": {
+     "halves": 0,
+     "products": 34,
+     "sums": 38
+    },
+    "share": {
+     "halves": 14,
+     "products": 34,
+     "sums": 0
+    },
+    "turn": {
+     "halves": 0,
+     "products": 18,
+     "sums": 3
+    }
+   },
+   "reach_m": 0.80574,
+   "relaxation": {
+    "largest": 1.93584,
+    "largest_by_joint": [
+     1.93584,
+     1.43851,
+     1.51786,
+     1.04681,
+     1.01551,
+     1.0,
+     1.0
+    ],
+    "median_by_joint": [
+     0.93041,
+     1.0549,
+     1.11147,
+     1.00798,
+     0.99963,
+     1.0,
+     1.0
+    ],
+    "share_above_2": 0.0,
+    "stages_above_2": 0
+   },
+   "task": "pose"
+  },
+  {
+   "arm": "generic7",
+   "budget": {
+    "lead": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 4200,
+     "level cells": 360,
+     "motor rings": 1400,
+     "orientation observer": 0,
+     "readout rings": 420,
+     "ring attractors": 2000,
+     "total": 73376,
+     "value populations": 49460,
+     "warm/cold comparison": 1140
+    },
+    "matrix": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 4200,
+     "level cells": 360,
+     "motor rings": 0,
+     "orientation observer": 0,
+     "readout rings": 420,
+     "ring attractors": 2000,
+     "total": 71976,
+     "value populations": 49460,
+     "warm/cold comparison": 1140
+    },
+    "observer": {
+     "2-D attractor sheets": 13824,
+     "anchors": 572,
+     "gain pairs and written goal rings": 4200,
+     "level cells": 360,
+     "motor rings": 0,
+     "orientation observer": 23880,
+     "readout rings": 420,
+     "ring attractors": 2000,
+     "total": 95856,
+     "value populations": 49460,
+     "warm/cold comparison": 1140
+    }
+   },
+   "caps_rad": [
+    0.25133,
+    0.25133,
+    0.25133,
+    0.25133,
+    0.25133,
+    0.25133,
+    0.25133
+   ],
+   "divisors": [
+    2.31649,
+    2.47767,
+    1.77911,
+    1.68757,
+    1.88075,
+    1.09163,
+    1.18367
+   ],
+   "forward_neurons": 24208,
+   "forward_wiring": {
+    "depth": 12,
+    "entries": 28,
+    "joints": 7,
+    "products": 62
+   },
+   "ik_wiring": {
+    "products": 140,
+    "share_populations": 14,
+    "sheet_readouts": 6,
+    "sum_populations": 89
+   },
+   "joints": 7,
+   "observer": {
+    "cue norms": 240,
+    "joint velocities": 420,
+    "observer cos/sin, now and delayed": 1440,
+    "observer rings (2 charts \u00d7 3)": 1200,
+    "products": 13800,
+    "shift cells": 2400,
+    "sums, selector, fallback and matrix gates": 4380,
+    "total": 23880
+   },
+   "parts": {
+    "direction": {
+     "halves": 0,
+     "products": 34,
+     "sums": 20
+    },
+    "goal": {
+     "halves": 0,
+     "products": 14,
+     "sums": 4
+    },
+    "levers": {
+     "halves": 0,
+     "products": 0,
+     "sums": 18
+    },
+    "offset": {
+     "halves": 0,
+     "products": 0,
+     "sums": 3
+    },
+    "rest": {
+     "halves": 0,
+     "products": 37,
+     "sums": 41
+    },
+    "share": {
+     "halves": 14,
+     "products": 37,
+     "sums": 0
+    },
+    "turn": {
+     "halves": 0,
+     "products": 18,
+     "sums": 3
+    }
+   },
+   "reach_m": 1.4,
+   "relaxation": {
+    "largest": 4.13092,
+    "largest_by_joint": [
+     4.13092,
+     3.00952,
+     2.19373,
+     2.33334,
+     1.41064,
+     1.08432,
+     1.0
+    ],
+    "median_by_joint": [
+     0.83596,
+     0.85422,
+     0.89885,
+     0.83208,
+     0.97308,
+     0.99884,
+     1.0
+    ],
+    "share_above_2": 0.02375,
+    "stages_above_2": 4
+   },
+   "task": "pose"
+  }
+ ],
+ "benchmark": "structure",
+ "ring_bump": {
+  "active": 27,
+  "driven_hz": 68.29091,
+  "flank_max_hz": 17.8,
+  "flank_min_hz": 12.6,
+  "total_hz": 1004.4
+ },
+ "techniques": [
+  "value populations",
+  "2-D attractor sheets",
+  "gain pairs and written goal rings",
+  "ring attractors",
+  "warm/cold comparison",
+  "anchors",
+  "readout rings",
+  "level cells",
+  "motor rings",
+  "orientation observer"
+ ]
+}
