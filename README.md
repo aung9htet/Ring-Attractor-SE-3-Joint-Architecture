@@ -1,497 +1,350 @@
-# Ring-Attractor-SE-3-Joint-Architecture
+# Ring-attractor kinematics: pose reaching in spiking neurons, and the baselines it is compared with
 
-The pose of a robot arm's end point, position and orientation, read from ring attractors
-that hold the joint angles. The orientation comes from the network of the SO-3 repo; this
-repo adds the position, held as packets of activity on three attractor sheets in the manner
-of RatSLAM's pose cells. Spiking neurons in NEST, 2 to 7 joints, the TIAGo arm among them,
-with a simulator in which you move the arm and watch the decoded pose next to the true one.
+This repository holds a spiking neural network that takes a robot arm's hand to a goal **pose** (position and
+orientation together), the controllers it is compared with, the shared benchmark they are all measured on, and every
+result. Everything runs in Docker; every result in `results/` can be produced again with the commands below.
 
-On top of it sits an inverse kinematics made of the same spiking parts: the hand is given a
-pose goal, on goal rings and goal sheets, and the arm goes there in closed loop, on a light
-robot or on the TIAGo in Gazebo (section 11).
+**The models**, one package each:
 
-Start here. Details: [`docs/architecture.md`](docs/architecture.md) (how it works),
-[`docs/tests.md`](docs/tests.md) (what was tested and the pass marks),
-[`docs/results.md`](docs/results.md) (what came out),
-[`docs/future-ik.md`](docs/future-ik.md) (ideas for inverse kinematics, and which are built).
-The mathematics and derivations of every part: [`TECHNICAL.md`](TECHNICAL.md).
-One account of all three repos (SO(2), SO(3), SE(3)): the idea, every model with its
-derivation, and how each derivation runs as spikes:
-[`Ring_Attractor_Kinematics.md`](Ring_Attractor_Kinematics.md).
+| Package | Model | What it is |
+|---|---|---|
+| `ring_attractor_kinematics/` | **RAK model** (ring-attractor kinematics) | The spiking network (NEST, leaky integrate-and-fire neurons). Joint angles live as bumps on ring attractors; hand position as packets on three 2-D attractor sheets; populations compose the hand's pose from the joints and compare it with the goal; a *cascade* hands the remaining error down the arm, joint by joint (below). Variants: the default (the turn is read from the hand's late decoded matrix), *predictive encoding* (joint angles written ahead by the commanded velocity), *observer* (a two-chart orientation observer), and *no spikes* (the same cascade in exact arithmetic, no neurons). |
+| `dls_ik/` | **DLS IK** | Standard inverse kinematics by damped least squares: every tick, the smallest joint step that makes the remaining turn and move, from the measured joint angles and the true geometry. Reactive, exact, no neurons, no internal model. |
+| `mpc_nn_dynamics/` | **NN dynamics + MPC** (Nagabandi et al., ICRA 2018) | A neural-network model of how the arm responds to joint steps, learned from data, with model-predictive control by random shooting. |
+| `pets/` | **PETS** (Chua et al., NeurIPS 2018) | An ensemble of probabilistic neural-network models of the arm's response, learned from data, with model-predictive control by the cross-entropy method over trajectories sampled from the ensemble. |
+| `jacobian_transpose_ik/` | Jacobian transpose | The gradient of the task error; used only as an exact-loop reference beside the RAK model's trials and in the simulator (no benchmark of its own). |
 
-Inverse kinematics: [`docs/ik/README.md`](docs/ik/README.md) (how to give the demonstration),
-[`docs/ik/architecture.md`](docs/ik/architecture.md) (what is built),
-[`docs/ik/tests.md`](docs/ik/tests.md) (the tests and their marks),
-[`docs/ik/results.md`](docs/ik/results.md) (what came out).
+Shared by all: `reaching_benchmark/` (the task, the arms, the plants, the closed loop, the runner, the results files,
+statistics, progress bars, status and comparison) and, for the two learned models, `learned_dynamics/`.
 
-Related repos: `Ring-Attractor-SO-2-Joint-Architecture` (one ring per joint, the joint
-controller, the paper draft) and `Ring-Attractor-SO-3-Joint-Architecture` (orientation from
-the rings). This repo runs on its own: it carries a copy of the SO-3 package (`ring_so3/`).
+**What "cascade" means.** The RAK model decides how far each joint moves with a *cascade*: every 50 ms it goes through
+the joints from base to wrist; joint 1 takes the part of the remaining hand error (turn and offset) that its own axis can
+make, capped at its step limit; that part is subtracted from the error; joint 2 takes its share of what joint 1 left;
+and so on to the wrist. In the RAK model spiking populations compute this. **"Cascade rule, no spikes"** computes the
+same equations exactly from the measured joint angles, with no neurons, no estimation lag and no spike noise, so that
+comparing it with the RAK model isolates what the spiking implementation costs, and comparing it with DLS IK isolates the
+algorithm.
 
-## 1. What this is and what was measured
+## Contents
 
-![the pose network](docs/figures/architecture.png)
+1. [Layout](#layout)
+2. [Install](#install)
+3. [Tests](#tests)
+4. [The reaching task](#the-reaching-task) (what every controller is measured on)
+5. [Results: how each one was produced](#results-how-each-one-was-produced)
+6. [Running the baselines (to fill Fig. 3b)](#running-the-baselines)
+7. [The learned baselines: protocol and settings](#the-learned-baselines-protocol-and-settings)
+8. [What each controller reads, is given and learns](#what-each-controller-reads-is-given-and-learns)
+9. [Gazebo](#gazebo)
+10. [Result files](#result-files)
+11. [Watching runs](#watching-runs)
+12. [The simulator](#the-simulator)
+13. [Code conventions](#code-conventions)
+14. [Licences and references](#licences-and-references)
 
-- **In:** one ring attractor per joint with a bump at the joint angle, and the joint
-  velocities.
-- **Orientation:** the SO(3) network, unchanged.
-- **Position:** every link's orientation times its fixed offset, summed (no product), held
-  by three *position cells*; these anchor one packet on each of three sheets of 48 x 48
-  spiking neurons (planes xy, xz, yz). The position is read from the packets.
-- **Velocity:** joint axis times lever times joint velocity gives the end point's velocity;
-  *velocity cells* move the packets with it when the anchor is off.
-- **Weights:** fitted once per kind of population to its measured response. No pose of any
-  chain is used for fitting.
+## Layout
 
-### What was tested, and the result
+```
+reaching_benchmark/          shared by every model; never imports a model
+  geometry/                  rotations, arms (chains), forward kinematics                        NumPy only
+  task.py                    IkDesign: the task, goal travel, step limits, when a trial ends and counts as reached
+  targets.py                 start poses and goals, and their seeds (TEST_SEED: the reported pairs; TRAIN_SEED: training)
+  limits.py                  step caps, limit room, goal travel, the turn and offset errors, the weighted Jacobian
+  plants/light_robot.py      the kinematic plant (joints move exactly as told)
+  plants/gazebo_robot.py     the TIAGo arm in Gazebo, in lock step                               (ROS)
+  closed_loop.py             the closed loop every controller runs in; Trial; trial_row; RuleLoop
+  benchmark.py               run_reach: the shared runner (resume, checkpoint, progress bar)
+  summary.py, compare.py     the shared reaching summary; every model side by side
+  results.py                 where results live and how run files are named
+  statistics.py              Wilson intervals, McNemar, paired bootstrap, censoring
+  progress.py, status.py     progress bars; python -m reaching_benchmark status
+ring_attractor_kinematics/   the RAK model
+  config.py                  every design constant of the network (sizes, sheets, gain pairs, observer)
+  neurons/, spiking/         the LIF neuron, tuning, ring and sheet layout; populations, rings, sheets in NEST
+  network/                   wiring (no NEST), the forward network, the pose-IK network, budgets
+  rules/                     cascade_rule (the exact rule and loop), observer_rule, references (DLS, transpose, cascade)
+  control/session.py         the network as a controller of the shared closed loop; the forward session
+  calibration/, artifacts/   the decoders measured in NEST, and the stored calibrations
+  benchmarks/                one module per benchmark, and their summaries
+  simulator/                 the browser simulator
+dls_ik/                      rule.py (damped least squares), controller.py, __main__.py
+jacobian_transpose_ik/       rule.py
+learned_dynamics/            setup (device, determinism), kinematics (PyTorch), data, model, train, planner, controller,
+                             protocol (the shared protocol and command line of the two learned baselines)
+mpc_nn_dynamics/, pets/      config.py (each model's settings), __main__.py
+tests/                       unittest; tests that need NEST, ROS or PyTorch skip themselves where it is missing
+docker/                      run.bash (every container), image.env (pinned images), Dockerfile.baselines
+gazebo/                      the Gazebo world
+results/                     every run and summary, one folder per model and benchmark (see Result files)
+```
 
-Position error is the distance between the decoded and the true end point, as a share of
-the arm's reach (0.806 m for the 7-joint TIAGo arm), given as median / 90th percentile /
-largest. Everything runs in NEST with a light robot (joint angles that move toward a target
-at a speed limit). Full account: [`docs/results.md`](docs/results.md).
+## Install
 
-| Test | What was done | Result |
-| --- | --- | --- |
-| Maths | position as a weighted sum of link orientations, velocity from joint velocities, for 12 chains | equal to the exact kinematics |
-| Parts | an anchored sheet; a free packet; a packet moved by a known velocity | an anchored packet sits within 0.56 cells of its place (mark 1 cell). A free packet moves at 0.66 to 1.71 times the speed asked for (mark: within 10%: **missed**) |
-| **Held poses** | 300 random poses for each of 12 models (2 to 7 joints): move there, rest 1 s | position off by 0.97% to 1.37% of the reach in the median, largest 90th percentile 2.34%; the 7-joint TIAGo arm 11.1 mm / 18.6 mm / 32.8 mm. All 12 models within the mark set beforehand (median at most 2%, 90th percentile at most 4%). Orientation as in the SO-3 repo (largest median 1.12°) |
-| Sheets against position cells | the same poses, position read before and after the sheets | the position cells alone are slightly closer (7 joints: 1.28% against 1.37%): the sheets hold the position, they do not sharpen it |
-| **Moving arm** | the arm keeps going from goal to goal at 0.25, 0.5 and 1.0 rad/s | 0.21 to 0.23 s behind at 0.5 rad/s (mark 0.5 s); 5.25% to 7.40% of the reach off while moving. With the anchor given the position 0.2 s ahead: 2.28% (7 joints) |
-| **Without the anchor, arm at rest** | anchor off for 2, 5, 10 s | in 29 of 30 gaps all three packets stay alive (in one, a sheet lost its packet); they move 4.59% of the reach in the median in 10 s (mark 2%: **missed**). Anchor on again: readout back in 0.10 s in the median, later than 0.5 s in 15 of 190 gaps (**missed** narrowly) |
-| **Without the anchor, arm moving** | path integration alone for 2 to 10 s | **does not work well**: a clear gain in one condition (3 joints, 0.25 rad/s, 2 s: error 0.52 of the distance travelled against 1.21 without); little gain or harm in the others |
-| Robustness | 100 poses, 4 and 7 joints | 20% of the sheets' neurons off: 1.93% (7 joints, as built 1.32%). Not robust to a noise current of 150 pA (6.31%) or to losing 5% of the SO(3) product neurons (7.21%) |
+Everything runs in one of two Docker images, both recorded in `docker/image.env`:
 
-![position error against the number of joints](docs/results/figures/error_by_joints.png)
-
-## 2. Setup
-
-Everything runs in the Docker image of the SO-2 repo (NEST, Python 3.8, NumPy, SciPy,
-Matplotlib, ffmpeg; pinned in `docker/image.env`). Nothing is installed on the host.
-
-**Every command on this page can be pasted into a terminal at the root of this repo as it
-stands.** Each one starts a fresh container (no network), runs, and removes the container.
-
-- `docker/run.bash nest --out /tmp/ring-se3 -- '...'` runs what is between the quotes in
-  the container. Results that a command writes to `/out/...` appear on the host in
-  `/tmp/ring-se3/`.
-- `docker/run.bash sim -- '...'` is the same with port 8765 published on localhost (the
-  simulator).
-- The repo is mounted read-write at `/work`. NEST uses `--threads` threads per run.
-
-## 3. Run it
-
-### 3.1 Calibration
-
-All four calibration files of the default design are checked in (`artifacts/`), so nothing
-has to be done. They are written by
+* **`MODEL_IMAGE`** (pinned by digest, pulled from Docker Hub): Ubuntu 20.04, ROS Noetic, Gazebo 11 with the TIAGo,
+  NEST, Python 3.8, NumPy, SciPy, Matplotlib. Every model runs here except the two learned baselines.
+* **`BASELINE_IMAGE`**: `MODEL_IMAGE` plus PyTorch 2.4.1 (CUDA 12.1 wheel), built locally from
+  `docker/Dockerfile.baselines`. The learned baselines run here; with `--cuda` they use the NVIDIA GPU.
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/calibrate.py --out /out/so3.npz'   # the SO(3) readouts, about a minute
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/calibrate_pose.py --out /out/pose.npz'   # anchor readout and packet speed curve, about two minutes
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/calibrate_ik.py --out /out/ik.npz'   # inverse kinematics: the readouts of the share halves, about a minute
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/calibrate_ramp.py --out /out/ramp.npz'   # inverse kinematics: the ramp readout of the sheets, about seven minutes
+docker pull "$(. docker/image.env; echo "$MODEL_IMAGE")"
+docker/run.bash build-baselines          # once, needs the network (about 25 GB image); then put the printed id in
+                                         # docker/image.env as BASELINE_IMAGE
 ```
 
-Without `--out` they write into `artifacts/` and replace the files there. Do that only for
-a design that has none yet (`--sheet 32`, `--seed 2`): the recorded results belong to the
-files that are checked in.
-
-### 3.2 Held poses of one model
+The GPU needs the NVIDIA driver (525 or later) and the NVIDIA Container Toolkit on the host. Check it:
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_static.py --chain tiago4 --poses 20 --out /out/tiago4.json'
+docker/run.bash nest --image baselines --cuda -- 'python3 -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"'
 ```
 
-The arm moves to each random pose and rests 1 s; position and orientation read over the
-last 0.5 s are compared with the exact kinematics. Models: `generic2` .. `generic7`,
-`tiago2` .. `tiago7`. The summary is printed every 50 poses; every pose is in the JSON
-file ([`docs/results/data/README.md`](docs/results/data/README.md) explains the fields).
-Without `--poses` it runs the 300 poses of the test.
+What runs where: the RAK model runs in NEST on the CPU (NEST has no GPU back end for this network); Gazebo's physics runs
+on the CPU; DLS IK and the cascade without spikes are negligible; only the two learned baselines' training and planning
+run on the GPU.
 
-### 3.3 A moving arm
+## Tests
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_tracking.py --chain tiago4 --speed 0.5 --goals 5 --out /out/tracking.json'
+docker/run.bash nest -- 'python3 -B -m unittest discover -s tests'                                 # ~2.5 min
+docker/run.bash nest --image baselines --cuda -- 'python3 -B -m unittest tests.test_learned'       # ~15 s
+docker/run.bash nest -- 'RAK_REGRESSION=1 python3 -B -m unittest tests.test_regression_rak'        # ~4 min
 ```
 
-The arm keeps moving from one random goal to the next; every 50 ms tick is logged.
+The last one replays two stored RAK trials (a kinematic reach and a joint-loss trial) with the code as it is and checks
+they come out number for number: the guard against any change to the model's behaviour.
 
-### 3.4 Without the anchor
+## The reaching task
+
+Every controller is measured on the same task (`reaching_benchmark/task.py`, `reaching_benchmark/closed_loop.py`):
+
+* **Arms.** *TIAGo arm, 7 DoF* (`tiago7`): the arm of PAL Robotics' TIAGo, from the shoulder (`arm_1`) to the tool flange
+  (`arm_tool_link`), with the joint limits of its robot description. *TIAGo arm, 4 DoF* (`tiago4`): its first four joints
+  (shoulder and elbow), asked for position only. *Synthetic arm, 2–7 DoF* (`generic2`…`generic7`): 0.2 m links, joint axes
+  alternating x, y, z, no joint limits. Every joint is revolute (one degree of freedom).
+* **Plants.** The *kinematic plant* (`light`): every joint moves toward its target as if to arrive after 1/κ (κ = 1 s⁻¹),
+  no dynamics. *Gazebo*: the TIAGo arm with its trajectory controller and physics, advanced in lock step with the
+  controller, 50 ms per tick.
+* **Pairs.** 30 start–goal pairs per arm from `TEST_SEED` (`reaching_benchmark/targets.py`): each goal is the pose of
+  another joint configuration within 0.8 rad of the start joint by joint, so every goal can be reached.
+* **The written goal.** The goal a controller is given travels toward the final goal at 1 rad/s (lift, pitch, yaw) and
+  0.3 reach/s (position), the same for every controller.
+* **Step limits.** A joint may be told to move at most 8 *steps* per tick; a step is 1/200 of its range on a circular
+  joint, 1/140 on a bounded one (`reaching_benchmark/limits.py`); a step toward a limit fades over the last 5 steps.
+* **Errors.** Position error is the Euclidean distance from the hand to the goal; orientation error is the angle of the
+  one rotation that turns the hand onto the goal (combining lift, pitch and yaw).
+* **End and success.** A trial ends when the written goal has arrived and the hand moved less than 0.5° and 0.4% of
+  reach in 2 s, or at 25 s. It counts as **reached** when, at its last sample, orientation is within 5° and position
+  within 4% of reach (32.2 mm on the 7-DoF TIAGo arm), only what the task asks.
+
+## Results: how each one was produced
+
+Times are wall times on 8 NEST threads on a 24-core machine; keep 8 threads (the thread count changes NEST's random
+streams). Each command writes the run files and the benchmark's `summary.json` in `results/<model>/<benchmark>/`;
+`summarise NAME` recomputes a summary from its run files. Run every command from the repository root.
+
+### RAK model (`results/ring_attractor_kinematics/`)
+
+**Calibration** (stored in `ring_attractor_kinematics/artifacts/`; optional, ~75 min):
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_dropout.py --chain generic3 --speed 0 --gaps 5 --repeats 2 --out /out/rest.json'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_dropout.py --chain generic3 --speed 0.25 --gaps 2 --repeats 2 --out /out/moving.json'
+docker/run.bash nest -- 'python3 -B -m ring_attractor_kinematics calibrate all'
 ```
 
-The anchor is switched off for the given number of seconds and on again. `--speed 0`: the
-arm rests during the gap (does the packet stay?). Otherwise it keeps moving (does path
-integration carry the packet?).
+| Benchmark folder | Question | Command (inside `docker/run.bash nest -- '…'`) | Runs | Wall |
+|---|---|---|---|---|
+| `screening/` | Which orientation source is worth a spiking build? Exact loop, every source, swept lag, cue noise and gain | `python3 -B -m ring_attractor_kinematics benchmark screening` | 1 (8,640 cases) | 4 min |
+| `held_pose/` | The forward network at rest: 30 held poses on 12 arms | `… benchmark held_pose` | 12 | ~1 h |
+| `held_pose_neuron_loss/` | The same poses under diffuse neuron loss: every class at 5–30%, each class alone at 10%, lesion seeds 1–3 | `… benchmark held_pose_neuron_loss` | 21 | ~2 h |
+| `moving_estimate/` | The forward network while the arm moves: four paths, three methods; then one shared path at three speeds | `… benchmark moving_estimate`, then `… benchmark moving_estimate --condition common` | 7 | ~1.5 h |
+| `reach_kinematic/` | Closed-loop reaching on the kinematic plant: 30 pairs each on the 7-DoF TIAGo arm, the synthetic 7-DoF arm and the 4-DoF TIAGo arm (position) | `… benchmark reach_kinematic` (seed 1), `… --variant predictive_encoding`, `… --variant observer`; seed repeats `… --arm tiago7 --seed 2` and `--seed 3`, each also with `--variant predictive_encoding` | 12 | 1–4.5 h each |
+| `reach_pole/` | Goals near the lift-pitch-yaw pole (20 pairs, \|pitch\| > 75°) | `… benchmark reach_pole`, `… --variant observer` | 4 | 2–3 h each |
+| `reach_gain/` | Loop gain κ = 1.5 and 2 | `… benchmark reach_gain --condition kappa=1.5` (and `kappa=2`), each with the three variants | 6 | 3.5–6 h each |
+| `reach_disturbance/` | A 0.3 rad push of one joint at 2 s; a 100 pA noise current (20 pairs) | `… benchmark reach_disturbance`, `… --variant observer` | 4 | ~2.7 h each |
+| `reach_gazebo/` | Reaching with the TIAGo arm in Gazebo (30 pairs) | see [Gazebo](#gazebo): `… benchmark reach_gazebo`, with `--variant predictive_encoding` and `--variant observer` | 3 | 2–6 h each |
+| `joint_loss/` | One joint disabled 2 s into each reach: actuator lock, motor-neuron loss, allocation-neuron loss; seeds 1–3; and 10% diffuse loss | `… benchmark joint_loss --condition intact` (seed 1), then for seeds 1–3: `--condition lock`, `motor`, `allocation` (`--seed 2`, `--seed 3`); `--condition loss --loss 0.1` | 11 | ~1 h each (1.5 h for loss) |
+| `joint_map/` | Every joint disabled in turn, in the exact loop (no NEST; 20 processes) | `… benchmark joint_map` | 1 (840 cases) | ~10 min |
+| `cost/` | Neurons, synapses, spikes, speed (run with nothing else running) | `… benchmark cost` | 1 | ~5 min |
+| `structure/` | Neuron and wiring counts from the code (no NEST) | `… benchmark structure` | 1 | ~10 s |
 
-### 3.5 Options
+The intact reference of `joint_loss` at seeds 2 and 3 is the `reach_kinematic` run of the same seed. `twins`
+(`… benchmark twins`) recomputes the exact-loop twins stored beside every closed-loop trial after a change to a rule.
 
-Of `run_static.py`, `run_tracking.py` and `run_dropout.py`:
+Options of `benchmark`: `--variant` (above), `--arm`, `--seed` (NEST kernel seed), `--condition`, `--pairs`,
+`--shard i/n` (every n-th pair from the i-th on, so several jobs can share a run), `--max-minutes M` (stop before the
+next trial after M minutes), `--threads` (keep 8), and for `joint_loss` `--onset`, `--loss`, `--loss-class`,
+`--lesion-seed`. Running the same command again resumes a run that stopped.
 
-| Option | Effect |
-| --- | --- |
-| `--no-path-integration` | the velocity cells are silent: nothing moves the packets but the anchor |
-| `--anchor-lead S` | the sheets are anchored at position + velocity x S seconds |
-| `--no-velocity` | build no velocity path at all (a smaller network, anchored sheets only) |
-| `--sheet N` | sheets of N x N neurons (needs its pose calibration) |
-| `--design-seed N` | other thresholds and maximum rates in the populations (needs both calibrations) |
-| `--noise PA` | a noise current into every neuron between the rings and the sheets |
-| `--silence-sheets 0.1` | switch off this share of the sheets' neurons (`run_static.py`) |
-| `--silence 0.05` | switch off this share of the SO(3) product neurons (`run_static.py`) |
-| `--lead` | write each joint's angle ahead by the SO(3) readout's delay (`run_tracking.py`) |
+### DLS IK (`results/dls_ik/`), cascade without spikes, NN dynamics + MPC, PETS
 
-### 3.6 The parts, the shift-register experiment, speed
+See [Running the baselines](#running-the-baselines). Their results appear in `results/dls_ik/reach_gazebo/`,
+`results/ring_attractor_kinematics/reach_gazebo/tiago7_no_spikes.json`, `results/mpc_nn_dynamics/` and `results/pets/`
+once run; `results/comparison/reach_gazebo.json` puts every model side by side.
+
+## Running the baselines
+
+These fill the baseline rows of the paper's Fig. 3b: every model on the same 30 pairs of the 7-DoF TIAGo arm in Gazebo.
+Gazebo takes one run at a time. Estimated times are for this machine.
+
+**1. DLS IK and the cascade without spikes** (model image):
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_parts.py --quick --out /out/parts.json'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_trail.py --chain generic3 --mode trail --repeats 3 --out /out/trail.json'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/rate_study.py --out /out/rate.json'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/benchmark.py --models generic3 --threads 8 --seconds 10 --out /out/speed.json'
+docker/run.bash gazebo up rak-gazebo
+docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m dls_ik reach --plant gazebo'                                         # ~0.5 h
+docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m ring_attractor_kinematics benchmark reach_gazebo --variant no_spikes'  # ~0.5 h
+docker/run.bash gazebo down rak-gazebo
 ```
 
-`run_parts.py` measures a sheet and the velocity path on their own (test 3; without
-`--quick` the full set). `run_trail.py`: for 2 s the network gets neither the anchor nor the
-joint velocities, and the velocity cells are given the velocity that the last 0.5 s of
-decoded positions show (`--mode none` and `--mode velocity` are the two comparisons).
-`rate_study.py` needs no NEST.
-
-### 3.7 Everything, and the report
+**2. The learned baselines** (baselines image, GPU):
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_experiments.py --list'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_experiments.py --jobs 3 --threads 8 --only static --models tiago7 generic7 generic6'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/report.py'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/check_doc_numbers.py'
+docker/run.bash gazebo up rak-gazebo-gpu --image baselines --cuda
+docker/run.bash gazebo exec rak-gazebo-gpu -- 'python3 -B -m mpc_nn_dynamics all --plant gazebo'   # ~2–3 h
+docker/run.bash gazebo exec rak-gazebo-gpu -- 'python3 -B -m pets all --plant gazebo'              # ~4–5 h
+docker/run.bash gazebo down rak-gazebo-gpu
 ```
 
-`run_experiments.py --list` prints every run of the results; a run whose output exists is
-skipped. All of it is several hours on 24 hardware threads; start it in parts (`--only`,
-`--models`), as above. `report.py` writes [`docs/results/tables.md`](docs/results/tables.md)
-and `docs/results/figures/`. The last command fails if a document quotes a number that is
-not in the tables.
+`all` runs the three steps in order; each can be run on its own (`collect`, `train`, `reach`) and each resumes where it
+stopped. Planning takes about 20 ms per tick for NN dynamics + MPC and about 270 ms for PETS on an RTX 4070 Ti.
 
-## 4. The simulator
+**3. Side by side:**
 
 ```bash
-docker/run.bash sim -- 'python3 -B scripts/simulator.py --chain tiago4'
+docker/run.bash nest -- 'python3 -B -m reaching_benchmark compare reach_gazebo'
 ```
 
-Then open <http://localhost:8765/>. The spiking network runs live, one 50 ms tick at a
-time, in step with a light robot (joint angles that move toward their targets at a speed
-limit; no dynamics).
+This writes `results/comparison/reach_gazebo.json` and prints a table: targets reached with Wilson 95% intervals, median
+final errors, median time to enter tolerance for good (missed targets at 25 s), median path ratio, and for every
+controller paired tests against the RAK model on the same targets (exact McNemar on reached; paired bootstrap of the
+differences in final error and time).
 
-- **Sliders**: one per joint, within its limits. **Keep moving to random goals**: the arm
-  goes from goal to goal by itself. **One random pose**, the **joint speed limit**, a
-  **chain** selector.
-- **Anchor** and **Path integration** switches. Anchor off, arm at rest: the packets stay.
-  Anchor off, arm moving: the packets are carried by the velocity, roughly; with path
-  integration off as well they stay where they were. Anchor on: they jump back.
-- **The arm in 3D** with the true end point (dot) and the one read from the sheets
-  (circle), and the true and decoded frames at every link; drag to turn the view. Below it
-  the position error and the orientation error, now and over the last 10 s.
-- **Position** x, y, z over the last 30 s, true and read from the sheets.
-- **The three sheets**: spikes of the last tick, the true position (cross) and the centre
-  of the packet (circle).
-- **Lift, pitch, yaw** and the **spikes** of the joint rings and output rings, as in the
-  SO-3 simulator.
+Every baseline also runs on the kinematic plant (`--plant light`, results in `reach_kinematic/`), which needs no Gazebo.
 
-The status line says how fast the network runs. A 2- or 3-joint network runs faster than
-real time, the 7-joint one at less than half of it; the page then shows the arm in slow
-motion. Options: `--port`, `--speed`, `--threads`, `--mode manual`, and `--stub`, which
-replaces the network by exact kinematics with a little noise, to try the page where NEST is
-not installed (`python3 scripts/simulator.py --stub` needs only NumPy). If your browser or
-proxy does not pass event streams, open `http://localhost:8765/?poll`.
+## The learned baselines: protocol and settings
 
-## 5. Record a session
+Both learned baselines follow one protocol (`learned_dynamics/protocol.py`), so that they differ only where their papers
+differ, the model and the planner:
+
+* **State** `s = (q, q̇)`: the measured joint angles and velocities. **Action** `u`: a joint step within the same caps as
+  every controller, sent as the target `q + u/κ`, exactly as DLS IK's step.
+* **What is learned**: how the arm responds, `Δs = f(s, u)`. The geometry is supplied: the planner scores predicted joint
+  angles by forward kinematics against the written goal, with the task's weighting, cost = θ² + w²·(distance/reach)²
+  (w = 3). As the RAK model and DLS IK are given the geometry, nothing about the arm's kinematics is learned.
+* **Data.** Training starts and goals come from `TRAIN_SEED`; the 30 reported pairs are never used in training.
+  *Phase 1*: 20 episodes of 10 s with a random step every tick (uniform within the caps). *Phase 2*: 10 iterations of
+  model-based reinforcement learning as in both papers: 3 episodes of MPC with the current model on training goals, the
+  transitions added to the data, the model refitted on everything. The transitions are kept in
+  `results/<model>/training/transitions.npz`, the final model in `model.pt`, and every iteration's data, fit and wall
+  time in `training.json`.
+* **Evaluation.** The final model's MPC on the 30 reported pairs, through the shared runner, without further learning.
+* **Reproducibility.** Fixed seeds for NumPy and PyTorch, deterministic algorithms, deterministic cuBLAS; the device,
+  PyTorch and CUDA versions are written into every file. On the same device and versions the planners give the same
+  actions run after run; Gazebo's physics is the one source of run-to-run variation.
+
+| | NN dynamics + MPC (`mpc_nn_dynamics/config.py`) | PETS (`pets/config.py`) |
+|---|---|---|
+| Model | 1 deterministic network, 2 hidden layers × 500 ReLU | ensemble of 5 probabilistic networks, 4 hidden layers × 200 swish, Gaussian outputs with learned log-variance bounds |
+| Loss | mean squared error of the normalised state change | Gaussian negative log-likelihood; each member on its own bootstrap |
+| Training | Adam, learning rate 1e-3, batch 512, 60 epochs per fit | Adam, learning rate 1e-3, weight decay 5e-5, batch 256, 25 epochs per fit |
+| Planner | random shooting: 1,000 sequences, horizon 10 ticks | CEM: population 400, 40 elites, 5 iterations, smoothing 0.1, horizon 25 ticks; 20 particles per sequence under TS∞ |
+| After each tick | the first step of the best sequence | the first step of the mean; the mean shifted and reused next tick |
+
+## What each controller reads, is given and learns
+
+| Controller | Reads every 50 ms | Given | Learns | Internal model |
+|---|---|---|---|---|
+| RAK model | measured joint angles | the arm's geometry, wired into the network; calibrated decoders | nothing during reaching (decoders calibrated offline) | its own population estimate of the hand, which lags the arm by about 0.2 s; the *predictive encoding* variant runs it ahead of the measured state |
+| Cascade rule, no spikes | measured joint angles | the arm's geometry | nothing | none: the RAK model's cascade computed exactly from the measured state |
+| DLS IK | measured joint angles | the arm's geometry (Jacobian) | nothing | none: every step recomputed from the measured state (reactive) |
+| NN dynamics + MPC | measured joint angles and velocities | the arm's geometry (for the cost) | the arm's response to joint steps | a learned model, planned 10 ticks ahead (predictive) |
+| PETS | measured joint angles and velocities | the arm's geometry (for the cost) | the arm's response to joint steps, with its uncertainty | a learned ensemble, planned 25 ticks ahead (predictive) |
+
+DLS IK is therefore the accuracy ceiling of a reactive controller, not a like-for-like comparison with the RAK model;
+the learned MPC baselines are the predictive, model-based comparison.
+
+## Gazebo
+
+Start a Gazebo with the TIAGo in the background, run beside it, and stop it when done:
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/record_session.py --chain tiago4 --seconds 20 --gap 8 5 --out /out/tiago4_gap'
+docker/run.bash gazebo up rak-gazebo                     # add --image baselines --cuda for the learned baselines
+docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m ring_attractor_kinematics benchmark reach_gazebo'
+docker/run.bash gazebo down rak-gazebo
 ```
 
-Runs the goal mode without a browser and writes `tiago4_gap.mp4` (the arm with both end
-points, the three sheets, position and position error over time), `.png` (the curves of the
-whole session) and `.json` (every tick). `--gap START LENGTH` switches the anchor off for
-LENGTH seconds, START seconds into the session. The recordings of the results page are in
-`docs/results/videos/`.
+Physics is paused; every 50 ms tick sends the joint targets to the arm's trajectory controller and then lets exactly one
+tick of physics pass, so a controller of any speed sees the same arm. The mobile base is not anchored and is put back at
+the origin before each trial. Add `--gpu` to `up` only for the camera picture in the simulator.
 
-## 6. Tests
+**Joint loss in Gazebo** (`benchmark joint_loss_gazebo`): the joint-loss study with the TIAGo arm's trajectory controller
+and dynamics. Under `lock` the jammed joint's trajectory target stays at its angle at onset. Its intact reference is the
+stored `reach_gazebo` run. Not run yet.
+
+## Result files
+
+```
+results/<model>/<benchmark>/<run>.json     every trial of one run, written after every trial
+results/<model>/<benchmark>/summary.json   computed from the run files of that folder only
+results/<model>/training/                  the learned baselines' data, model and training record
+results/comparison/<benchmark>.json        every model side by side (python -m reaching_benchmark compare)
+```
+
+A run file is named `<arm>[_<task>][_kappa<κ>][_seed<s>][_<variant>][_<condition>][_shard<i>of<n>]`, each part only when it
+is not the default: the task only when not pose, κ only when not 1, the seed only for controllers with something random
+in them (the RAK model's NEST kernel seed; the learned baselines' seed), the variant (`predictive_encoding`, `observer`,
+`no_spikes`), the condition (`push`, `noise`, `lock`, `motor`, `allocation`, `intact`, `loss0.1_all_l1`, …) and the shard
+only when a run was split. Examples: `reach_kinematic/tiago7_seed2_predictive_encoding.json`,
+`reach_gain/tiago7_kappa1.5_seed1.json`, `joint_loss/tiago7_seed3_motor.json`, `dls_ik/reach_gazebo/tiago7.json`.
+
+A reaching run file holds `run` (what was run), `design` (the whole task record), `controller` (what it reads, is given
+and learns; baselines), `rows` (one per trial: start and final errors, reached, time to reach, path ratio, final joint
+angles, and time courses every 4th tick) and wall and simulated times. Floats are rounded to 5 decimals in run files and
+6 in summaries; NaN is written as null.
+
+## Watching runs
+
+Every run shows a progress bar on stderr (count, targets reached, the running trial's time and errors, an ETA); it
+redraws in place in a terminal and prints one line per trial when redirected. `REACHING_PROGRESS=bar|lines|off` overrides.
+To see every run of every model at once, on the host (standard library only):
 
 ```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B -m unittest discover -s tests'   # about six minutes
+python3 -m reaching_benchmark status --watch 60
+python3 -m reaching_benchmark status joint_loss dls_ik/reach_gazebo
 ```
 
-Covers the maths, the sheet, the copy without spikes, every new part in NEST, a 2-joint
-pose end to end with both switches, the simulator's interface, the report, and that the
-documents quote only numbers from the generated tables. What each of the ten tests of the
-results asks, and its pass mark: [`docs/tests.md`](docs/tests.md). The inverse kinematics
-adds its rule and wiring against each other, its spiking parts in NEST, a 3-joint arm
-reaching position goals, both robots and the IK simulator on stand-ins:
-[`docs/ik/tests.md`](docs/ik/tests.md).
-
-## 7. From Python
-
-```python
-import nest
-import numpy as np
-from ring_se3 import experiments, kinematics
-
-chain, design, network, session = experiments.build(nest, "tiago4", threads=8)   # built once, then kept
-session.warm_up()                                       # 1 s: the rings and the packets form
-measurement = session.go_to(chain.limits().mean(axis=1) + 0.3)       # move there, rest 1 s
-print(measurement.position)                             # end point read from the sheets, m, base frame
-print(kinematics.position(chain, session.robot.q))      # the exact one
-tick = session.tick()                                   # one more 50 ms tick
-print(tick.position, tick.cells_position)               # from the sheets (last two ticks), from the position cells
-print(tick.tool_rotation())                             # orientation, as in the SO-3 repo
-network.set_anchor(False)                               # the packets are on their own now
-```
-
-The same lines are in `scripts/example.py`; run them with
+A run file not written for much longer than a trial (about 8 min for the RAK model on the 7-DoF TIAGo arm) means its
+run has stopped; the same command resumes it. In the background with a log:
 
 ```bash
-docker/run.bash nest -- 'python3 -B scripts/example.py'
+nohup docker/run.bash nest -- 'python3 -B -m ring_attractor_kinematics benchmark joint_loss --condition lock' > lock.log 2>&1 &
 ```
 
-`ring_se3/rate/network.py` is the position and velocity part as firing rates, with no NEST.
+## The simulator
 
-## 8. Add a chain
-
-One entry in [`ring_so3/chains.py`](ring_so3/chains.py), as in the SO-3 repo: for each joint
-its axis, the fixed rotation and offset of its frame in the previous link, its limits. The
-offsets are what the position is made of. Everything else follows: the wiring, the size of
-the workspace, the network, the simulator. `tests/test_kinematics.py` checks every chain in
-`MODEL_NAMES`.
-
-## 9. Status and limits
-
-Date 2026-10-10, branch `ik-pose` (the forward network: 2026-10-05, branch `fk-pose`).
-
-- **Done:** position and velocity of the end point for any chain of turning joints, three
-  attractor sheets with anchor and path integration, 12 models measured, simulator,
-  recorded sessions, documents. On top of it the inverse kinematics for a pose (section 11):
-  goal rings and goal sheets, level cells and ramp readouts, the cascade over turn and
-  offset, closed loop on the light robot and on the TIAGo in Gazebo, IK simulator.
-- **What works:** the position of a held pose (about 1% of the reach), the orientation
-  beside it, a packet that stays alive without input, re-anchoring, following a moving arm
-  with a delay that can be removed; reaching pose goals near the hand in closed loop (93%
-  to 100% of the test goals, about 2% of the reach and 2° at the end).
-- **A packet can go out** when the anchor is off: seen on one sheet in 1 of 30 gaps with the
-  arm at rest and in 31 of 160 with the arm moving. The other two sheets still give the
-  position, and the packet returns with the anchor.
-- **What does not work well:** path integration. A packet's speed for a given velocity
-  varies by tens of percent from run to run, so the packets cannot be carried far without
-  the anchor ([`docs/results.md`](docs/results.md), sections 2 and 8). What would have to
-  change is a sheet whose packet has many more neurons or fires faster, so that a push is
-  not a matter of a few spikes.
-- **Three pass marks of the forward network missed:** packet speed proportional to the
-  velocity; a packet at rest within 2% of the reach for 10 s; readout back within 0.5 s in
-  every gap ([`docs/results/tables.md`](docs/results/tables.md), section 12). **One of the
-  inverse kinematics:** the path of the 7-joint generic arm
-  ([`docs/ik/results/tables.md`](docs/ik/results/tables.md), section 0).
-- **Inverse kinematics, limits:** goals far from the hand are often missed, by the rule
-  itself; the hand ends no closer than the forward network reads its own pose; the arm's
-  geometry is wired in, nothing is learned; no real robot
-  ([`docs/ik/results.md`](docs/ik/results.md), section 11).
-- **Simulation only.** The light robot, and the TIAGo in Gazebo for the inverse kinematics.
-  No real robot.
-- **Slow for long arms:** the 7-joint network runs at 0.44 of real time on 8 threads, with
-  the IK layer at 0.22 on 12.
-- **Inherited from the SO(3) network:** its delay of about 0.2 s, and its weakness to
-  losing product neurons.
-- **The resting drive of the velocity cells and the two switches are set from outside**
-  ([`docs/architecture.md`](docs/architecture.md), section 8).
-- **Next:** the same loop with kinematics learned from the arm's own motion
-  ([`docs/ik/results.md`](docs/ik/results.md), section 11).
-
-## 10. Where things are
-
-Paths are relative to the repo root.
-
-| Topic | Code | Document | Data |
-| --- | --- | --- | --- |
-| Chains, workspace, exact position and velocity | `ring_se3/chains.py`, `ring_se3/kinematics.py` | [`docs/architecture.md`](docs/architecture.md) section 2 | |
-| Position and velocity as sums and products | `ring_se3/wiring.py` | section 2 | |
-| The sheet: weights, anchor, labels, readout | `ring_se3/sheet.py`, `ring_se3/nest/sheet.py` | section 4 | |
-| The pose network | `ring_se3/nest/network.py` | sections 3, 7 | |
-| Calibration | `ring_se3/nest/calibrate.py`, `scripts/calibrate_pose.py`, `scripts/calibrate.py` | section 6 | `artifacts/` |
-| Copy without spikes | `ring_se3/rate/network.py`, `scripts/rate_study.py` | [`docs/tests.md`](docs/tests.md) test 2 | `docs/results/data/rate_study.json` |
-| Parts on their own | `ring_se3/nest/rigs.py`, `scripts/run_parts.py` | test 3 | `docs/results/data/parts.json` |
-| Held poses | `ring_se3/session.py`, `ring_se3/experiments.py`, `scripts/run_static.py` | tests 4, 5, 6, 10 | `docs/results/data/static/` |
-| Moving arm | `scripts/run_tracking.py` | test 7 | `docs/results/data/tracking/`, `tracking_variants/` |
-| Without the anchor | `scripts/run_dropout.py` | test 8 | `docs/results/data/dropout/` |
-| Shift-register experiment | `scripts/run_trail.py` | [`docs/architecture.md`](docs/architecture.md) section 5 | `docs/results/data/trail/` |
-| Variants and robustness | `scripts/run_static.py` with options | test 9 | `docs/results/data/robust/` |
-| All runs, speed | `scripts/run_experiments.py`, `scripts/benchmark.py` | | `docs/results/data/speed.json` |
-| Tables and figures | `scripts/report.py`, `scripts/check_doc_numbers.py` | [`docs/results.md`](docs/results.md) | [`docs/results/tables.md`](docs/results/tables.md), `docs/results/figures/` |
-| Simulator and recordings | `ring_se3/sim/`, `scripts/simulator.py`, `scripts/record_session.py` | this file, sections 4 and 5 | `docs/results/videos/` |
-| Architecture figure | `scripts/draw_architecture.py` | | `docs/figures/architecture.png` |
-| The SO(3) network (copied) | `ring_so3/` | [`docs/architecture.md`](docs/architecture.md) section 9 | |
-| Ideas for inverse kinematics, and which are built | | [`docs/future-ik.md`](docs/future-ik.md) | |
-| IK: the rule without neurons, standard methods | `ring_se3/ik/rules.py`, `ring_se3/ik/design.py`, `ring_se3/standard/ik.py`, `scripts/ik_study.py` | [`TECHNICAL.md`](TECHNICAL.md) sections 14 to 19, 28 | `docs/ik/results/data/study.json` |
-| IK: the rule as products and sums | `ring_se3/ik/wiring.py` | [`TECHNICAL.md`](TECHNICAL.md) sections 23, 24 | |
-| IK: level cells, ramp readout, the network | `ring_se3/nest/sheet.py`, `ring_se3/nest/ik_calibrate.py`, `ring_se3/nest/ik_network.py`, `scripts/calibrate_ramp.py`, `scripts/run_ik_sheets.py` | [`docs/ik/architecture.md`](docs/ik/architecture.md); [`TECHNICAL.md`](TECHNICAL.md) sections 20 to 22 | `artifacts/`, `docs/ik/results/data/sheets.json` |
-| IK: closed loop and its tests | `ring_se3/ik/session.py`, `ring_se3/ik/experiments.py`, `scripts/run_ik_parts.py`, `scripts/run_ik_reach.py`, `scripts/run_ik_experiments.py` | [`docs/ik/tests.md`](docs/ik/tests.md) | [`docs/ik/results/data/`](docs/ik/results/data/README.md) |
-| IK: Gazebo as the robot | `ring_so3/robots.py`, `ring_so3/gazebo/link.py`, `ring_se3/gazebo/link.py`, `gazebo/ring_ik.world`, `scripts/run_ik_gazebo.py` | [`docs/ik/README.md`](docs/ik/README.md) section 6 | |
-| IK: simulator | `ring_se3/sim/ik_server.py`, `ring_se3/sim/ik_page.py`, `scripts/ik_simulator.py` | [`docs/ik/README.md`](docs/ik/README.md) | |
-| IK: tables, figures, spikes, speed | `scripts/ik_report.py`, `scripts/ik_spike_census.py`, `scripts/ik_benchmark.py`, `scripts/draw_ik_architecture.py` | [`docs/ik/results.md`](docs/ik/results.md); [`TECHNICAL.md`](TECHNICAL.md) part III | [`docs/ik/results/tables.md`](docs/ik/results/tables.md), `docs/ik/spikes/`, `docs/ik/figures/` |
-
-## 11. Inverse kinematics for a pose
-
-The hand is given a pose: an orientation on three goal rings (lift, pitch, yaw) and a
-position as a packet on three goal sheets. The network compares both with the pose it
-decodes, hands each joint its share of the turn and of the offset that are still to make,
-joint after joint down the arm, and every joint follows its own goal ring. The loop closes
-through the robot: the light robot of this repo, or the TIAGo arm in Gazebo.
-
-![The pose inverse-kinematics layer of the 4-joint TIAGo arm](docs/ik/figures/architecture.png)
-
-What is built: [`docs/ik/architecture.md`](docs/ik/architecture.md). The mathematics, the
-derivations, and how every part runs as spikes: [`TECHNICAL.md`](TECHNICAL.md), parts II and
-III. The tests and their marks: [`docs/ik/tests.md`](docs/ik/tests.md). What came out:
-[`docs/ik/results.md`](docs/ik/results.md).
-
-### What was tested, and the result
-
-Everything in this table is the spiking network ("ring IK"). `tiago4`, `tiago7`, `generic4`
-and `generic7` are the arms it was built for, not names of the method. A goal is reached when
-the hand ends within 4% of the reach and, for a pose, within 5° of it. Marks were fixed
-before the test pairs ran. Full account: [`docs/ik/results.md`](docs/ik/results.md).
-
-| Test | What was done | Result |
-| --- | --- | --- |
-| The rule, exact arithmetic | 60 pairs per arm; what a share is divided by, cascade or not, balance, gain | the cascade with a constant divisor reaches 95% to 100% of the goals; every joint getting the whole error 78% to 98% |
-| The sheets | three sheets alone at 80 places, without and with level cells | without: 33 of 240 packets weak, ramp readout off by 6.26% of the reach. With: none weak, 0.59% |
-| Comparisons and shares in spikes | arm held, 40 to 60 poses per arm | offset within 1.74% of the reach (mark 2%), direction of the turn within 4.6° (mark 10°), every share above 0.05 rad with the right sign |
-| **Reaching, 4 joints, position** | 40 test pairs per arm, light robot | 98% (`tiago4`) and 100% (`generic4`) reached; 1.96% and 1.24% of the reach at the end; within the marks after 4.5 s and 4.0 s |
-| **Reaching, 7 joints, pose** | 30 test pairs per arm, light robot | 97% (`generic7`) and 93% (`tiago7`) reached; 2.02% and 2.09% of the reach, 2.27° and 1.89° at the end; after 5.0 s and 5.7 s. Path 1.54 times the straight line for `generic7` (mark 1.5: **missed**) |
-| Sheets or numbers | the same pairs with positions compared as numbers | numbers are a little closer: 1.62% against 1.96% (4 joints), 1.70% against 2.09% (7 joints) |
-| Without the cascade | `tiago4`, every joint gets the whole error | 88% reached, after 8.1 s |
-| Disturbances | `tiago4`, 20 pairs each | robot 30% weak or strong, a joint pushed: 95% to 100% reached. Goal changed on the way: 80%. Goals anywhere: 70% |
-| **TIAGo in Gazebo** | the arm's own controller and gravity; 30 pose pairs, 20 position pairs | 93% of the pose goals (all 28 of those reached on the light robot) and 100% of the position goals; 2.22% of the reach and 1.50° at the end. Damped least squares with exact joint angles: 100%, 0.29%, 0.35° |
-
-![The spiking ring IK in closed loop: distance from the goal over time](docs/ik/results/figures/error_over_time.png)
-
-Limits: goals near the start pose only; the hand ends no closer than the forward network
-reads its own pose; the arm's geometry is wired in; 0.22 of real time for seven joints.
-
-### 11.1 The IK simulator
+Set a pose goal in the browser and watch an arm reach it (http://localhost:8765/), with the RAK model, the cascade
+without spikes, DLS IK or the Jacobian transpose:
 
 ```bash
-docker/run.bash sim -- 'python3 -B scripts/ik_simulator.py --chain tiago4'
+docker/run.bash sim -- 'python3 -B -m ring_attractor_kinematics simulator --chain tiago7'
+docker/run.bash sim -- 'python3 -B -m ring_attractor_kinematics simulator --chain tiago4 --stub'    # no NEST
+docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m ring_attractor_kinematics simulator --chain tiago7 --gazebo'
 ```
 
-Then open <http://localhost:8765/> and press **Random goal nearby**.
-[`docs/ik/README.md`](docs/ik/README.md) walks through a demonstration step by step.
+## Code conventions
 
-- **The goal** is drawn in the 3D view: drag its dot to move it, an arrow tip to move it
-  along one axis, a ring to turn it. Six sliders do the same.
-- **Task**: pose, position only, orientation only. `tiago4` starts with the position (four
-  joints); `--chain tiago7` or `generic7` starts with the pose.
-- **Method**: ring IK (the spiking network); the exact cascade; damped least squares;
-  Jacobian transpose. **Same start and goal, next method** puts the arm back and repeats the
-  goal; the chart overlays the last six runs.
-- **The sheets**: the goal's packets and the hand's packets in the three planes, and goal
-  minus hand as the network holds it. **Goal anchor** off: the goal sheets keep the goal by
-  themselves.
-- Below: every joint's share and the lead of its goal ring, and the spikes of all rings.
+* Imports only at the top of a module. NEST, ROS and PyTorch are imported only by the modules that need them; each command
+  line loads its command's module by name, so one command's imports never slow down or break another.
+* `reaching_benchmark/` never imports a model. Model packages import `reaching_benchmark/` and not each other, except
+  that the RAK model uses DLS IK and the Jacobian transpose as exact-loop references (`rules/references.py`).
+* `reaching_benchmark/geometry/`, `ring_attractor_kinematics/neurons/`, `network/*_wiring.py` and `rules/` run without NEST.
 
-`--stub` replaces the network by the exact rule (`python3 scripts/ik_simulator.py --stub`
-needs only NumPy). Other options: `--task`, `--position-goal`, `--method`, `--port`,
-`--threads`.
+## Licences and references
 
-### 11.2 With the TIAGo in Gazebo as the robot
+* Nagabandi, A., Kahn, G., Fearing, R. S. & Levine, S. Neural network dynamics for model-based deep reinforcement learning
+  with model-free fine-tuning. *IEEE International Conference on Robotics and Automation* (2018).
+* Chua, K., Calandra, R., McAllister, R. & Levine, S. Deep reinforcement learning in a handful of trials using
+  probabilistic dynamics models. *Advances in Neural Information Processing Systems 31* (2018).
+* Wampler, C. W. Manipulator inverse kinematic solutions based on vector formulations and damped least-squares methods.
+  *IEEE Transactions on Systems, Man, and Cybernetics* 16, 93–101 (1986).
 
-Paste the three steps one at a time, each in a terminal at the root of this repo.
-
-```bash
-docker/run.bash gazebo up ik-gazebo --gpu
-```
-
-Starts Gazebo with the TIAGo in a world with nothing but the ground, a light and a camera,
-in the background; returns after about a minute with "Gazebo ready".
-
-```bash
-docker/run.bash gazebo exec ik-gazebo -- 'python3 -B scripts/ik_simulator.py --chain tiago7 --gazebo'
-```
-
-The simulator beside it, in the foreground. Open <http://localhost:8765/>; the robot
-selector says "TIAGo in Gazebo" and a panel shows the camera picture. Ctrl-C ends it.
-
-```bash
-docker/run.bash gazebo down ik-gazebo
-```
-
-Stops Gazebo. Without an NVIDIA GPU or a desktop session leave `--gpu` out: everything works
-except the camera picture. More, and what to do if something is in the way:
-[`docs/ik/README.md`](docs/ik/README.md), section 6.
-
-### 11.3 The measurements
-
-```bash
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/ik_study.py --out /out/study.json'                                   # the rule with exact kinematics, 7 minutes
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_ik_sheets.py --out /out/sheets.json'                             # level cells and ramp readout on sheets alone, 8 minutes
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_ik_parts.py --chain tiago4 --poses 20 --out /out/parts_try.json'   # comparison and shares in spikes, 6 minutes
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/run_ik_reach.py --chain tiago4 --pairs 3 --out /out/reach_try.json'    # three closed-loop trials, 3 minutes
-```
-
-All runs of the results, in batches that stay under two hours (a run that its time guard
-cut is finished by starting the same batch again):
-
-```bash
-docker/run.bash nest -- 'python3 -B scripts/run_ik_experiments.py --list'
-docker/run.bash nest -- 'python3 -B scripts/run_ik_experiments.py --batch parts reach_position --jobs 4 --threads 6 --max-minutes 105'
-docker/run.bash nest -- 'python3 -B scripts/ik_report.py'
-docker/run.bash nest -- 'python3 -B scripts/check_doc_numbers.py'
-```
-
-Batches: `study`, `parts`, `reach_position`, `reach_pose`, `variants`, `disturbances`.
-`ik_report.py` writes [`docs/ik/results/tables.md`](docs/ik/results/tables.md) and
-`docs/ik/results/figures/`.
-
-In Gazebo (start it as in 11.2, with `--out /tmp/ring-se3` so that results land there; no
-`--gpu` needed), then stop it with `docker/run.bash gazebo down ik-gazebo`:
-
-```bash
-docker/run.bash gazebo up ik-gazebo --out /tmp/ring-se3
-```
-
-```bash
-docker/run.bash gazebo exec ik-gazebo -- 'python3 -B scripts/run_ik_gazebo.py --check 5 --out /out/gazebo_kinematics.json'
-docker/run.bash gazebo exec ik-gazebo -- 'python3 -B scripts/run_ik_gazebo.py --chain tiago4 --pairs 3 --out /out/gazebo_try.json'
-```
-
-Spike counts, weights and the level-cell figure of `TECHNICAL.md` part III, the speed on an
-idle machine, and the architecture drawings:
-
-```bash
-docker/run.bash nest -- 'python3 -B scripts/ik_spike_census.py'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/ik_benchmark.py --out /out/speed.json'
-docker/run.bash nest --out /tmp/ring-se3 -- 'python3 -B scripts/draw_ik_architecture.py --chain generic7 --out /out/ik_generic7.png'
-```
-
-### 11.4 From Python
-
-```bash
-docker/run.bash nest -- 'python3 -B scripts/ik_example.py'
-```
-
-`scripts/ik_example.py` builds the network for the 4-joint TIAGo arm, gives the hand one
-position goal and prints the distance from it every half second; it is the shortest way
-into the code. Its core:
-
-```python
-import nest
-from ring_se3 import kinematics
-from ring_se3.ik import experiments
-from ring_se3.ik.session import PoseIkSession
-
-chain, network = experiments.build_ik(nest, "tiago4", threads=8)     # pose network and IK layer; calibrations from artifacts/
-session = PoseIkSession(network, chain.limits().mean(axis=1))        # the light robot at a start pose
-session.warm_up()                                                    # 1 s: rings and packets form; the goal sits on the hand
-goal_position = kinematics.position(chain, session.q + 0.3)          # the pose of a joint pose nearby: it can be reached
-trial = session.reach([0.0, 0.0, 0.0], goal_position)                # lift, pitch, yaw are not asked of a 4-joint arm
-print(trial.final_error_reach, trial.reached(network.ik_design))     # distance at the end, as a share of the reach
-```
+The learned baselines are reimplemented here in PyTorch from these papers; their original code is not used.
