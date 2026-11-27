@@ -199,12 +199,14 @@ def render_stuck(root: str, now: Optional[float] = None) -> str:
 
 def main(args: argparse.Namespace, command: str = "status") -> int:
     root = ROOT
+    shown = 0                                      # lines printed last time (--watch redraws over them, in place)
     while True:
         text = render_stuck(root) if getattr(args, "stuck", False) else render(collect(root, args.names))
-        if args.watch and sys.stdout.isatty():
-            sys.stdout.write("\033[2J\033[H")
-        print(time.strftime("%Y-%m-%d %H:%M:%S") + "  " + root)
-        print(text, flush=True)
+        block = time.strftime("%Y-%m-%d %H:%M:%S") + "  " + root + "\n" + text
+        if args.watch and sys.stdout.isatty() and shown:
+            sys.stdout.write("\033[%dF\033[J" % shown)     # up to the first line printed last time, clear below
+        print(block, flush=True)
+        shown = block.count("\n") + 1
         if not args.watch:
             return 0
         try:
