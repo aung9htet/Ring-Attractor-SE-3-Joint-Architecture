@@ -7,7 +7,7 @@ There are three modes:
 * ``off`` keeps the old behaviour: one plain line per finished item on stdout.
 
 ``REACHING_PROGRESS`` picks the mode. ``docker/run.bash`` sets it to ``bar`` when its own stderr is a terminal and to
-``lines`` otherwise; inside the container stderr is never a terminal. Standard library only, so ``python3 -m ring_attractor_kinematics
+``lines`` otherwise; inside the container stderr is never a terminal. Standard library only, so ``python3 -m reaching_benchmark
 status`` also runs on the host.
 """
 

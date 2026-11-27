@@ -192,6 +192,17 @@ See [Running the baselines](#running-the-baselines). Their results appear in `re
 These fill the baseline rows of the paper's Fig. 3b: every model on the same 30 pairs of the 7-DoF TIAGo arm in Gazebo.
 Gazebo takes one run at a time. Estimated times are for this machine.
 
+**Everything in one command**, in the background, with a log to follow:
+
+```bash
+nohup docker/run_tiago_baselines.bash > /dev/null 2>&1 &
+tail -f logs/tiago_baselines.log
+```
+
+It runs the steps below in order (DLS IK, CCD IK, NN dynamics + MPC, PETS, then the comparison), starting and stopping the
+Gazebo containers itself; the log has one line per trial or training episode and a heartbeat every minute. Run it again
+after a stop and every step goes on where it stopped. The steps one by one:
+
 **1. DLS IK and CCD IK** (model image):
 
 ```bash

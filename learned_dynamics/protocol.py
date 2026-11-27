@@ -31,7 +31,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 
 from reaching_benchmark import results, summary
-from reaching_benchmark.benchmark import BENCHMARKS, PLANTS, make_plant, run_reach, test_pairs
+from reaching_benchmark.benchmark import BENCHMARKS, PLANTS, make_plant, run_reach, test_pairs, tick_progress
 from reaching_benchmark.geometry.chains import get_chain
 from reaching_benchmark.progress import Progress, say
 from reaching_benchmark.targets import TRAIN_SEED, pose_pairs
@@ -132,11 +132,14 @@ def design_for(chain: Any, seconds: Optional[float] = None) -> IkDesign:
     return dataclasses.replace(design, trial_s=float(seconds)) if seconds else design
 
 
-def episode(loop: Any, pair: Any, settle: bool = True) -> Any:
+def episode(loop: Any, pair: Any, settle: bool = True, progress: Optional[Progress] = None) -> Any:
+    """One training episode from ``pair``'s start toward its goal; with ``progress``, its time and errors on the bar."""
+
     if hasattr(loop.robot, "link"):
         loop.robot.link.put_base_back()
     loop.place(pair.start)
-    return loop.reach(pair.goal, pair.goal_position, stop_when_settled=settle)
+    on_tick = tick_progress(progress, loop, pair) if progress is not None else None
+    return loop.reach(pair.goal, pair.goal_position, stop_when_settled=settle, on_tick=on_tick)
 
 
 def collect(config: Config, plant: str, seed: int) -> None:
@@ -160,7 +163,7 @@ def collect(config: Config, plant: str, seed: int) -> None:
         loop.episode = number
         loop.rng = np.random.default_rng([int(seed), number])
         progress.start("%d" % number)
-        episode(loop, pairs[number], settle=False)
+        episode(loop, pairs[number], settle=False, progress=progress)
         data.save(paths(config)["transitions"])
         progress.finish(None, "%s random episode %d: %d transitions in all" % (config.name, number, len(data)))
     progress.close()
@@ -214,9 +217,12 @@ def train(config: Config, plant: str, seed: int, iterations: int, device_name: s
         for k in range(config.episodes_per_iteration):
             pair = pairs[config.random_episodes + (number - 1) * config.episodes_per_iteration + k]
             loop.episode = data.episode_count()
-            trial = episode(loop, pair)
+            trial = episode(loop, pair, progress=progress)
             reached.append(bool(trial.reached(design)))
             data.save(paths(config)["transitions"])
+            say("%s iteration %d episode %d/%d (training goal %d): %s, %.1f° %.1f mm, %d transitions" % (
+                config.name, number, k + 1, config.episodes_per_iteration, pair.index, "reached" if reached[-1] else "missed",
+                trial.final_error_deg, 1000.0 * trial.final_error_reach * loop.radius, len(data)))
         entry = {"iteration": number, "training_pairs": [int(p.index) for p in pairs[config.random_episodes + (number - 1) * config.episodes_per_iteration:
                                                                                    config.random_episodes + number * config.episodes_per_iteration]],
                  "reached_on_training_goals": reached, "fit": fit_and_save(config, chain, device, info, seed, number)}
