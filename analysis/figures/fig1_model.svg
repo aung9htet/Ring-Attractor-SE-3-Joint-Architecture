@@ -2818,7 +2818,7 @@ z
 <text x="920" y="511" font-size="14.143" fill="#7748B4" text-anchor="middle" font-weight="normal">target ring</text>
 <text x="839" y="552" font-size="14.143" fill="#6F8390" text-anchor="middle" font-weight="normal">Target circuit repeated for all joints</text>
 <path d="M955 445L978 445L978 591L838 591L838 627" fill="none" stroke="#7748B4" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#head-corr)"/>
-<text x="986" y="577" font-size="14.143" fill="#7748B4" text-anchor="end" font-weight="normal">Joint targets qᵗᵃʳ</text>
+<text x="972" y="577" font-size="14.143" fill="#7748B4" text-anchor="end" font-weight="normal">Joint targets qᵗᵃʳ</text>
 <rect x="736" y="628" width="226" height="72" rx="6" fill="#F7F9FA" stroke="#C9D4DA" stroke-width="0.9"/>
 <polygon points="856,651 852.223,653.253 851.695,655.45 854.038,659.172 852.562,661.58 848.182,661.182 846.464,662.65 846.172,667.038 843.562,668.119 840.253,665.223 838,665.4 835.184,668.778 832.438,668.119 831.463,663.83 829.536,662.65 825.272,663.728 823.438,661.58 825.17,657.537 824.305,655.45 820.222,653.816 820,651 823.777,648.747 824.305,646.55 821.962,642.828 823.438,640.42 827.818,640.818 829.536,639.35 829.828,634.962 832.438,633.881 835.747,636.777 838,636.6 840.816,633.222 843.562,633.881 844.537,638.17 846.464,639.35 850.728,638.272 852.562,640.42 850.83,644.463 851.695,646.55 855.778,648.184" fill="#F0F4F6" stroke="#6F8390" stroke-width="1.1"/>
 <circle cx="838" cy="651" r="8.64" fill="#FFFFFF" stroke="#6F8390" stroke-width="1"/>
@@ -2884,11 +2884,11 @@ z
 <rect x="549" y="689" width="97.328" height="15.5" rx="3.5" fill="#1B7837"/>
 <text x="597.664" y="701" font-size="14.143" fill="#FFFFFF" text-anchor="middle" font-weight="bold">✕ Allocation</text>
 </g>
-<g transform="translate(300 564.6) scale(0.839) translate(0 -612)">
-<path d="M9 612L825 612" fill="none" stroke="#C9D4DA" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+<g transform="translate(369.245 564.6) scale(0.839) translate(0 -612)">
+<path d="M9 612L660 612" fill="none" stroke="#C9D4DA" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="13" y="631" font-size="17" fill="#193747" text-anchor="start" font-weight="bold">e</text>
 <text x="38" y="631" font-size="15.3" fill="#193747" text-anchor="start" font-weight="bold">Population motifs</text>
-<text x="820" y="631" font-size="11.8" fill="#6F8390" text-anchor="end" font-weight="normal">Representative circuits, reused across the controller</text>
+<text x="655" y="631" font-size="11.8" fill="#6F8390" text-anchor="end" font-weight="normal">Representative circuits, reused across the controller</text>
 <g transform="translate(9 643)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
@@ -3076,7 +3076,7 @@ z
 <text x="79" y="114" font-size="11.8" fill="#6F8390" text-anchor="middle" font-weight="normal">Coordinate readouts</text>
 <text x="79" y="127" font-size="11.8" fill="#6F8390" text-anchor="middle" font-weight="normal">xy, xz, yz</text>
 </g>
-<g transform="translate(669 643)">
+<g transform="translate(9 784)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">5</text>
@@ -3119,7 +3119,7 @@ z
 <circle cx="87" cy="103.2" r="0.985" fill="#84bfc6"/>
 <text x="79" y="125" font-size="11.8" fill="#087F8C" text-anchor="middle" font-weight="normal">Packet location</text>
 </g>
-<g transform="translate(9 784)">
+<g transform="translate(174 784)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">6</text>
@@ -3157,7 +3157,7 @@ z
 <text x="116" y="96" font-size="11.8" fill="#6F8390" text-anchor="middle" font-weight="normal">Level cells</text>
 <text x="79" y="126" font-size="11.8" fill="#6F8390" text-anchor="middle" font-weight="normal">Homeostatic feedback</text>
 </g>
-<g transform="translate(174 784)">
+<g transform="translate(339 784)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">7</text>
@@ -3192,7 +3192,7 @@ z
 <text x="118" y="109" font-size="11.8" fill="#7748B4" text-anchor="middle" font-weight="normal">Position error</text>
 <text x="118" y="123" font-size="11.8" fill="#7748B4" text-anchor="middle" font-weight="normal">(offset)</text>
 </g>
-<g transform="translate(339 784)">
+<g transform="translate(504 784)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">8</text>
@@ -3230,7 +3230,7 @@ z
 <text x="85" y="106" font-size="11.8" fill="#087F8C" text-anchor="middle" font-weight="normal">Lever</text>
 <text x="125" y="124" font-size="11.8" fill="#087F8C" text-anchor="middle" font-weight="normal">Sensitivity</text>
 </g>
-<g transform="translate(504 784)">
+<g transform="translate(9 925)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">9</text>
@@ -3265,7 +3265,7 @@ z
 <text x="79" y="112" font-size="11.8" fill="#7748B4" text-anchor="middle" font-weight="normal">u⁺, u⁻ ∈ [0, 1]</text>
 <text x="79" y="127" font-size="11.8" fill="#6F8390" text-anchor="middle" font-weight="normal">Outward inhibition</text>
 </g>
-<g transform="translate(669 784)">
+<g transform="translate(174 925)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">10</text>
@@ -3299,7 +3299,7 @@ z
 <text x="125" y="97" font-size="11.8" fill="#7748B4" text-anchor="middle" font-weight="normal">eₖ₊₁, dₖ₊₁</text>
 <text x="79" y="124" font-size="11.8" fill="#7748B4" text-anchor="middle" font-weight="normal">Remaining error</text>
 </g>
-<g transform="translate(9 925)">
+<g transform="translate(339 925)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">11</text>
@@ -3362,7 +3362,7 @@ z
 <text x="95" y="103" font-size="13" fill="#7748B4" text-anchor="middle" font-weight="normal">−</text>
 <text x="79" y="128" font-size="11.8" fill="#7748B4" text-anchor="middle" font-weight="normal">u⁺ − u⁻</text>
 </g>
-<g transform="translate(174 925)">
+<g transform="translate(504 925)">
 <rect x="0" y="0" width="157" height="132" rx="3" fill="#FFFFFF" stroke="#C9D4DA" stroke-width="0.7"/>
 <rect x="5" y="5" width="18" height="14" rx="2" fill="#F4F7F9" stroke="#6F8390" stroke-width="0.55"/>
 <text x="14" y="16" font-size="11.8" fill="#193747" text-anchor="middle" font-weight="bold">12</text>
