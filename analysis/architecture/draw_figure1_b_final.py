@@ -169,6 +169,12 @@ def panel_c(c,s):
  c.path('M817 651L714 651L714 729L12 729L12 299L35 299',STATE,1.5,head='state')
  c.text(414,751,'Measured joint angles q(t)',color=STATE)
 
+def motif_number(c,x,y,n):
+ """The number of a motif of panel e, as on its tile."""
+ w=18 if n<10 else 24
+ c.rect(x,y,w,14,SOFT,GREY,.7,rx=2)
+ c.text(x+w/2,y+11,str(n),size=10.6,color=INK,weight='bold')
+
 #: which letter the joint-state panel has (panel d refers to it)
 STATE_PANEL=['a']
 
@@ -189,6 +195,15 @@ def overlays(c,s):
  c.text(716,150,'qₖ',size=10.6,color=PRED,italic=True)
  label(c,716,181,['Motor ring','(measured)'],PRED,size=10.4,weight='bold')
  c.path('M716 200L716 330L796 330',PRED,1.2,dash='3 2',head='pred')
+ # what each ablation of Fig. 5 removes, outlined in its colour (diffuse silencing touches every population: key only)
+ dash='5 3'
+ c.rect(729,620,240,88,'none',ABLATION['lock'],1.4,rx=8);c.parts[-1]=c.parts[-1].replace('/>',' stroke-dasharray="%s"/>'%dash)
+ c.rect(732,367,236,160,'none',ABLATION['motor'],1.4,rx=8);c.parts[-1]=c.parts[-1].replace('/>',' stroke-dasharray="%s"/>'%dash)
+ c.rect(584,290,33,380,'none',ABLATION['allocation'],1.4,rx=6);c.parts[-1]=c.parts[-1].replace('/>',' stroke-dasharray="%s"/>'%dash)
+ # where each motif of panel e sits in the circuit
+ for n,x,y in [(1,20,327),(1,846,158),(2,543,92),(3,246,428),(4,286,593),(5,96,665),(6,266,686),
+               (7,520,186),(8,371,287),(9,562,296),(10,546,385),(11,745,372),(12,957,399)]:
+  motif_number(c,x,y,n)
  # ablations of Fig. 5, where each acts
  badge(c,883,640,'✕ Lock',ABLATION['lock'])
  badge(c,702,357,'✕ Motor',ABLATION['motor'])
@@ -251,7 +266,8 @@ def make():
  'dimensions_mm':[178,HEIGHT_MM],'minimum_label_pt':min(c.fonts),
  'panels':{'a':'Target pair 0, every controller (fig1a_hand_paths.svg)','b':'Joint-state and pose representation','c':'Pose-error and correction allocation','d':'Joint-target generation and feedback','e':'Population motifs'},
  'overlays':{'predictive_encoding':'blue (Fig. 4): forward rings hold q_k + tau_k qdot_k^cmd; a separate motor ring keeps the measured angle for the target circuit',
-  'ablations':'solid badges in the Fig. 5 colours: lock at the actuator, motor at the gain pair and target ring, allocation at the u+/u- correction pairs; diffuse 10% silencing applies to every population (key only)'},
+  'ablations':'solid badges in the Fig. 5 colours, and dashed outlines around what each removes: lock, the actuator; motor, the gain pair and target ring; allocation, the u+/u- correction pairs; diffuse 10% silencing applies to every population (key only)',
+  'motif_numbers':'grey numbers on the circuit name the motif tiles of panel e'},
  'geometry':'pinned TIAGo pose pair: analysis/source_data/figure1_snapshot.json',
  'diagram_convention':'arrows carry named neural signals; a grey brace groups independent joint channels; gain input ports represent grouped projections',
  'activity':'all circuit activity glyphs are schematic; measured activity is in Figure 2'}

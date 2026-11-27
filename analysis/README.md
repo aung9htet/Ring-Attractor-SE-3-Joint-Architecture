@@ -90,7 +90,7 @@ docker/run.bash nest -- 'python3 -B -m analysis derive && python3 -B -m analysis
 | `activity.py` | the NEST replay for Fig. 2a–c |
 | `figures.py` | Figs 1–5 and the supplementary figures drawn from runs; `FIGURE_MAKERS` maps each name to its function |
 | `diagnostics/` | the four diagnostic supplementary figures (forward representation, orientation sources, chart poles, screening) |
-| `architecture/` | Fig. 1: `snapshot.py` (the geometry), `figure1_art.py` and `figure1_population_strip.py` (glyphs), `draw_figure1_b_final.py` (composes a with the circuit b–d, its blue predictive-encoding marks and Fig. 5 ablation badges, and the motifs e, as one SVG), `render_figure1_b_final.py` (PDF and PNG, with Chrome) |
+| `architecture/` | Fig. 1: `snapshot.py` (the geometry), `figure1_art.py` and `figure1_population_strip.py` (glyphs), `draw_figure1_b_final.py` (composes a with the circuit b–d, its blue predictive-encoding marks, the Fig. 5 ablation badges and dashed outlines, and the motif numbers of e, as one SVG), `render_figure1_b_final.py` (PDF and PNG, with Chrome) |
 
 The analysis reads only `results/` and the repository's own packages (`reaching_benchmark`,
 `ring_attractor_kinematics`), so after a model is rerun, rerunning the analysis redraws every figure from the new runs.
