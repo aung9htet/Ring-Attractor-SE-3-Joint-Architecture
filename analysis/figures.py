@@ -922,8 +922,8 @@ def make_ablation():
     ax.text(.215, 18, "Failed although the stuck joint\nalone would not have: none", fontsize=5.6, color="#8A4B08", ha="left", va="top",
             linespacing=1.15, zorder=4)
     ax.set(xscale="log", yscale="log", xlim=(lo, hi), ylim=(ylo, hi),
-           xlabel="Hand error if the other joints had not adjusted to the stuck one (1 = success limit: 5° and 40.3 mm)",
-           ylabel="Hand error the reach actually\nended with (1 = success limit)")
+           xlabel="Reach error if the other joints kept their normal path (1 = success limit: 5° and 40.3 mm)",
+           ylabel="Reach error after the other joints\ncorrected for it (1 = success limit)")
     ax.set_xticks([.3, 1, 3, 10])
     ax.set_xticklabels(["0.3", "1", "3", "10"])
     ax.set_yticks([.3, 1, 3, 10])
