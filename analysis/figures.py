@@ -904,7 +904,7 @@ def make_ablation():
     ax.axvline(1, color="#59646A", lw=.8, ls=":")
     ax.set(xscale="log", yscale="log", xlim=(.2, 20), ylim=(.2, 20),
            xlabel="Error if the other joints had moved as in the intact reach (× tolerance)",
-           ylabel="Actual final error\n(× tolerance)")
+           ylabel="Error the reach ended with,\njoint stopped (× tolerance)")
     ax.plot([.2, 20], [.2, 20], color="#C9D0D4", lw=.6, zorder=0)
     ax.text(11, .23, "absorbed: would have\nmissed, was reached", fontsize=5.6, color="#1B5E20", va="bottom", ha="right")
     ax.text(11, 17, "not absorbed", fontsize=5.6, color="#7F1D1D", va="top", ha="right")
