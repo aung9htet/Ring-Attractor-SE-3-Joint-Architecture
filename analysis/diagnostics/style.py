@@ -71,6 +71,7 @@ def save(fig: Any, name: str) -> Sequence[str]:
     ensure_dirs()
     paths = [str(FIGURES / (name + ext)) for ext in (".pdf", ".svg", ".png")]
     for path in paths:
-        fig.savefig(path, bbox_inches="tight", pad_inches=0.02, dpi=300, facecolor="white")
+        metadata = {".pdf": {"CreationDate": None}, ".svg": {"Date": None}}.get(path[-4:], {})
+        fig.savefig(path, bbox_inches="tight", pad_inches=0.02, dpi=300, facecolor="white", metadata=metadata)
     plt.close(fig)
     return paths

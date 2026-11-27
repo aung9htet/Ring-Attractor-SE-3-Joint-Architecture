@@ -83,7 +83,9 @@ def baseline_rows(model):
 
 def save(fig, name):
     for ext in ("pdf", "svg", "png"):
-        fig.savefig(FIG / (name + "." + ext), dpi=300, facecolor="white")
+        # no creation date, so redrawing an unchanged figure gives an identical file
+        metadata = {"pdf": {"CreationDate": None}, "svg": {"Date": None}}.get(ext, {})
+        fig.savefig(FIG / (name + "." + ext), dpi=300, facecolor="white", metadata=metadata)
     plt.close(fig)
 
 
