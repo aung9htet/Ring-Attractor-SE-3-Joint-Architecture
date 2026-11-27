@@ -801,8 +801,7 @@ def make_ablation():
 
     # a - intervention check in the circuit
     rel = np.arange(-1.0, 6.01, .2)
-    sub = gs[0, 0].subgridspec(2, 1, hspace=.6)
-    ax1, ax2 = fig.add_subplot(sub[0, 0]), fig.add_subplot(sub[1, 0])
+    ax1 = fig.add_subplot(gs[0, 0])
     checkrows = []
     for c in ("intact",) + CONDITIONS:
         shares, written = [], []
@@ -818,22 +817,14 @@ def make_ablation():
         # the cascade's requested turn for the stopped joint (its share s_k, rad per 50 ms tick), in degrees,
         # and how often a joint target is still written for it, in % of the 90 reaches
         ax1.plot(rel, np.degrees(med), color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
-        ax2.plot(rel, 100 * frac, color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
         checkrows += [[c, g, m, f] for g, m, f in zip(rel, med, frac)]
-    for ax in (ax1, ax2):
-        ax.axvline(0, color="#59646A", lw=.7, ls="--")
-        ax.tick_params(labelsize=5.4)
-    ax1.set(ylabel="Requested turn\n(° per tick)", ylim=(0, None), xlim=(-1, 6))
-    ax1.set_title("Circuit still asks it to turn?", loc="left", fontsize=5.8, pad=2)
-    ax1.tick_params(labelbottom=False)
+    ax1.axvline(0, color="#59646A", lw=.7, ls="--")
+    ax1.tick_params(labelsize=5.4)
+    ax1.set(ylabel="Turn the circuit requests\n(° per 50 ms tick)", ylim=(0, None), xlim=(-1, 6),
+            xlabel="Time after the joint stops (s)")
     ax1.yaxis.label.set_size(5.8)
-    ax2.set(ylabel="Reaches with\na command (%)", ylim=(-5, 108), yticks=[0, 50, 100], xlabel="Time after the joint stops (s)", xlim=(-1, 6))
-    ax2.set_title("Command still sent to it?", loc="left", fontsize=5.8, pad=2)
-    ax2.yaxis.label.set_size(5.6)
     ax1.yaxis.labelpad = 1
-    ax2.yaxis.labelpad = 1
-    ax1.text(-.5, 1.30, "a", transform=ax1.transAxes, fontweight="bold", fontsize=9)
-    ax1.text(-.3, 1.30, "What each intervention cuts", transform=ax1.transAxes, fontsize=7.5)
+    panel(ax1, "a", "Is the stopped joint\nstill asked to turn?", x=-.42)
 
     # b - hand error over time
     grid = np.arange(0, LIMIT_S + .001, .1)
