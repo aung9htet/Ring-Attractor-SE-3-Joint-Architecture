@@ -759,30 +759,28 @@ def make_prediction():
     axs.text(-.12, 1.30, "Forward kinematics, one path", transform=axs.transAxes, fontsize=7.5)
     tracerows = list(zip(tt, tr["common1_speed_rad_s"], tr["common1_plain_orientation_deg"], tr["common1_lead_orientation_deg"]))
 
-    # c - every recorded path: median moving error without and with
+    # c - the path of b replayed at three peak speeds: median error while moving, without and with (paired bars)
+    from matplotlib.patches import Patch
     ax = fig.add_subplot(top[0, 2])
     est = read(RAK / "moving_estimate" / "summary.json")["paths"]
-    order = ["speed0.25", "speed0.5", "speed1", "pole", "common0.25", "common0.5", "common1"]
-    estrows = []
-    for name in order:
-        a = est[name]["sources"]["M0"]["moving_median_deg"]
-        b = est[name]["sources"]["M1"]["moving_median_deg"]
-        shared = name.startswith("common")
-        ax.plot([0, 1], [a, b], color="#3A3F44" if shared else "#A9B1B6", lw=.9 if shared else .7,
-                ls="-" if shared else (0, (3, 1.5)), zorder=2)
-        ax.scatter([0], [a], marker=MARK["matrix"], s=14, color=C["matrix"], zorder=3, alpha=1 if shared else .55)
-        ax.scatter([1], [b], marker=MARK["lead"], s=16, color=C["lead"], zorder=3, alpha=1 if shared else .55)
-        estrows.append([name, est[name]["network_lag_s"], a, b])
-    ax.text(-.08, 9.0, "9.00", fontsize=5.2, ha="right", va="center", color="#5B666C")
-    ax.text(1.08, 1.89, "1.89", fontsize=5.2, ha="left", va="center", color=C["lead"])
-    ax.set(xticks=[0, 1], xlim=(-.45, 1.45), ylim=(0, 10), ylabel="Median moving\norientation error (°)")
-    ax.set_xticklabels(["Without", "With"], fontsize=5.8)
-    ax.set_xlabel("Predictive encoding", fontsize=6)
-    ax.legend(handles=[Line2D([], [], color="#3A3F44", lw=.9, label="shared path,\n3 speeds"),
-                       Line2D([], [], color="#A9B1B6", lw=.7, ls=(0, (3, 1.5)), label="other paths")],
-              frameon=False, loc="upper right", fontsize=5.0, handlelength=1.4, borderaxespad=0)
+    # every recorded path is exported; the panel shows the path of b, where only the speed changes
+    estrows = [[name, est[name]["network_lag_s"], est[name]["sources"]["M0"]["moving_median_deg"],
+                est[name]["sources"]["M1"]["moving_median_deg"]]
+               for name in ("speed0.25", "speed0.5", "speed1", "pole", "common0.25", "common0.5", "common1")]
+    width = .36
+    for i, speed in enumerate((.25, .5, 1.)):
+        name = "common%g" % speed
+        for value, dx, key in ((est[name]["sources"]["M0"]["moving_median_deg"], -width / 2, "matrix"),
+                               (est[name]["sources"]["M1"]["moving_median_deg"], width / 2, "lead")):
+            ax.bar(i + dx, value, width, color=C[key], linewidth=0, zorder=2)
+            ax.text(i + dx, value + .15, "%.2f" % value, ha="center", va="bottom", fontsize=4.9, color=C[key])
+    ax.set(xticks=range(3), xlim=(-.6, 2.6), ylim=(0, 10), ylabel="Median error\nwhile moving (°)")
+    ax.set_xticklabels(["0.25", "0.5", "1"], fontsize=5.8)
+    ax.set_xlabel("Peak joint speed (rad s$^{-1}$)", fontsize=6)
+    ax.legend(handles=[Patch(color=C["matrix"], label="Without"), Patch(color=C["lead"], label="With")],
+              frameon=False, loc="upper left", fontsize=5.2, handlelength=1.0, borderaxespad=0)
     ax.text(-.62, 1.07, "c", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(-.40, 1.07, "Forward kinematics, all paths", transform=ax.transAxes, fontsize=7.5)
+    ax.text(-.40, 1.07, "Path of b, three speeds", transform=ax.transAxes, fontsize=7.5)
 
     # d, e - closed-loop reaching in Gazebo: every controller of Fig. 3 on the same 30 targets, paired against the RAK model
     MISS = "#B2182B"
@@ -1365,7 +1363,7 @@ def finish():
                    "learned models' test reaches split over three Gazebos and put back together). Panel a example: Gazebo RAK-model "
                    "target 0, the lowest index (same trial as Figure 1). Kinematic-plant results in Supplementary Table S3. "
                    "All targets retained; failures never create a sustained-entry event.",
-        "figure4": "Seven recorded estimation paths (four original, three shared); medians over moving ticks. Panels d-e: every controller of Figure 3 on "
+        "figure4": "Panels b-c: forward kinematics on the matched path (goals of speed0.5) at 0.25, 0.5 and 1 rad/s; medians over moving ticks (every recorded path exported). Panels d-e: every controller of Figure 3 on "
                    "the same 30 TIAGo7 Gazebo targets; paired effects are controller minus RAK model (without predictive encoding), median and percentile "
                    "95% interval from 4,000 target-pair resamples; missed targets retain 25 s.",
         "figure5": "Joint unavailability at 2 s, kinematic plant, seeds 1-3, 30 targets each, the same disabled joint per target in every condition and "
