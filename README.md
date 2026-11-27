@@ -344,9 +344,21 @@ Physics is paused; every 50 ms tick sends the joint targets to the arm's traject
 tick of physics pass, so a controller of any speed sees the same arm. The mobile base is not anchored and is put back at
 the origin before each trial. Add `--gpu` to `up` only for the camera picture in the simulator.
 
-**Joint loss in Gazebo** (`benchmark joint_loss_gazebo`): the joint-loss study with the TIAGo arm's trajectory controller
-and dynamics. Under `lock` the jammed joint's trajectory target stays at its angle at onset. Its intact reference is the
-stored `reach_gazebo` run. Not run yet.
+**One joint stuck, every controller** (Fig. 5f; `results/<model>/joint_loss_gazebo/`): the 30 Gazebo reaches again, with
+each pair's pre-assigned joint (the joint-loss joints) stuck 2 s in: from then on its trajectory target stays at its
+angle at onset, whatever the controller asks, and the controller is not told. Each controller is compared with its own
+stored intact `reach_gazebo` run. In one command, in the background (about 2–3 h on this machine):
+
+```bash
+nohup docker/run_tiago_stuck.bash > /dev/null 2>&1 &
+tail -f logs/stuck*.log
+```
+
+It runs the RAK model and the RAK model with predictive encoding (`benchmark joint_loss_gazebo --condition lock`, with
+`--variant predictive_encoding` for the second), DLS IK and CCD IK (`reach --plant gazebo --stuck`) at the same time,
+then NN dynamics + MPC and PETS (`reach --plant gazebo --stuck`, with their stored trained models), each over
+`SHARDS` Gazebos (default 3), and redraws Fig. 5. Every step resumes where it stopped. Any one of them can be run on its
+own beside a Gazebo, e.g. `docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m dls_ik reach --plant gazebo --stuck'`.
 
 ## Result files
 

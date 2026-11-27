@@ -5,7 +5,8 @@
     collect     phase 1: random-action episodes on training starts (results/<model>/training/transitions.npz)
     train       fit the model on every transition so far; with --iterations K, then K rounds of phase 2:
                 MPC episodes on training goals with the current model, add their transitions, refit
-    reach       the final model's MPC on the 30 reported pairs (results/<model>/reach_gazebo/ or reach_kinematic/)
+    reach       the final model's MPC on the 30 reported pairs (results/<model>/reach_gazebo/ or reach_kinematic/);
+                with --stuck, one joint jammed 2 s into each reach (results/<model>/joint_loss_gazebo/ or joint_loss/)
     summarise   recompute the reaching summary
     all         collect, train with the configured iterations, reach
 
@@ -32,7 +33,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 from reaching_benchmark import results, summary
-from reaching_benchmark.benchmark import BENCHMARKS, PLANTS, make_plant, run_reach, test_pairs, tick_progress
+from reaching_benchmark.benchmark import (BENCHMARKS, PLANTS, STUCK_BENCHMARKS, STUCK_ONSET_S, make_plant, run_reach, test_pairs,
+                                         tick_progress)
 from reaching_benchmark.geometry.chains import get_chain
 from reaching_benchmark.progress import Progress, say
 from reaching_benchmark.targets import TRAIN_SEED, pose_pairs
@@ -240,7 +242,7 @@ def train(config: Config, plant: str, seed: int, iterations: int, device_name: s
 
 
 def reach(config: Config, plant: str, seed: int, pairs: int, device_name: str, max_minutes: Optional[float],
-          shard: Tuple[int, int] = (0, 1)) -> None:
+          shard: Tuple[int, int] = (0, 1), stuck: bool = False) -> None:
     """The final model's MPC on the reported pairs (``shard``: every n-th pair from the i-th on, so several Gazebos can
     share the 30 pairs; the summary puts the shards together)."""
 
@@ -254,9 +256,12 @@ def reach(config: Config, plant: str, seed: int, pairs: int, device_name: str, m
     loop = MpcLoop(chain, design, make_plant(plant, chain), build_planner(config, model, chain, design, device, seed * 1000 + 999))
     run = {"arm": ARM, "pairs": pairs, "kappa": design.kappa, "plant": plant, "kind": "near", "seed": seed,
            "iterations": len(record["iterations"]) - 1, "transitions": record.get("transitions"), "device": info}
-    name = results.run_name(ARM, seed, task=design.task, shard=shard)
-    run_reach(config.name, BENCHMARKS[plant], name, run, loop, test_pairs(chain, pairs), controller_description(config, record),
-              shard=shard, max_minutes=max_minutes)
+    if stuck:
+        run.update(condition="lock", onset_s=STUCK_ONSET_S)
+    name = results.run_name(ARM, seed, task=design.task, condition="lock" if stuck else None, shard=shard)
+    run_reach(config.name, (STUCK_BENCHMARKS if stuck else BENCHMARKS)[plant], name, run, loop, test_pairs(chain, pairs),
+              controller_description(config, record), shard=shard, max_minutes=max_minutes,
+              stuck_onset_s=STUCK_ONSET_S if stuck else None)
 
 
 def main(config: Config, argv: Optional[List[str]] = None) -> int:
@@ -270,6 +275,8 @@ def main(config: Config, argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--pairs", type=int, default=30)
     parser.add_argument("--max-minutes", type=float, default=None)
     parser.add_argument("--shard", default="0/1", help="reach: i/n, every n-th pair from the i-th on (several Gazebos share the pairs)")
+    parser.add_argument("--stuck", action="store_true", help="reach: jam one joint per pair 2 s into the reach, the MPC not told "
+                                                             "(results in joint_loss_gazebo/ or joint_loss/)")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     iterations = config.iterations if args.iterations is None else args.iterations
     if args.command in ("collect", "all"):
@@ -277,8 +284,9 @@ def main(config: Config, argv: Optional[List[str]] = None) -> int:
     if args.command in ("train", "all"):
         train(config, args.plant, args.seed, iterations, args.device)
     if args.command in ("reach", "all"):
-        reach(config, args.plant, args.seed, args.pairs, args.device, args.max_minutes, tuple(int(v) for v in args.shard.split("/")))
+        reach(config, args.plant, args.seed, args.pairs, args.device, args.max_minutes, tuple(int(v) for v in args.shard.split("/")),
+              args.stuck)
     if args.command in ("reach", "summarise", "all"):
-        benchmark = BENCHMARKS[args.plant]
+        benchmark = (STUCK_BENCHMARKS if args.stuck else BENCHMARKS)[args.plant]
         print("wrote", results.write_summary(config.name, benchmark, summary.summarise(config.name, benchmark)))
     return 0

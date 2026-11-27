@@ -18,18 +18,22 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import numpy as np
 
 from . import results
-from .closed_loop import ClosedLoop, Trial, trial_row
+from .closed_loop import ClosedLoop, StuckJoint, Trial, stuck_fields, trial_row
 from .geometry import kinematics
 from .geometry.chains import Chain
 from .geometry.rotations import rotation_angle, wrap
 from .limits import goal_matrix
 from .progress import Progress, say, trial_detail
-from .targets import TEST_SEED, PosePair, pose_pairs
+from .targets import TEST_SEED, PosePair, disabled_joints, pose_pairs
 from .task import IkDesign
 
 PLANTS = ("light", "gazebo")
 #: the benchmark folder of each plant
 BENCHMARKS = {"light": "reach_kinematic", "gazebo": "reach_gazebo"}
+#: the benchmark folder of each plant for reaches with one joint stuck (``--stuck``; the RAK model's joint-loss folders)
+STUCK_BENCHMARKS = {"light": "joint_loss", "gazebo": "joint_loss_gazebo"}
+#: when the joint sticks, as in the RAK model's joint-loss benchmark
+STUCK_ONSET_S = 2.0
 
 
 def make_plant(name: str, chain: Chain) -> Any:
@@ -68,8 +72,11 @@ def tick_progress(progress: Progress, loop: ClosedLoop, pair: PosePair) -> Calla
 def run_reach(model: str, benchmark: str, name: str, run: Dict[str, Any], loop: ClosedLoop, pairs: List[PosePair],
               controller: Dict[str, Any], shard: Tuple[int, int] = (0, 1), max_minutes: Optional[float] = None,
               row_of: Optional[Callable[[Trial, IkDesign], Dict[str, Any]]] = None, warm_up_ticks: int = 20,
-              log: Optional[Callable[[str], None]] = None) -> str:
+              log: Optional[Callable[[str], None]] = None, stuck_onset_s: Optional[float] = None) -> str:
     """Run (or resume) one run: every pair of ``pairs`` in this shard, checkpointed after each trial.
+
+    ``stuck_onset_s``: jam one joint per pair from this time on, the controller not told (:class:`StuckJoint`); the joint
+    is the pair's own from :func:`~reaching_benchmark.targets.disabled_joints`, as in the RAK model's joint-loss runs.
 
     ``controller``: what the controller reads, is given and learns (stored in the run file, shown in the comparison).
     ``row_of``: the trial's record (default :func:`trial_row`). Returns the run file's path."""
@@ -87,6 +94,7 @@ def run_reach(model: str, benchmark: str, name: str, run: Dict[str, Any], loop: 
         return path
     if rows:
         say("%s/%s %s: resuming after %d pairs" % (model, benchmark, name, len(rows)))
+    stuck = disabled_joints(loop.chain, max(p.index for p in pairs) + 1) if stuck_onset_s is not None else None
     loop.warm_up(warm_up_ticks)
     progress = Progress("%s %s" % (benchmark, name), len(mine), len(rows), earlier.get("wall_s", 0.0), sum(bool(r["reached"]) for r in rows))
     simulated = float(earlier.get("simulated_s", 0.0))
@@ -99,12 +107,16 @@ def run_reach(model: str, benchmark: str, name: str, run: Dict[str, Any], loop: 
         if hasattr(loop.robot, "link"):
             loop.robot.link.put_base_back()
         loop.place(pair.start)
-        progress.start("%d" % pair.index)
-        trial = loop.reach(pair.goal, pair.goal_position, on_tick=tick_progress(progress, loop, pair))
+        joint = int(stuck[pair.index]) if stuck is not None else None
+        disable = StuckJoint(float(stuck_onset_s), joint) if joint is not None else None
+        progress.start("%d" % pair.index + (" (joint %d stuck)" % (joint + 1) if joint is not None else ""))
+        trial = loop.reach(pair.goal, pair.goal_position, on_tick=tick_progress(progress, loop, pair), disable=disable)
         simulated += float(trial.t[-1])
         row = (row_of or trial_row)(trial, design)
         row.update(index=pair.index, start=pair.start.tolist(), goal_lpy=pair.goal.tolist(), goal_position=pair.goal_position.tolist(),
                    start_off_rad=float(np.max(np.abs(wrap(trial.q[0] - pair.start)))))
+        if joint is not None:
+            row.update(stuck_fields(trial, joint, float(stuck_onset_s)))
         rows.append(row)
         rows.sort(key=lambda r: r["index"])
         line = "%s/%s %s pair %d: %.0f° %.0f%% → %.1f° %.1f%% (%s) in %.1f s | %d done, %.0f min" % (
@@ -118,6 +130,11 @@ def run_reach(model: str, benchmark: str, name: str, run: Dict[str, Any], loop: 
                     "shard": list(shard), "planned": len(mine), "simulated_s": simulated,
                     "wall_s": earlier.get("wall_s", 0.0) + time.time() - started, "robot": loop.robot.describe(), "rows": rows,
                     "skipped": skipped + [p.index for p in chosen[position + 1:]]}
+        if stuck is not None:
+            document.update(onset_s=float(stuck_onset_s), disabled_joints=[int(j) for j in stuck],
+                            lesion={"condition": "lock", "onset_s": float(stuck_onset_s),
+                                    "joint": "one per pair: targets.disabled_joints (row field disabled_joint, counted from 0)",
+                                    "how": "the plant holds the joint at its angle at onset; the controller is not told"})
         results.write_run(model, benchmark, name, document)
     progress.close()
     return path

@@ -111,16 +111,17 @@ INTACT_FALLBACK = {"joint_loss": "reach_kinematic", "joint_loss_gazebo": "reach_
 def intact_reference(groups: Dict[Tuple[str, int], Dict[str, Any]], seed: int, run: Dict[str, Any], task: str,
                      name: str = "joint_loss") -> Tuple[List[Dict[str, Any]], str]:
     """The intact rows for a seed: this benchmark's ``intact`` run, else the fallback benchmark's spiking run (same arm,
-    task, κ; matrix method, no condition)."""
+    task, κ and network method, no condition)."""
 
-    if ("intact", seed) in groups:
-        return groups[("intact", seed)]["rows"], "%s intact" % name
+    method = run.get("network_method", "matrix")
+    if ("intact", seed, method) in groups:
+        return groups[("intact", seed, method)]["rows"], "%s intact" % name
     fallback = INTACT_FALLBACK.get(name, "reach_kinematic")
     rows: List[Dict[str, Any]] = []
     for document in results.read_raw(fallback):
         other = document["run"]
         if (other["arm"] == run["arm"] and int(other["seed"]) == seed and float(other["kappa"]) == float(run["kappa"])
-                and document["design"]["task"] == task and other.get("network_method", "matrix") == "matrix"
+                and document["design"]["task"] == task and other.get("network_method", "matrix") == method
                 and other.get("method", "ring") == "ring" and not other.get("condition")):
             rows += document["rows"]
     return rows, fallback
@@ -166,18 +167,18 @@ def against_intact(chain: Any, rows: List[Dict[str, Any]], intact: List[Dict[str
 
 
 def summarise(name: str = "joint_loss") -> Dict[str, Any]:
-    groups: Dict[Tuple[str, int], Dict[str, Any]] = {}
+    groups: Dict[Tuple[str, int, str], Dict[str, Any]] = {}
     for document in results.read_raw(name):
         run = document["run"]
         condition = "loss" if run["condition"].startswith("loss") else run["condition"]
-        key = (run["condition"] if condition == "loss" else condition, int(run["seed"]))
+        key = (run["condition"] if condition == "loss" else condition, int(run["seed"]), run.get("network_method", "matrix"))
         group = groups.setdefault(key, {"run": run, "design": document["design"], "rows": [], "lesion": document.get("lesion"),
                                         "neurons": document["neurons"], "simulated_s": 0.0, "wall_s": 0.0})
         group["rows"] += [dict(r, seed=int(run["seed"])) for r in document["rows"]]
         group["simulated_s"] += document["simulated_s"]
         group["wall_s"] += document["wall_s"]
     out: Dict[str, Any] = {"benchmark": name, "groups": {}}
-    for (condition, seed), group in sorted(groups.items()):
+    for (condition, seed, method), group in sorted(groups.items()):
         run, design = group["run"], group["design"]
         chain = get_chain(run["arm"])
         radius_mm = 1000.0 * workspace(chain).radius
@@ -190,5 +191,6 @@ def summarise(name: str = "joint_loss") -> Dict[str, Any]:
             intact, source = intact_reference(groups, seed, run, design["task"], name)
             entry["against_intact"] = dict(against_intact(chain, rows, intact, design, radius_mm, float(run.get("onset_s") or 2.0),
                                                           condition in DISABLED), reference=source)
-        out["groups"]["%s_seed%d" % (condition, seed)] = entry
+        variant = "" if method == "matrix" else "_" + {"lead": "predictive_encoding"}.get(method, method)
+        out["groups"]["%s_seed%d%s" % (condition, seed, variant)] = dict(entry, network_method=method)
     return out

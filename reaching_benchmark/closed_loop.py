@@ -292,6 +292,39 @@ class ClosedLoop:
                      extras={key: np.array(value) for key, value in extra.items() if value})
 
 
+@dataclass(frozen=True)
+class StuckJoint:
+    """One joint (counting from 0) jammed from ``onset_s`` into a reach to its end, the controller not told: the plant
+    holds the joint where it was at onset (:meth:`LightRobot.lock`, :meth:`GazeboRobot.lock`) and the controller keeps
+    reading its true, unmoving angle. The ``lock`` of the RAK model's joint-loss benchmark, for any controller."""
+
+    onset_s: float
+    joint: int
+    condition: str = "lock"
+    locks: bool = True
+    site: Optional[str] = None
+
+
+def stuck_fields(trial: Trial, joint: int, onset_s: float) -> Dict[str, Any]:
+    """What happened from ``onset_s`` on with ``joint`` jammed (the fields of the RAK model's joint-loss rows that every
+    controller has): the angles and the hand's errors at onset, how far the jammed joint moved after it (in Gazebo the
+    arm's own controller holds it, so not quite 0) and the summed motion of every other joint after it."""
+
+    k = int(joint)
+    index, q_onset = trial.onset(onset_s)
+    after = np.vstack([q_onset[None, :], trial.q[index:]])
+    steps = np.abs(wrap(np.diff(after, axis=0)))
+    others = [j for j in range(after.shape[1]) if j != k]
+    out = {"disabled_joint": k, "onset_s": float(onset_s), "q_onset": q_onset.tolist(),
+           "error_at_onset_deg": float(trial.error_deg[index - 1]) if index > 0 else trial.start_error_deg,
+           "error_at_onset_reach": float(trial.error_reach[index - 1]) if index > 0 else trial.start_error_reach,
+           "disabled_drift_rad": float(np.max(np.abs(wrap(after[:, k] - q_onset[k])))),
+           "remaining_excursion_rad": float(np.sum(steps[:, others]))}
+    if trial.disabled is not None:
+        out.update(disable_condition=trial.disabled["condition"], condition=trial.disabled["condition"])
+    return out
+
+
 def trial_row(trial: Trial, design: IkDesign, every: int = 4) -> Dict[str, Any]:
     """A JSON-ready record of one trial, the part every controller has (time courses thinned to every ``every``-th tick)."""
 
