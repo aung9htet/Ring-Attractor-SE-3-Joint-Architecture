@@ -902,6 +902,9 @@ def make_ablation():
                    linewidths=.7, alpha=.75, label="%s: %d of %d would-miss targets reached" % (SHORT[c], counts[c][1], counts[c][0]))
     ax.axhline(1, color="#59646A", lw=.8, ls=":")
     ax.axvline(1, color="#59646A", lw=.8, ls=":")
+    # 1 = the success limit (5 deg and 5% of reach); below 1 the target is reached
+    ax.text(1.04, 4.2, "success limit", fontsize=5.2, color="#59646A", rotation=90, va="top", ha="left")
+    ax.text(16, 1.06, "success limit", fontsize=5.2, color="#59646A", va="bottom", ha="right")
     ax.set(xscale="log", yscale="log", xlim=(.2, 20), ylim=(.2, 20),
            xlabel="Error if the other joints had moved as in the intact reach (× tolerance)",
            ylabel="Error the reach ended with,\njoint stopped (× tolerance)")
