@@ -924,21 +924,24 @@ def make_ablation():
             lesion = row["lesion"]
             pop = "all" if len(lesion["classes"]) == 3 else lesion["classes"][0]
             if pop == name and np.isclose(float(lesion["fraction"]), .1):
-                ori = row["orientation_median_deg"] / base["orientation_median_deg"]
-                pos = row["position_median_mm"] / base["position_median_mm"]
+                ori = row["orientation_median_deg"]
+                pos = row["position_median_mm"]
                 jitter = (int(lesion["lesion_seed"]) - 2) * .06
                 ax.scatter(i - .14 + jitter, ori, s=11, color=C["diffuse"], marker="o", linewidths=0, zorder=3)
                 ax.scatter(i + .14 + jitter, pos, s=11, facecolors="none", edgecolors=C["diffuse"], marker="s", linewidths=.7, zorder=3)
                 diffrows.append(["held_pose_10pct", name, int(lesion["lesion_seed"]), row["orientation_median_deg"], row["position_median_mm"]])
-    ax.axhline(1, color=C["intact"], lw=.8, ls=":")
-    ax.text(-.45, 1.1, "intact", fontsize=5, color=C["intact"], ha="left", va="bottom")
-    ax.set(xticks=range(4), yscale="log", ylim=(.7, 40), xlim=(-.5, 3.5), ylabel="Hand-pose estimate error\n(× intact)")
+    # the intact network's error, one line for each quantity
+    for value, unit in ((base["orientation_median_deg"], "%.2f°"), (base["position_median_mm"], "%.1f mm")):
+        ax.axhline(value, color=C["intact"], lw=.8, ls=":")
+        ax.text(3.45, value * 1.08, ("intact " + unit) % value, fontsize=4.8, color=C["intact"], ha="right", va="bottom")
+    ax.set(xticks=range(4), yscale="log", ylim=(.7, 3000), xlim=(-.5, 3.5),
+           ylabel="Hand-pose estimate error:\norientation (°), position (mm)")
     ax.set_xticklabels([c[1] for c in classes], fontsize=4.8, linespacing=.95)
     ax.tick_params(labelsize=5.4)
     ax.yaxis.label.set_size(5.8)
     ax.legend(handles=[Line2D([], [], marker="o", ls="none", color=C["diffuse"], markersize=3.4, label="orientation"),
                        Line2D([], [], marker="s", ls="none", markerfacecolor="none", color=C["diffuse"], markersize=3.4, label="position")],
-              frameon=False, fontsize=5.2, loc="upper center", bbox_to_anchor=(.4, 1.0), ncol=1, handletextpad=.2,
+              frameon=False, fontsize=5.2, loc="upper center", ncol=2, handletextpad=.2,
               columnspacing=1.2, borderaxespad=0)
     panel(ax, "e", "10% of neurons silenced", x=-.42)
     # reaching with the whole network 10% silenced (0 of 30; every target in the supplement): data only
