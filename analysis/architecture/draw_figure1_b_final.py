@@ -4,6 +4,7 @@ All activity and the arm are schematic at the declared, pinned TIAGo pose pair.
 No neural simulation is run. Full motif wiring is exported separately for SI.
 """
 import re,json
+from pathlib import Path
 from .figure1_art import *
 from .figure1_art import DATA,FIGURES,ensure_dirs
 from .figure1_population_strip import draw_strip
@@ -19,6 +20,8 @@ class FigureArt(Art):
    v=[float(x) for x in re.split(r'[,\s]+',token.strip())];assert len(v)==1 or v[0]==v[1];scale*=v[0]
   self.scales.append(self.scales[-1]*scale);super().group(transform,opacity)
  def end(self):self.scales.pop();super().end()
+ def heading(self,x,y,letter,title):
+  self.text(x,y,letter,size=17,weight='bold',anchor='start');self.text(x+25,y,title,size=15.3,weight='bold',anchor='start')
  def text(self,x,y,s,size=12.4,anchor='middle',**kwargs):
   size=max(size,self.minfont/self.scales[-1]);self.fonts.append(size*self.scales[-1]*178/1000*72/25.4)
   super().text(x,y,s,size=size,anchor=anchor,**kwargs)
@@ -27,13 +30,13 @@ def label(c,x,y,lines,color=INK,anchor='middle',size=12.4,weight='normal'):
  for j,t in enumerate(lines):c.text(x,y+j*15,t,size=size,color=color,anchor=anchor,weight=weight)
 def pop(c,x,y,col=STATE,strength=.85):
  for i in range(3):
-  for j in range(3):c.circle(x+(i-1)*5,y+(j-1)*5,1.9,mix(col,.7*(1-strength*(.8+.2*math.cos(i+j)))))
+  for j in range(3):c.circle(x+(i-1)*5,y+(j-1)*5,1.9,mix(col,.45*(1-strength*(.8+.2*math.cos(i+j)))))
 def arrow(c,a,b,col=STATE,lw=1.3):
- c.line(*a,*b,col,lw,head='state' if col==STATE else 'goal' if col==GOAL else 'corr' if col==CORR else 'grey')
+ c.line(*a,*b,col,lw,head='state' if col==STATE else 'goal' if col==GOAL else 'corr' if col==CORR else 'pred' if col==PRED else 'grey')
 def mini_ring(c,x,y,r,index,col=STATE,bounded=True,recurrent=True,text=None):
  for i in range(40):
   idx=200*(i+.5)/40;dist=(idx-index+100)%200-100;a=math.radians(-90+360*idx/200);v=math.exp(-.5*(dist/8.)**2)
-  c.circle(x+r*math.cos(a),y+r*math.sin(a),1+1.5*v,mix(col,.78*(1-v)))
+  c.circle(x+r*math.cos(a),y+r*math.sin(a),1+1.5*v,mix(col,.5*(1-v)))
  if bounded:
   arc(c,x,y,r+5,-36,216,mix(col,.5),1.2)
   for deg in [-36,216]:
@@ -137,7 +140,7 @@ def panel_b(c,s):
 
 def panel_c(c,s):
  k=s['motor_joint'];idx=s['positions'][k];lead=s['leads'][k]
- c.text(836,107,'Joint k, enlarged from a',color=GREY)
+ c.text(836,107,'Joint k, enlarged from '+STATE_PANEL[0],color=GREY)
  mini_ring(c,800,204,39,idx,STATE,text='qₖ')
  c.text(800,263,'Same joint-state ring',color=STATE)
  arrow(c,(800,247),(800,366),STATE,1.4)
@@ -166,31 +169,86 @@ def panel_c(c,s):
  c.path('M817 651L714 651L714 729L12 729L12 299L35 299',STATE,1.5,head='state')
  c.text(414,751,'Measured joint angles q(t)',color=STATE)
 
-def make():
- ensure_dirs()
- s=get_data();c=FigureArt()
+#: which letter the joint-state panel has (panel d refers to it)
+STATE_PANEL=['a']
+
+def badge(c,x,y,word,col,size=11.2):
+ """A solid label marking an ablation site (Fig. 5 colours): white text on the colour."""
+ w=14+.62*size*len(word)
+ c.rect(x,y-11,w,15.5,col,None,0,rx=3.5)
+ c.text(x+w/2,y+1,word,size=size,color='#FFFFFF',weight='bold')
+ return w
+
+def overlays(c,s):
+ """Predictive encoding (blue, Fig. 4) and the ablation sites (Fig. 5), in the circuit's own coordinates."""
+ # predictive encoding: the forward joint rings are written ahead by the commanded velocity...
+ label(c,214,399,['written ahead:','qₖ+τₖq̇ₖᶜᵐᵈ'],PRED,size=11.2,weight='bold',anchor='start')
+ c.path('M218 388Q202 372 189 351',PRED,1.2,head='pred')
+ # ...and a separate motor ring keeps the measured angle for the target circuit
+ mini_ring(c,716,146,15,s['positions'][s['motor_joint']],PRED,recurrent=True)
+ c.text(716,150,'qₖ',size=10.6,color=PRED,italic=True)
+ label(c,716,181,['Motor ring','(measured)'],PRED,size=10.4,weight='bold')
+ c.path('M716 200L716 330L796 330',PRED,1.2,dash='3 2',head='pred')
+ # ablations of Fig. 5, where each acts
+ badge(c,883,640,'✕ Lock',ABLATION['lock'])
+ badge(c,702,357,'✕ Motor',ABLATION['motor'])
+ badge(c,549,700,'✕ Allocation',ABLATION['allocation'])
+
+def legend(c,x0=20,y=16):
+ """Colour meanings: roles, predictive encoding, ablations."""
+ x=x0
+ for col,word in [(STATE,'State'),(GOAL,'Goal'),(CORR,'Correction'),(PRED,'Predictive encoding (Fig. 4)')]:
+  c.circle(x,y-4,3.6,col);c.text(x+9,y,word,size=11.6,color=col,anchor='start',weight='bold');x+=22+7.0*len(word)
+ x+=8;c.text(x,y,'Ablated (Fig. 5):',size=11.2,color=INK,anchor='start');x+=104
+ for key,word in [('lock','✕ Lock'),('motor','✕ Motor'),('allocation','✕ Allocation'),('diffuse','✕ 10% of all')]:
+  x+=badge(c,x,y-1,word,ABLATION[key],10.4)+6
+
+def circuit(c,s,letters='abc'):
+ """The circuit (three panels) in its own 1000 x 758 coordinates."""
  for x in [340,677]:
   c.line(x,82,x,188,PALE,.9);c.line(x,233 if x==340 else 513,x,707,PALE,.9)
- for x,letter,lines in [(20,'a',['Joint-state and','pose representation']),(355,'b',['Pose-error and','correction allocation']),(694,'c',['Joint-target generation','and feedback'])]:
+ for x,letter,lines in [(20,letters[0],['Joint-state and','pose representation']),(355,letters[1],['Pose-error and','correction allocation']),(694,letters[2],['Joint-target generation','and feedback'])]:
   c.text(x,55,letter,size=18,weight='bold',anchor='start')
   label(c,x+25,50,lines,anchor='start',size=14.2,weight='bold')
- for x,col,word in [(674,STATE,'State'),(779,GOAL,'Goal'),(864,CORR,'Correction')]:
-  c.circle(x,14,3.3,col);c.text(x+10,18,word,size=12.1,color=col,anchor='start')
- panel_a(c,s);panel_b(c,s);panel_c(c,s)
- c.save(FIGURES/'supp_architecture.svg')
- # Export the existing catalogue as its own supplementary plate.
- si=FigureArt(56,11.1);si.group('translate(0 -612)');draw_strip(si,s);si.end()
- si.parts=[v.replace('>f</text>','>a</text>').replace('>hₖsₖ</text>','>Joint effect</text>') for v in si.parts]
- si.save(FIGURES/'supp_population_motifs.svg')
- out={'selected':'refined Option B','dimensions_mm':[178,135],'minimum_label_pt':min(c.fonts),
- 'panels':{'a':'Joint-state and pose representation','b':'Pose-error and correction allocation','c':'Joint-target generation and feedback'},
+ STATE_PANEL[0]=letters[0]
+ panel_a(c,s);panel_b(c,s);panel_c(c,s);overlays(c,s)
+
+def inline_svg(path,x,y,w,h):
+ """Another SVG (Fig. 1a, drawn by Matplotlib) placed as a nested, vector SVG."""
+ text=Path(path).read_text()
+ text=re.sub(r'<\?xml[^>]*\?>','',text);text=re.sub(r'<!DOCTYPE[^>]*>','',text,flags=re.S)
+ head=re.search(r'<svg[^>]*>',text).group(0)
+ box=re.search(r'viewBox="([^"]+)"',head).group(1)
+ new='<svg x="%s" y="%s" width="%s" height="%s" viewBox="%s" preserveAspectRatio="xMidYMin meet">'%(f(x),f(y),f(w),f(h),box)
+ return text.replace(head,new,1)
+
+#: Fig. 1 on a 178 mm wide page: a (hand paths, 44 mm) | b-d (circuit, 134 mm); e (motifs) underneath
+LEFT=247;SCALE=(1000-LEFT-3)/1000;STRIP_Y=598;HEIGHT_MM=167
+
+def make():
+ ensure_dirs()
+ s=get_data()
+ c=FigureArt(HEIGHT_MM,minfont=9.9)
+ legend(c)
+ # a: every controller's hand path (python -m analysis figure fig1 draws it)
+ c.text(8,62,'a',size=18,weight='bold',anchor='start')
+ label(c,30,57,['Target pair 0,','every controller'],anchor='start',size=14.2,weight='bold')
+ hand=FIGURES/'fig1a_hand_paths.svg'
+ if not hand.exists():raise SystemExit('draw Fig. 1a first: python3 -m analysis figure fig1')
+ c.add(inline_svg(hand,0,84,LEFT,STRIP_Y-84-6))
+ c.group('translate(%s 26) scale(%s)'%(f(LEFT+3),f(SCALE)));circuit(c,s,'bcd');c.end()
+ c.group('translate(0 %s)'%f(STRIP_Y-612));draw_strip(c,s);c.end()
+ c.parts=[v.replace('>f</text>','>e</text>').replace('>hₖsₖ</text>','>Joint effect</text>') for v in c.parts]
+ c.save(FIGURES/'fig1_model.svg')
+ out={'figure':'Fig. 1: a, hand paths of every controller (Gazebo target pair 0); b-d, the circuit; e, population motifs',
+ 'dimensions_mm':[178,HEIGHT_MM],'minimum_label_pt':min(c.fonts),
+ 'panels':{'a':'Target pair 0, every controller (fig1a_hand_paths.svg)','b':'Joint-state and pose representation','c':'Pose-error and correction allocation','d':'Joint-target generation and feedback','e':'Population motifs'},
+ 'overlays':{'predictive_encoding':'blue (Fig. 4): forward rings hold q_k + tau_k qdot_k^cmd; a separate motor ring keeps the measured angle for the target circuit',
+  'ablations':'solid badges in the Fig. 5 colours: lock at the actuator, motor at the gain pair and target ring, allocation at the u+/u- correction pairs; diffuse 10% silencing applies to every population (key only)'},
  'geometry':'pinned TIAGo pose pair: analysis/source_data/figure1_snapshot.json',
  'diagram_convention':'arrows carry named neural signals; a grey brace groups independent joint channels; gain input ports represent grouped projections',
- 'shared_state':'panel c enlarges the same joint k state ring shown in a; not an additional baseline ring',
- 'feedforward':'joint-target ring has no attractor recurrence; q_tar is decoded centroid over three windows',
- 'local_feedback':'sheet activity-level feedback is separate from anchoring and external plant feedback',
- 'activity':'all Figure 1 activity glyphs are schematic; measured activity is in Figure 2'}
+ 'activity':'all circuit activity glyphs are schematic; measured activity is in Figure 2'}
  (DATA/'figure1_b_manifest.json').write_text(json.dumps(out,indent=2)+'\n')
- print('Final B and SI motif SVGs written; minimum main label %.2f pt'%min(c.fonts))
+ print('Fig. 1 SVG written; minimum label %.2f pt'%min(c.fonts))
 
 if __name__=='__main__':make()

@@ -15,7 +15,7 @@ Everything at once (under a minute):
 
 ```bash
 docker/run.bash nest -- 'python3 -B -m analysis all'
-python3 -B -m analysis.architecture.render_figure1_b_final   # on the host, if the image has no Chrome (PDFs of S1-S2)
+python3 -B -m analysis.architecture.render_figure1_b_final   # on the host, if the image has no Chrome (PDF of Fig. 1)
 ```
 
 The same, step by step:
@@ -24,7 +24,7 @@ The same, step by step:
 docker/run.bash nest -- 'python3 -B -m analysis derive'       # shared data: seconds, NumPy only
 docker/run.bash nest -- 'python3 -B -m analysis activity'     # Fig. 2a-c spikes: seconds, NEST
 docker/run.bash nest -- 'python3 -B -m analysis figure all'   # every data figure: about 20 s
-docker/run.bash nest -- 'python3 -B -m analysis architecture' # the circuit schematic (SVG; PDF where Chrome exists)
+docker/run.bash nest -- 'python3 -B -m analysis architecture' # Fig. 1: hand paths + circuit + motifs (SVG; PDF where Chrome exists)
 docker/run.bash nest -- 'python3 -B -m analysis list'         # every figure, its file and what it needs first
 ```
 
@@ -58,11 +58,12 @@ scored at the trial's last sample: θ ≤ 5° and ‖Δp‖ ≤ 5% of reach (40.
 
 | Paper | Name (`figure NAME`) | Output | Run first | Reads | Panel data (`plotexports/`) |
 |---|---|---|---|---|---|
-| Fig. 1 | `fig1` | `fig1_reach` | — | target pair 0 in every controller's `reach_gazebo/` (a: hand paths of the RAK model without and with predictive encoding, DLS IK, CCD IK, NN dynamics + MPC, PETS); RAK `reach_gazebo/tiago7_seed1.json` (c, d) | `fig1_hand_paths_target0.csv`, `fig1_pair0_*.csv` |
+| Fig. 1 | `fig1`, then `architecture` | `fig1_model` (a alone: `fig1a_hand_paths`) | — | a: target pair 0 in every controller's `reach_gazebo/` (the RAK model without and with predictive encoding, DLS IK, CCD IK, NN dynamics + MPC, PETS); b–e: none (the circuit and its motifs, drawn from the arm's geometry and the cascade's constants at one pose pair, `analysis/architecture/`) | `fig1_hand_paths_target0.csv`; `../figure1_snapshot.json`, `../figure1_b_manifest.json` |
 | Fig. 2 | `fig2` | `fig2_representation` | `derive`, `activity` | `illustrative_activity.npz`; RAK `held_pose/summary.json`; `common_path_traces.npz`; RAK `reach_kinematic/tiago7_seed1.json` (goal of target 0) | `fig2_*.csv` |
 | Fig. 3 | `fig3` | `fig3_reaching` | — | RAK `reach_gazebo/` (without and with predictive encoding); `dls_ik/`, `ccd_ik/`, `mpc_nn_dynamics/`, `pets/` `reach_gazebo/`; RAK `reach_kinematic/` (Supp. Table S3) | `fig3_*.csv`, `supp_rak_kinematic_plant.csv` (Table S3) |
 | Fig. 4 | `fig4` | `fig4_prediction` | `derive` | `common_path_traces.npz`; RAK `moving_estimate/summary.json`; every controller's `reach_gazebo/` (d, e); RAK `reach_kinematic/`, `reach_gain/`, `reach_gazebo/` (Supp. Table S4) | `fig4_*.csv`, `tableS4_predictive_encoding_paired.csv` (Table S4) |
 | Fig. 5 | `fig5` | `fig5_ablation` | `derive` | RAK `joint_loss/` (seeds 1–3, every condition); RAK `reach_kinematic/tiago7_seed{2,3}.json` (intact reference); `sensitivity_metrics.json`; RAK `held_pose/summary.json` | `fig5_*.csv`, `ablation_counts.json` |
+| Supp. events of one reach | `supp_reach_events` | `supp_reach_events` | — | RAK `reach_gazebo/tiago7_seed1.json` (target 0) | `supp_reach_events_*.csv` |
 | Supp. supporting controls | `supp_supporting` | `supp_supporting` | — | RAK `reach_disturbance/`, `reach_gain/` | `supp_gain_*.csv`, `supp_push_recovery.csv` |
 | Supp. joint loss by joint and exact map | `supp_joint_loss` | `supp_joint_loss` | — | RAK `joint_loss/`, `joint_map/all.json` | `supp_joint_loss_*.csv`, `supp_joint_map.csv` |
 | Supp. held-pose silencing | `supp_neuron_loss` | `supp_neuron_loss` | `derive` | `sensitivity_metrics.json`; RAK `held_pose/summary.json` | — |
@@ -71,7 +72,6 @@ scored at the trial's last sample: θ ≤ 5° and ‖Δp‖ ≤ 5% of reach (40.
 | Supp. orientation sources | `supp_observer` | `supp_observer` | — | RAK `moving_estimate/summary.json` | — |
 | Supp. chart poles | `supp_observer_pole` | `supp_observer_pole` | — | RAK `moving_estimate/summary.json` (`pole` path) | — |
 | Supp. exact-loop screening | `supp_screening` | `supp_screening` | — | RAK `screening/summary.json` | — |
-| Supp. Figs S1–S2 (circuit) | `python3 -B -m analysis architecture` | `supp_architecture`, `supp_population_motifs` | — | none: drawn from the arm's geometry and the cascade's constants at one start pose and goal (`analysis/architecture/snapshot.py`) | `../figure1_snapshot.json`, `../figure1_b_manifest.json` |
 
 Examples:
 
@@ -90,7 +90,7 @@ docker/run.bash nest -- 'python3 -B -m analysis derive && python3 -B -m analysis
 | `activity.py` | the NEST replay for Fig. 2a–c |
 | `figures.py` | Figs 1–5 and the supplementary figures drawn from runs; `FIGURE_MAKERS` maps each name to its function |
 | `diagnostics/` | the four diagnostic supplementary figures (forward representation, orientation sources, chart poles, screening) |
-| `architecture/` | the circuit schematic: `snapshot.py` (the geometry), `figure1_art.py` and `figure1_population_strip.py` (glyphs), `draw_figure1_b_final.py` (SVG), `render_figure1_b_final.py` (PDF and PNG, with Chrome) |
+| `architecture/` | Fig. 1: `snapshot.py` (the geometry), `figure1_art.py` and `figure1_population_strip.py` (glyphs), `draw_figure1_b_final.py` (composes a with the circuit b–d, its blue predictive-encoding marks and Fig. 5 ablation badges, and the motifs e, as one SVG), `render_figure1_b_final.py` (PDF and PNG, with Chrome) |
 
 The analysis reads only `results/` and the repository's own packages (`reaching_benchmark`,
 `ring_attractor_kinematics`), so after a model is rerun, rerunning the analysis redraws every figure from the new runs.

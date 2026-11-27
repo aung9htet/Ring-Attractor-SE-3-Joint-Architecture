@@ -3,7 +3,7 @@
   derive                 shared data for several figures (NumPy only; seconds)
   activity               the spikes of Fig. 2a-c: a forward replay in NEST (seconds)
   figure NAME [NAME..]   one or more figures by name (``list`` shows them), or ``all``
-  architecture           the schematic of the circuit (Supp. Figs S1-S2; SVG, then PDF if Chrome is available)
+  architecture           Fig. 1: the hand paths (figure fig1) beside the circuit and motifs (SVG, then PDF with Chrome)
   all                    derive, activity, every figure and the schematic, in that order
   list                   every figure: its name, output file and what it needs first
 

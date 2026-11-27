@@ -10,7 +10,7 @@ from pathlib import Path
 
 from ..common import FIGURES
 
-SIZES = [("supp_architecture", 135), ("supp_population_motifs", 56)]   # height in mm, width 178 mm
+SIZES = [("fig1_model", 167)]   # height in mm, width 178 mm
 
 
 def main():

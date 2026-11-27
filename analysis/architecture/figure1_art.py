@@ -17,7 +17,10 @@ from reaching_benchmark.limits import limit_room
 from reaching_benchmark.task import IkDesign
 from ring_attractor_kinematics.rules.cascade_rule import pose_cascade,levers,share_caps
 
-STATE='#087F8C';GOAL='#BB7D12';CORR='#7748B4';INK='#193747';GREY='#8295A2';PALE='#E4EBEF';SOFT='#F4F7F9'
+STATE='#087F8C';GOAL='#BB7D12';CORR='#7748B4';INK='#193747';GREY='#6F8390';PALE='#C9D4DA';SOFT='#F4F7F9'
+#: predictive encoding (as in Fig. 4) and the ablations of Fig. 5, drawn on the circuit
+PRED='#2166AC'
+ABLATION={'lock':'#8C510A','motor':'#C51B7D','allocation':'#1B7837','diffuse':'#4D4D4D'}
 W=1000;H=702
 
 def mix(c,t=0.5,to='#FFFFFF'):
@@ -31,7 +34,7 @@ class Art:
   self.rect(0,0,W,H,'#FFFFFF')
  def definitions(self):
   out=['<defs>']
-  for k,c in [('state',STATE),('goal',GOAL),('corr',CORR),('grey',GREY)]:
+  for k,c in [('state',STATE),('goal',GOAL),('corr',CORR),('grey',GREY),('pred',PRED)]:
    out.append('<marker id="head-%s" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10L2.5 5Z" fill="%s"/></marker>'%(k,c))
    out.append('<radialGradient id="glow-%s"><stop offset="0" stop-color="%s" stop-opacity=".55"/><stop offset="1" stop-color="%s" stop-opacity="0"/></radialGradient>'%(k,c,c))
   out.append('<linearGradient id="metal"><stop stop-color="#B8C6D0"/><stop offset=".48" stop-color="#F9FBFC"/><stop offset="1" stop-color="#D1DCE4"/></linearGradient>')
