@@ -796,8 +796,9 @@ def make_ablation():
     for (c, s), rr in data.items():
         assert sorted(int(r["index"]) for r in rr) == list(range(30)), (c, s)
     # the interventions themselves are drawn on the circuit in Fig. 1 (badges and dashed outlines)
-    fig = plt.figure(figsize=(WIDTH, 112 / 25.4))
-    gs = fig.add_gridspec(2, 4, left=.09, right=.975, bottom=.09, top=.9, hspace=.62, wspace=.62, width_ratios=[1, 1, 1, 1.35])
+    fig = plt.figure(figsize=(WIDTH, 132 / 25.4))
+    gs = fig.add_gridspec(2, 4, left=.09, right=.975, bottom=.075, top=.92, hspace=.5, wspace=.62, width_ratios=[1, 1, 1, 1.35],
+                          height_ratios=[1, 1.45])
 
     # a - intervention check in the circuit
     rel = np.arange(-1.0, 6.01, .2)
@@ -911,40 +912,40 @@ def make_ablation():
     ax.legend(frameon=False, fontsize=5.4, loc="upper left")
     panel(ax, "d", "Do the remaining joints absorb the lost motion?", x=-.09)
 
-    # e - diffuse silencing
-    sub = gs[1, 3].subgridspec(2, 1, hspace=.65)
+    # e - 10% of neurons silenced: the hand-pose estimate (held poses) relative to the intact network, and reaching
     audit = read(DATA / "sensitivity_metrics.json")
-    base = read(RAK / "held_pose" / "summary.json")["arms"]["tiago7"]
-    ax = fig.add_subplot(sub[0, 0])
-    classes = [("all", "all"), ("rings", "rings"), ("value", "value"), ("sheets", "sheets")]
+    base = audit["baseline"]          # intact network, the same 30 held poses
+    ax = fig.add_subplot(gs[1, 3])
+    #: silenced groups, named and numbered as the motifs of Fig. 1e
+    classes = [("all", "whole\nnetwork"), ("rings", "joint\nrings\n(1)"), ("value", "pose\ncalc.\n(3)"), ("sheets", "position\nsheets\n(4–6)")]
     diffrows = []
     for i, (name, label) in enumerate(classes):
-        vals = []
         for row in audit["runs"]:
             lesion = row["lesion"]
             pop = "all" if len(lesion["classes"]) == 3 else lesion["classes"][0]
             if pop == name and np.isclose(float(lesion["fraction"]), .1):
-                vals.append(float(row["orientation_median_deg"]))
+                ori = row["orientation_median_deg"] / base["orientation_median_deg"]
+                pos = row["position_median_mm"] / base["position_median_mm"]
+                jitter = (int(lesion["lesion_seed"]) - 2) * .06
+                ax.scatter(i - .14 + jitter, ori, s=11, color=C["diffuse"], marker="o", linewidths=0, zorder=3)
+                ax.scatter(i + .14 + jitter, pos, s=11, facecolors="none", edgecolors=C["diffuse"], marker="s", linewidths=.7, zorder=3)
                 diffrows.append(["held_pose_10pct", name, int(lesion["lesion_seed"]), row["orientation_median_deg"], row["position_median_mm"]])
-        ax.scatter([i] * len(vals), vals, s=9, color=C["diffuse"], marker="X", linewidths=0)
-    ax.axhline(base["orientation_median_deg"], color="#087F8C", lw=.8, ls=":")
-    ax.set(xticks=range(4), xticklabels=[c[1] for c in classes], ylabel="Held-pose\norientation (°)", yscale="log", ylim=(.8, 40))
+    ax.axhline(1, color=C["intact"], lw=.8, ls=":")
+    ax.text(-.45, 1.1, "intact", fontsize=5, color=C["intact"], ha="left", va="bottom")
+    ax.set(xticks=range(4), yscale="log", ylim=(.7, 40), xlim=(-.5, 3.5), ylabel="Hand-pose estimate error\n(× intact)")
+    ax.set_xticklabels([c[1] for c in classes], fontsize=4.8, linespacing=.95)
     ax.tick_params(labelsize=5.4)
     ax.yaxis.label.set_size(5.8)
-    ax.text(-.55, 1.30, "e", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(-.08, 1.30, "10% diffuse silencing", transform=ax.transAxes, fontsize=7.5)
-    ax = fig.add_subplot(sub[1, 0])
+    ax.legend(handles=[Line2D([], [], marker="o", ls="none", color=C["diffuse"], markersize=3.4, label="orientation"),
+                       Line2D([], [], marker="s", ls="none", markerfacecolor="none", color=C["diffuse"], markersize=3.4, label="position")],
+              frameon=False, fontsize=5.2, loc="upper center", bbox_to_anchor=(.4, 1.0), ncol=1, handletextpad=.2,
+              columnspacing=1.2, borderaxespad=0)
+    panel(ax, "e", "10% of neurons silenced", x=-.42)
+    # reaching with the whole network 10% silenced (0 of 30; every target in the supplement): data only
     loss = JL[("loss0.1_all_l1", 1)]["rows"]
-    for i, (label, rr, colour) in enumerate((("intact", data[("intact", 1)], C["intact"]), ("10% silenced", loss, C["diffuse"]))):
+    for label, rr in (("intact", data[("intact", 1)]), ("whole network 10% silenced", loss)):
         sm = success_summary([r["reached"] for r in rr])
-        lo, hi = np.array(sm["ci"]) * 30
-        ax.errorbar(sm["reached"], i, xerr=[[sm["reached"] - lo], [hi - sm["reached"]]], fmt="o" if i == 0 else "X", color=colour,
-                    markersize=3.6, capsize=1.5, lw=.8)
-        ax.text(31.5, i, "%d/30" % sm["reached"], fontsize=5.6, va="center", color=colour)
         diffrows.append(["closed_loop", label, 1, sm["reached"], sm["n"]])
-    ax.set(yticks=[0, 1], xlim=(-1, 35), ylim=(1.6, -.6), xlabel="Targets reached (of 30)")
-    ax.set_yticklabels(["intact", "10% silenced"], fontsize=5.4)
-    ax.tick_params(labelsize=5.4)
     save(fig, "fig5_ablation")
     csvout("fig5_intervention_check.csv", ["condition", "time_from_onset_s", "median_abs_requested_turn_rad_per_tick", "fraction_of_reaches_with_written_target"], checkrows)
     csvout("fig5_error_courses.csv", ["condition", "quantity", "time_s", "q25", "median", "q75"], courserows)
@@ -1158,7 +1159,7 @@ def make_neuron_loss():
     bases = {"orientation": baseline["orientation_median_deg"], "position": baseline["position_median_reach"] * .80574 * 1000}
     fig = plt.figure(figsize=(WIDTH, 117 / 25.4))
     gs = fig.add_gridspec(2, 2, left=.11, right=.97, bottom=.11, top=.92, hspace=.74, wspace=.47)
-    for j, (quantity, ylabel) in enumerate((("orientation", "Orientation error (°)"), ("position", "Position error (mm)"))):
+    for j, (quantity, ylabel) in enumerate((("orientation", "Hand-pose estimate:\norientation error (°)"), ("position", "Hand-pose estimate:\nposition error (mm)"))):
         ax = fig.add_subplot(gs[0, j])
         ax.axhline(bases[quantity], ls=":", color=C["matrix"], lw=1, label="Intact")
         for seed, marker in ((1, "o"), (2, "s"), (3, "^")):
@@ -1169,17 +1170,17 @@ def make_neuron_loss():
         ax.set(xlabel="Neurons silenced (%)", ylabel=ylabel, xticks=[0, 10, 20, 30], ylim=(0, None))
         if j == 0:
             ax.legend(frameon=False, loc="upper left", ncol=2, handlelength=1, columnspacing=.8)
-        panel(ax, "ab"[j], "Diffuse silencing")
-        ax = fig.add_subplot(gs[0, 1 + j])
+        panel(ax, "ab"[j], "Silencing across the whole network")
+        ax = fig.add_subplot(gs[1, j])
         ax.axhline(bases[quantity], ls=":", color=C["matrix"], lw=1)
-        classes = [("rings", "Joint rings"), ("value", "Value populations"), ("sheets", "Sheet family")]
+        classes = [("rings", "Joint rings\n(1)"), ("value", "Pose computation\n(3)"), ("sheets", "Position sheets\n(4–6)")]
         for i, (name, label) in enumerate(classes):
             for seed, off, marker in ((1, -.075, "o"), (2, 0, "s"), (3, .075, "^")):
                 rr = [r for r in records if r["population"] == name and r["seed"] == seed and np.isclose(r["fraction"], .1)]
                 assert len(rr) == 1, (name, seed, rr)
                 ax.plot(i + off, rr[0][quantity], marker=marker, color=C["lead"], markersize=4, alpha=.7)
         ax.set(xticks=range(3), xticklabels=[x[1] for x in classes], ylabel=ylabel, xlim=(-.4, 2.4), ylim=(0, None))
-        panel(ax, "cd"[j], "Ten per cent within one population family")
+        panel(ax, "cd"[j], "10% within one population family")
     save(fig, "supp_neuron_loss")
 
 
@@ -1187,8 +1188,8 @@ def make_closed_loop_loss():
     """One silencing mask and one kernel seed; not a recovery experiment."""
     doc = read(DATA / "closed_loop_loss.json")
     assert doc["n_targets"] == 30 and doc["kernel_seed"] == 1 and doc["lesion_seed"] == 1
-    series = [("nominal", "Nominal\ns1", C["matrix"]),
-              ("lesion", "10% silent\ns1 / m1", C["lead"])]
+    series = [("nominal", "Intact", C["matrix"]),
+              ("lesion", "Whole network\n10% silenced", C["diffuse"])]
     records = {name: sorted(doc[name]["per_target"], key=lambda r: r["target_index"])
                for name, _, _ in series}
     assert [r["target_index"] for r in records["nominal"]] == [r["target_index"] for r in records["lesion"]] == list(range(30))
@@ -1279,7 +1280,7 @@ def finish():
                    "95% interval from 4,000 target-pair resamples; missed targets retain 25 s.",
         "figure5": "Joint unavailability at 2 s, kinematic plant, seeds 1-3, 30 targets each, the same disabled joint per target in every condition and "
                    "seed. Intact reference: dedicated seed-1 run; nominal RAK-model reaching at seeds 2-3. Error courses pool the 90 trials per condition "
-                   "(30 targets x 3 seeds) descriptively; success is shown per seed. Diffuse silencing: one mask, kernel seed 1.",
+                   "(30 targets x 3 seeds) descriptively; success is shown per seed. 10% of the whole network silenced: one mask, kernel seed 1.",
         "neuron_loss": "Every point is a median across the same 30 held poses for one lesion-mask seed. Three masks are not three neural simulation seeds or 90 independent targets.",
         "closed_loop_loss": "One fixed 10% silencing mask applied from network construction, kernel seed 1, same 30 targets as the nominal RAK model."
     })

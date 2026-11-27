@@ -12,4 +12,4 @@ held_pose_10pct,sheets,1,1.242755,86.3551845
 held_pose_10pct,sheets,2,1.242755,87.5557371
 held_pose_10pct,sheets,3,1.242755,89.2437624
 closed_loop,intact,1,30,30
-closed_loop,10% silenced,1,0,30
+closed_loop,whole network 10% silenced,1,0,30

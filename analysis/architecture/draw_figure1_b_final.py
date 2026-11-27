@@ -215,7 +215,7 @@ def legend(c,x0=20,y=16):
  for col,word in [(STATE,'State'),(GOAL,'Goal'),(CORR,'Correction'),(PRED,'Predictive encoding (Fig. 4)')]:
   c.circle(x,y-4,3.6,col);c.text(x+9,y,word,size=11.6,color=col,anchor='start',weight='bold');x+=22+7.0*len(word)
  x+=8;c.text(x,y,'Ablated (Fig. 5):',size=11.2,color=INK,anchor='start');x+=104
- for key,word in [('lock','✕ Lock'),('motor','✕ Motor'),('allocation','✕ Allocation'),('diffuse','✕ 10% of all')]:
+ for key,word in [('lock','✕ Lock'),('motor','✕ Motor'),('allocation','✕ Allocation'),('diffuse','✕ 10% of network')]:
   x+=badge(c,x,y-1,word,ABLATION[key],10.4)+6
 
 def circuit(c,s,letters='abc'):
