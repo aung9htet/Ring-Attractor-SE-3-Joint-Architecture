@@ -21,6 +21,12 @@ set -uo pipefail
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 cd "$repo"
 mkdir -p logs
+# one copy at a time: a second one would start Gazebos with the same names and stop the first one's
+exec 9> logs/.run_tiago_stuck.lock
+if ! flock -n 9; then
+    echo "docker/run_tiago_stuck.bash is already running (python3 -m reaching_benchmark status --stuck shows it)" >&2
+    exit 1
+fi
 SHARDS=${SHARDS:-3}
 THREADS=${THREADS:-3}
 export REACHING_PROGRESS=lines
