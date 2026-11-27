@@ -816,9 +816,10 @@ def make_ablation():
         frac = np.mean(written, axis=0)
         # the cascade's requested turn for the stopped joint (its share s_k, rad per 50 ms tick), in degrees,
         # and how often a joint target is still written for it, in % of the 90 reaches
-        ax1.plot(rel, np.degrees(med), color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
+        ax1.plot(rel, np.degrees(med), color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5, label=SHORT[c])
         checkrows += [[c, g, m, f] for g, m, f in zip(rel, med, frac)]
     ax1.axvline(0, color="#59646A", lw=.7, ls="--")
+    ax1.legend(frameon=False, fontsize=5.3, loc="upper right", handlelength=1.2, borderaxespad=.1)
     ax1.tick_params(labelsize=5.4)
     ax1.set(ylabel="Turn the circuit requests\n(° per 50 ms tick)", ylim=(0, None), xlim=(-1, 6),
             xlabel="Time after the joint stops (s)")
