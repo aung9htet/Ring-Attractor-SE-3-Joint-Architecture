@@ -118,17 +118,39 @@ def reachable_after(chain: Chain, q_onset: Sequence[float], joint: int, pair: Po
     return best
 
 
-def run_command(args: Any) -> None:
-    """``--condition reach,pole``: only those benchmarks (default: every closed-loop benchmark)."""
+def _file_twins(job: Tuple[str, Dict[str, Any]]) -> Tuple[str, Dict[str, Any]]:
+    """Every trial of one run file (each case is seeded by its own pair, so files can run in parallel)."""
 
-    for name in (args.condition.split(",") if args.condition else CLOSED_LOOP):
-        for path, document in results.read_raw_files(name):
-            chain = get_chain(document["run"]["arm"])
-            design = IkDesign(**document["design"])
-            for row in document["rows"]:
-                pair = PosePair(row["index"], np.array(row["start"]), np.array(row["start"]), np.array(row["goal_lpy"]),
-                                np.array(row["goal_position"]))
-                push = (2.0, row["pushed_joint"], 0.3) if row.get("pushed_joint") is not None else None
-                row["twins"] = twins(chain, pair, design, push)
-            results.write(path, document)
-            print("twins:", path, len(document["rows"]), flush=True)
+    path, document = job
+    chain = get_chain(document["run"]["arm"])
+    design = IkDesign(**document["design"])
+    for row in document["rows"]:
+        pair = PosePair(row["index"], np.array(row["start"]), np.array(row["start"]), np.array(row["goal_lpy"]),
+                        np.array(row["goal_position"]))
+        if row.get("disabled_joint") is not None:   # a joint-loss trial: its own twins and the reachability check
+            joint = int(row["disabled_joint"])
+            row["twins"] = joint_loss_twins(chain, pair, design, float(row["onset_s"]), joint)
+            row["reachability"] = reachable_after(chain, row["q_onset"], joint, pair, design)
+        else:
+            push = (2.0, row["pushed_joint"], 0.3) if row.get("pushed_joint") is not None else None
+            row["twins"] = twins(chain, pair, design, push)
+    return path, document
+
+
+def run_command(args: Any) -> None:
+    """``--condition reach,pole``: only those benchmarks (default: every closed-loop benchmark and joint loss); one
+    process per run file, up to ``--processes``."""
+
+    import multiprocessing
+
+    from reaching_benchmark.progress import Progress
+
+    jobs = [(path, document) for name in (args.condition.split(",") if args.condition else CLOSED_LOOP + ("joint_loss",))
+            for path, document in results.read_raw_files(name)]
+    progress = Progress("twins", sum(len(document["rows"]) for _, document in jobs))
+    context = multiprocessing.get_context("spawn")   # fresh workers: a fork would carry NEST's state along
+    with context.Pool(int(getattr(args, "processes", None) or 20)) as pool:
+        for path, document in pool.imap_unordered(_file_twins, jobs):
+            results.shared.write(path, document)
+            progress.advance(len(document["rows"]), path.rsplit("/", 1)[-1])
+    progress.close()

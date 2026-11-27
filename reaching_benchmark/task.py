@@ -53,8 +53,9 @@ class IkDesign:
     rest_deg: float = 0.5
     rest_reach: float = 0.004
     #: a goal is reached when, at the end, orientation is within reach_deg and position within reach_reach of the reach
+    #: (5%; runs made before 2026-11-27 were scored at 4% and re-scored with ``python -m reaching_benchmark rescore``)
     reach_deg: float = 5.0
-    reach_reach: float = 0.04
+    reach_reach: float = 0.05
 
     def __post_init__(self) -> None:
         for value, allowed, name in ((self.task, TASKS, "task"), (self.position_goal, POSITION_GOALS, "position_goal"),

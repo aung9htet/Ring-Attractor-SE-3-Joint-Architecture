@@ -2,6 +2,7 @@
 
     python -m reaching_benchmark status   [MODEL/BENCHMARK | BENCHMARK ...] [--watch S]   how far every run is (host or container)
     python -m reaching_benchmark compare  BENCHMARK                                       every model's summary of one benchmark side by side
+    python -m reaching_benchmark rescore  [MODEL/BENCHMARK ...]                           score stored trials again at the current tolerance
 
 Each model has its own command line: ``python -m ring_attractor_kinematics``, ``python -m dls_ik``,
 ``python -m mpc_nn_dynamics``, ``python -m pets``.
@@ -14,7 +15,7 @@ import importlib
 import sys
 from typing import List, Optional
 
-COMMANDS = {"status": "reaching_benchmark.status", "compare": "reaching_benchmark.compare"}
+COMMANDS = {"status": "reaching_benchmark.status", "compare": "reaching_benchmark.compare", "rescore": "reaching_benchmark.rescore"}
 
 
 def main(argv: Optional[List[str]] = None) -> int:

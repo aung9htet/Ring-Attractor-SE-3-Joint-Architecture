@@ -141,7 +141,15 @@ Every controller is measured on the same task (`reaching_benchmark/task.py`, `re
   one rotation that turns the hand onto the goal (combining lift, pitch and yaw).
 * **End and success.** A trial ends when the written goal has arrived and the hand moved less than 0.5° and 0.4% of
   reach in 2 s, or at 25 s. It counts as **reached** when, at its last sample, orientation is within 5° and position
-  within 4% of reach (32.2 mm on the 7-DoF TIAGo arm), only what the task asks.
+  within 5% of reach (40.3 mm on the 7-DoF TIAGo arm), only what the task asks. The tolerances only judge a trial;
+  no controller and no trial ending reads them.
+* **Re-scoring.** The runs stored here were made when the position tolerance was 4% of reach, and were scored again at 5%
+  on 27 November 2026 without running them again (`python3 -B -m reaching_benchmark rescore`, then
+  `python3 -B -m ring_attractor_kinematics benchmark twins` for the exact-loop twins and the joint-loss reachability
+  check, `benchmark screening` and `benchmark joint_map` run again, and every summary recomputed; `logs/rescore.sh`
+  is the exact sequence). Reached is decided from the stored final errors, exactly; the time from which the hand
+  stays in tolerance is read from the stored time course (one sample every 0.2 s), so it can be up to 0.2 s late.
+  Each re-scored run file says so under `scoring`.
 
 ## Results: how each one was produced
 
@@ -249,14 +257,15 @@ time); path ratio is the hand's path over the straight-line distance.
 
 | Controller | Reached (Wilson 95%) | Orientation | Position | Time to enter tolerance | Path ratio | Trained on |
 |---|---|---|---|---|---|---|
-| RAK model | 27/30 (74–97%) | 1.77° | 17.2 mm | 5.80 s | 1.44 | — |
+| RAK model | 28/30 (79–98%) | 1.77° | 17.2 mm | 5.65 s | 1.44 | — |
+| RAK model, predictive encoding | 27/30 (74–97%) | 1.95° | 17.2 mm | 5.45 s | 1.41 | — |
 | DLS IK | 30/30 (89–100%) | 0.36° | 2.5 mm | 4.65 s | 1.02 | — |
-| CCD IK | 30/30 (89–100%) | 0.48° | 2.6 mm | 4.62 s | 1.02 | — |
-| NN dynamics + MPC | 29/30 (83–99%) | 1.26° | 7.4 mm | 7.50 s | 5.70 | 15,879 transitions, 50 episodes |
-| PETS | 30/30 (89–100%) | 0.69° | 2.8 mm | 3.50 s | 1.77 | 8,394 transitions, 50 episodes |
+| CCD IK | 30/30 (89–100%) | 0.48° | 2.6 mm | 4.65 s | 1.02 | — |
+| NN dynamics + MPC | 29/30 (83–99%) | 1.26° | 7.4 mm | 7.35 s | 5.70 | 15,879 transitions, 50 episodes |
+| PETS | 30/30 (89–100%) | 0.69° | 2.8 mm | 3.45 s | 1.77 | 8,394 transitions, 50 episodes |
 
-Against the RAK model on the same targets, no controller reaches significantly more often (exact McNemar p ≥ 0.25; the
-RAK model misses 3 targets the others reach). All four have smaller final errors (paired bootstrap intervals exclude 0);
+Against the RAK model on the same targets, no controller reaches significantly more often (exact McNemar p ≥ 0.5; the
+RAK model misses 2 targets the others reach). All four have smaller final errors (paired bootstrap intervals exclude 0);
 DLS IK, CCD IK and PETS enter tolerance sooner and NN dynamics + MPC later. NN dynamics + MPC reaches with a wandering
 path (median path 5.7 times the straight line). Wall time on this machine: DLS IK 8 min, CCD IK 11 min, NN dynamics + MPC
 22 min training and 15 min reaching, PETS 18 min training and 17 min reaching (reaches over 3 Gazebos), all at once.
