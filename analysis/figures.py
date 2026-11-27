@@ -756,7 +756,7 @@ def make_prediction():
            ylabel="Hand-orientation\nestimate error (°)")
     ax.legend(frameon=False, fontsize=5.3, loc="upper left", handlelength=1.4, borderaxespad=.1)
     axs.text(-.30, 1.30, "b", transform=axs.transAxes, fontweight="bold", fontsize=9)
-    axs.text(-.12, 1.30, "Estimate error while the arm moves", transform=axs.transAxes, fontsize=7.5)
+    axs.text(-.12, 1.30, "Forward kinematics, one path", transform=axs.transAxes, fontsize=7.5)
     tracerows = list(zip(tt, tr["common1_speed_rad_s"], tr["common1_plain_orientation_deg"], tr["common1_lead_orientation_deg"]))
 
     # c - every recorded path: median moving error without and with
@@ -782,7 +782,7 @@ def make_prediction():
                        Line2D([], [], color="#A9B1B6", lw=.7, ls=(0, (3, 1.5)), label="other paths")],
               frameon=False, loc="upper right", fontsize=5.0, handlelength=1.4, borderaxespad=0)
     ax.text(-.62, 1.07, "c", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(-.40, 1.07, "All recorded paths", transform=ax.transAxes, fontsize=7.5)
+    ax.text(-.40, 1.07, "Forward kinematics, all paths", transform=ax.transAxes, fontsize=7.5)
 
     # d, e - closed-loop reaching in Gazebo: every controller of Fig. 3 on the same 30 targets, paired against the RAK model
     MISS = "#B2182B"
