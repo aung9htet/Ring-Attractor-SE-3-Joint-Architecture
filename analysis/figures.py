@@ -780,7 +780,7 @@ def make_prediction():
     ax.legend(handles=[Patch(color=C["matrix"], label="Without"), Patch(color=C["lead"], label="With")],
               frameon=False, loc="upper left", fontsize=5.2, handlelength=1.0, borderaxespad=0)
     ax.text(-.62, 1.07, "c", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(-.40, 1.07, "Path of b, three speeds", transform=ax.transAxes, fontsize=7.5)
+    ax.text(-.40, 1.07, "Forward kinematics, by speed", transform=ax.transAxes, fontsize=7.5)
 
     # d, e - closed-loop reaching in Gazebo: every controller of Fig. 3 on the same 30 targets, paired against the RAK model
     MISS = "#B2182B"
