@@ -58,12 +58,11 @@ scored at the trial's last sample: θ ≤ 5° and ‖Δp‖ ≤ 5% of reach (40.
 
 | Paper | Name (`figure NAME`) | Output | Run first | Reads | Panel data (`plotexports/`) |
 |---|---|---|---|---|---|
-| Fig. 1 | `fig1` | `fig1_reach` | — | RAK `reach_gazebo/tiago7_seed1.json` (target 0) | `fig1_pair0_*.csv` |
+| Fig. 1 | `fig1` | `fig1_reach` | — | target pair 0 in every controller's `reach_gazebo/` (a: hand paths of the RAK model without and with predictive encoding, DLS IK, CCD IK, NN dynamics + MPC, PETS); RAK `reach_gazebo/tiago7_seed1.json` (c, d) | `fig1_hand_paths_target0.csv`, `fig1_pair0_*.csv` |
 | Fig. 2 | `fig2` | `fig2_representation` | `derive`, `activity` | `illustrative_activity.npz`; RAK `held_pose/summary.json`; `common_path_traces.npz`; RAK `reach_kinematic/tiago7_seed1.json` (goal of target 0) | `fig2_*.csv` |
 | Fig. 3 | `fig3` | `fig3_reaching` | — | RAK `reach_gazebo/` (without and with predictive encoding); `dls_ik/`, `ccd_ik/`, `mpc_nn_dynamics/`, `pets/` `reach_gazebo/`; RAK `reach_kinematic/` (Supp. Table S3) | `fig3_*.csv`, `supp_rak_kinematic_plant.csv` (Table S3) |
 | Fig. 4 | `fig4` | `fig4_prediction` | `derive` | `common_path_traces.npz`; RAK `moving_estimate/summary.json`; every controller's `reach_gazebo/` (d, e); RAK `reach_kinematic/`, `reach_gain/`, `reach_gazebo/` (Supp. Table S4) | `fig4_*.csv`, `tableS4_predictive_encoding_paired.csv` (Table S4) |
 | Fig. 5 | `fig5` | `fig5_ablation` | `derive` | RAK `joint_loss/` (seeds 1–3, every condition); RAK `reach_kinematic/tiago7_seed{2,3}.json` (intact reference); `sensitivity_metrics.json`; RAK `held_pose/summary.json` | `fig5_*.csv`, `ablation_counts.json` |
-| Supp. reaching trajectory | `supp_trajectory` | `supp_reaching_trajectory` | — | RAK `reach_gazebo/tiago7_seed1.json` and `dls_ik/reach_gazebo/` (target 0) | — |
 | Supp. supporting controls | `supp_supporting` | `supp_supporting` | — | RAK `reach_disturbance/`, `reach_gain/` | `supp_gain_*.csv`, `supp_push_recovery.csv` |
 | Supp. joint loss by joint and exact map | `supp_joint_loss` | `supp_joint_loss` | — | RAK `joint_loss/`, `joint_map/all.json` | `supp_joint_loss_*.csv`, `supp_joint_map.csv` |
 | Supp. held-pose silencing | `supp_neuron_loss` | `supp_neuron_loss` | `derive` | `sensitivity_metrics.json`; RAK `held_pose/summary.json` | — |

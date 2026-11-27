@@ -15,6 +15,7 @@ import sys
 
 import numpy as np
 import matplotlib
+import matplotlib.ticker
 import matplotlib.transforms
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -224,48 +225,21 @@ def make_reach_example():
     entry = r["time_to_reach_s"]
     end = r["settled_s"] if r["settled_s"] is not None else r["duration_s"]
 
-    fig = plt.figure(figsize=(WIDTH, 132 / 25.4))
-    gs = fig.add_gridspec(2, 2, left=.075, right=.985, bottom=.085, top=.93, hspace=.78, wspace=.24,
-                          height_ratios=[1.12, 1], width_ratios=[1.05, 1])
-    top = gs[0, 0].subgridspec(1, 2, wspace=.42)
-    axis_colours = ("#C0392B", "#2E8B57", "#1F5FA8")
+    fig = plt.figure(figsize=(WIDTH, 150 / 25.4))
+    upper = fig.add_gridspec(1, 2, left=.0, right=.985, bottom=.47, top=.895, wspace=.2, width_ratios=[1.2, 1])
+    lower = fig.add_gridspec(1, 2, left=.075, right=.985, bottom=.075, top=.33, wspace=.24)
+    hand_paths(fig, upper[0, 0])
+    fig.text(.012, .955, "a", fontweight="bold", fontsize=9)
+    fig.text(.04, .955, "One Gazebo reach (target pair 0) by every controller", fontsize=7.5)
+    fig.legend(handles=[Line2D([], [], marker="o", ls="none", markerfacecolor="white", markeredgecolor="#59646A", markersize=3.2, label="start"),
+                        Line2D([], [], marker="*", ls="none", color=C["goal"], markersize=5, label="goal"),
+                        Line2D([], [], marker="o", ls="none", color="#59646A", markersize=2.8, label="end")],
+               loc="upper left", bbox_to_anchor=(.17, .465), ncol=3, frameon=False, fontsize=5.6, handletextpad=.3)
     rows_out = []
-    for j, (u, v, ulab, vlab, view) in enumerate(((0, 2, "x (mm)", "z (mm)", "Side view"),
-                                                  (0, 1, "x (mm)", "y (mm)", "Top view"))):
-        ax = fig.add_subplot(top[0, j])
-        ax.plot(path[:, u], path[:, v], color=C["matrix"], lw=1.1, zorder=3)
-        for label, R, p, style, colour, alpha in (
-                ("start", CHAIN.rotation(q[0]), path[0], ":", "#9AA5AB", 1.),
-                ("goal", goal_R, goal_p, "--", C["goal"], 1.),
-                ("final", CHAIN.rotation(q[-1]), path[-1], "-", C["matrix"], 1.)):
-            for a in range(3):
-                d = 28 * R[:, a]
-                ax.plot([p[u], p[u] + d[u]], [p[v], p[v] + d[v]], ls=style, color=axis_colours[a], lw=.9, alpha=alpha, zorder=4)
-        ax.scatter(*path[0, [u, v]], s=16, facecolors="white", edgecolors="#6A757B", lw=.8, zorder=5)
-        ax.scatter(goal_p[u], goal_p[v], s=42, marker="*", color=C["goal"], edgecolors="white", lw=.3, zorder=6)
-        ax.scatter(*path[-1, [u, v]], s=14, color=C["matrix"], zorder=6)
-        ax.set(xlabel=ulab, ylabel=vlab, aspect="equal")
-        ax.tick_params(labelsize=5.5)
-        ax.set_title(view, loc="left", pad=3, fontsize=6.5)
-        lo = np.minimum(path[:, [u, v]].min(0), goal_p[[u, v]]) - 45
-        hi = np.maximum(path[:, [u, v]].max(0), goal_p[[u, v]]) + 45
-        span = (hi - lo).max()
-        mid = (hi + lo) / 2
-        ax.set_xlim(mid[0] - span / 2, mid[0] + span / 2)
-        ax.set_ylim(mid[1] - span / 2, mid[1] + span / 2)
-        if j == 0:
-            ax.text(-.42, 1.17, "a", transform=ax.transAxes, fontweight="bold", fontsize=9)
-            ax.text(-.10, 1.17, "One identified TIAGo reach (Gazebo, target pair 0)", transform=ax.transAxes, fontsize=7.5)
-    handles = [Line2D([], [], color=axis_colours[a], lw=.9, label="tool %s axis" % "xyz"[a]) for a in range(3)]
-    handles += [Line2D([], [], color="#55626A", ls=":", lw=.9, marker="o", mfc="white", markersize=3, label="start pose"),
-                Line2D([], [], color="#55626A", ls="--", lw=.9, marker="*", mfc=C["goal"], mec=C["goal"], markersize=5, label="goal pose"),
-                Line2D([], [], color="#55626A", lw=.9, marker="o", mfc=C["matrix"], markersize=3, label="achieved pose")]
-    fig.legend(handles=handles, loc="upper left", bbox_to_anchor=(.075, .535), ncol=6, frameon=False, fontsize=5.6,
-               handlelength=1.6, columnspacing=.9)
     for tt, qq, pp in zip(t, q, path):
         rows_out.append(["gazebo", "rak_model", 1, 0, tt, *qq, *pp])
 
-    ax = fig.add_subplot(gs[0, 1])
+    ax = fig.add_subplot(upper[0, 1])
     ax.axis("off")
     ax.text(-.04, 1.035, "b", transform=ax.transAxes, fontweight="bold", fontsize=9)
     ax.text(.03, 1.035, "Feedback circuit (schematic)", transform=ax.transAxes, fontsize=7.5)
@@ -294,7 +268,7 @@ def make_reach_example():
               ("error_deg", 1., TOL_DEG, "Orientation error (°)", "d", "Hand orientation against the goal")]
     trace_rows = []
     for j, (field, scale, tol, ylabel, letter, title) in enumerate(errors):
-        ax = fig.add_subplot(gs[1, j])
+        ax = fig.add_subplot(lower[0, j])
         tt = np.asarray(r["t"], float)
         yy = np.asarray(r[field], float) * scale
         ax.plot(tt, yy, color=C["matrix"], lw=1.1)
@@ -1087,35 +1061,55 @@ def make_ablation():
 # ----------------------------------------------------------------------------------------------------
 # Supplementary companions
 # ----------------------------------------------------------------------------------------------------
-def make_supp_trajectory():
-    """The former Fig. 3c,d: one paired Gazebo reach in joint and Cartesian space."""
-    fig = plt.figure(figsize=(WIDTH, 66 / 25.4))
-    gs = fig.add_gridspec(1, 2, left=.07, right=.97, bottom=.17, top=.86, wspace=.30)
-    ax = fig.add_subplot(gs[0, 0], projection="3d")
-    for method in ("matrix", "dls"):
-        r = next(r for r in (rows("gazebo", method=method) if method == "matrix" else baseline_rows("dls_ik")) if r["index"] == 0)
-        pp = np.array([position(CHAIN, np.array(q)) for q in r["q"]]) * 1000
-        ax.plot(*pp.T, color=C[method] if method == "matrix" else "#9A9A9A", label=LABEL[method])
-        ax.scatter(*pp[0], s=10, facecolors="white", edgecolors=C[method], linewidths=.7)
-    goal = 1000 * np.array(r["goal_position"])
-    ax.scatter(*goal, marker="*", s=50, c=C["goal"], edgecolors="white", linewidths=.25, label="Task goal")
-    ax.set(xlabel="x (mm)", ylabel="y (mm)", zlabel="z (mm)")
-    ax.view_init(elev=23, azim=-55)
-    ax.tick_params(pad=0, labelsize=5.5)
-    ax.legend(frameon=False, loc="upper left", bbox_to_anchor=(-.1, 1.05), fontsize=5.8)
-    panel(ax, "a", "Hand paths, Gazebo target pair 0")
-    ax = fig.add_subplot(gs[0, 1])
-    r = next(r for r in rows("gazebo") if r["index"] == 0)
-    t = np.asarray(r["t"])
-    q = np.rad2deg(np.asarray(r["q"]) - np.asarray(r["q"])[0])
-    palette = ["#0C4D59", "#087F8C", "#319CA1", "#71B9B6", "#444D58", "#83949D", "#BBC8CD"]
-    for k in range(7):
-        ax.plot(t, q[:, k], color=palette[k], lw=1.1, ls="-" if k < 4 else "--", label="$q_%d$" % (k + 1))
-    ax.axhline(0, color="#BBC2C5", lw=.5, zorder=0)
-    ax.set(xlabel="Time (s)", ylabel="Joint change from start (°)", xlim=(0, t[-1]), ylim=(-45, 65))
-    ax.legend(ncol=4, frameon=False, loc="upper right", columnspacing=.65, handlelength=1.3, fontsize=5.8)
-    panel(ax, "b", "RAK model: all seven joints move together")
-    save(fig, "supp_reaching_trajectory")
+def hand_paths(fig, cell):
+    """Fig. 1a: one Gazebo reach (target pair 0) by every controller of Fig. 3, as hand paths on common axes."""
+    from matplotlib.gridspec import GridSpecFromSubplotSpec
+    ctrls = [(key, rows("gazebo", method="matrix") if key == "rak" else rows("gazebo", method="lead") if key == "rak_pe"
+              else baseline_rows(key)) for key, _ in CONTROLLERS]
+    paths, export = {}, []
+    for key, rs in ctrls:
+        r = next(r for r in rs if r["index"] == 0)
+        pp = np.array([position(CHAIN, np.array(q)) for q in [r["start"]] + list(r["q"])]) * 1000
+        paths[key] = (r, pp)
+        export += [[key, t, *p] for t, p in zip([0.] + list(r["t"]), pp)]
+    goal = 1000 * np.array(paths["rak"][0]["goal_position"])
+    for key, (r, _) in paths.items():           # the same target for every controller
+        assert np.allclose(1000 * np.array(r["goal_position"]), goal, atol=.01), key
+    allp = np.vstack([pp for _, pp in paths.values()] + [goal[None]])
+    lo, hi = allp.min(0), allp.max(0)
+    pad = .06 * (hi - lo)
+    lims = list(zip(lo - pad, hi + pad))
+    grid = GridSpecFromSubplotSpec(2, 3, subplot_spec=cell, wspace=.02, hspace=.18)
+    axes = []
+    for i, (key, label) in enumerate(CONTROLLERS):
+        r, pp = paths[key]
+        ax = fig.add_subplot(grid[i // 3, i % 3], projection="3d")
+        colour = CTRL_COLOUR[key]
+        ax.plot(*pp.T, color=colour, lw=.9)
+        ax.scatter(*pp[0], s=10, facecolors="white", edgecolors="#59646A", linewidths=.6, depthshade=False)
+        ax.scatter(*pp[-1], s=8, color=colour, depthshade=False)
+        ax.scatter(*goal, marker="*", s=36, c=C["goal"], edgecolors="white", linewidths=.25, depthshade=False)
+        ax.set(xlim=lims[0], ylim=lims[1], zlim=lims[2])
+        ax.view_init(elev=23, azim=-55)
+        ax.tick_params(pad=-3.5, labelsize=4.3)
+        for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+            axis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
+        # axis values once (every panel shares the same axes): x and y bottom left, z bottom right
+        if i == 3:
+            ax.set_xlabel("x (mm)", fontsize=4.8, labelpad=-8)
+            ax.set_ylabel("y (mm)", fontsize=4.8, labelpad=-8)
+        else:
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
+        if i == 5:
+            ax.set_zlabel("z (mm)", fontsize=4.8, labelpad=-9)
+        else:
+            ax.set_zticklabels([])
+        ax.set_title("%s\npath %.2f× straight" % (SHORT_CTRL[key], r["path_ratio"]), fontsize=5.4,
+                     color="#1F2A30" if key == "rak" else colour, pad=-6)
+        axes.append(ax)
+    csvout("fig1_hand_paths_target0.csv", ["controller", "time_s", "x_mm", "y_mm", "z_mm"], export)
+    return axes
 
 
 def make_supp_joint_loss():
@@ -1336,7 +1330,6 @@ FIGURE_MAKERS = {
     "fig3": (make_reaching, "fig3_reaching", "-"),
     "fig4": (make_prediction, "fig4_prediction", "derive"),
     "fig5": (make_ablation_all, "fig5_ablation", "derive"),
-    "supp_trajectory": (make_supp_trajectory, "supp_reaching_trajectory", "-"),
     "supp_supporting": (make_supporting, "supp_supporting", "-"),
     "supp_joint_loss": (make_supp_joint_loss, "supp_joint_loss", "-"),
     "supp_neuron_loss": (make_neuron_loss, "supp_neuron_loss", "derive"),
