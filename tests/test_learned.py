@@ -96,7 +96,7 @@ class LearnedTest(unittest.TestCase):
         import tempfile
         from learned_dynamics import protocol
         from pets.config import CONFIG
-        from reaching_benchmark import results
+        from reaching_benchmark import results, summary
         small = dataclasses.replace(CONFIG, hidden=32, layers=2, epochs=3, horizon=4, random_episodes=2, random_episode_s=1.0,
                                     iterations=1, episodes_per_iteration=1,
                                     planner_settings={"population": 20, "elites": 4, "iterations": 2, "alpha": 0.1, "particles": 5})
@@ -106,14 +106,18 @@ class LearnedTest(unittest.TestCase):
             try:
                 protocol.collect(small, "light", 1)
                 protocol.train(small, "light", 1, 1, "cpu")
-                protocol.reach(small, "light", 1, 2, "cpu", None)
+                protocol.reach(small, "light", 1, 3, "cpu", None, (0, 2))
+                protocol.reach(small, "light", 1, 3, "cpu", None, (1, 2))
                 record = protocol.read_record(small)
-                document = results.read_run("pets", "reach_kinematic", "tiago7_seed1")
+                document = results.read_run("pets", "reach_kinematic", "tiago7_seed1_shard0of2")
+                merged = summary.summarise("pets", "reach_kinematic")["runs"]
                 self.assertTrue(os.path.exists(protocol.paths(small)["model"]))
             finally:
                 results.ROOT = saved
         self.assertEqual(len(record["iterations"]), 2)                     # the fit on phase 1, then one round
-        self.assertEqual(len(document["rows"]), 2)
+        self.assertEqual([r["index"] for r in document["rows"]], [0, 2])     # shard 0 of 2: pairs 0 and 2
+        self.assertEqual(list(merged), ["tiago7_seed1"])                    # the shards put back together
+        self.assertEqual(merged["tiago7_seed1"]["per_trial"]["index"], [0, 1, 2])
         self.assertEqual(document["controller"]["name"], "PETS")
         self.assertIn("device", document["run"])
 

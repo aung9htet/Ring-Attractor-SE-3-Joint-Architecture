@@ -11,7 +11,8 @@
 
 Options: ``--plant gazebo|light`` (default gazebo: run beside ``docker/run.bash gazebo up NAME --image baselines --cuda``),
 ``--device auto|cuda|cpu``, ``--seed`` (default 1: model initialisation, minibatches, random actions, planner sampling),
-``--pairs`` (default 30), ``--max-minutes``.
+``--pairs`` (default 30), ``--max-minutes``, ``--shard i/n`` (reach: every n-th pair from the i-th on, so several Gazebos
+share the 30 pairs; the summary puts the shards together).
 
 Every step resumes: collection counts the episodes already stored, training reads ``training.json`` for the iterations
 done, and reaching resumes its run file. ``training.json`` records the configuration, the device and versions, every
@@ -26,7 +27,7 @@ import json
 import os
 import sys
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -238,7 +239,11 @@ def train(config: Config, plant: str, seed: int, iterations: int, device_name: s
     write_record(config, record)
 
 
-def reach(config: Config, plant: str, seed: int, pairs: int, device_name: str, max_minutes: Optional[float]) -> None:
+def reach(config: Config, plant: str, seed: int, pairs: int, device_name: str, max_minutes: Optional[float],
+          shard: Tuple[int, int] = (0, 1)) -> None:
+    """The final model's MPC on the reported pairs (``shard``: every n-th pair from the i-th on, so several Gazebos can
+    share the 30 pairs; the summary puts the shards together)."""
+
     from .controller import MpcLoop
     from .setup import setup
     chain = get_chain(ARM)
@@ -249,9 +254,9 @@ def reach(config: Config, plant: str, seed: int, pairs: int, device_name: str, m
     loop = MpcLoop(chain, design, make_plant(plant, chain), build_planner(config, model, chain, design, device, seed * 1000 + 999))
     run = {"arm": ARM, "pairs": pairs, "kappa": design.kappa, "plant": plant, "kind": "near", "seed": seed,
            "iterations": len(record["iterations"]) - 1, "transitions": record.get("transitions"), "device": info}
-    name = results.run_name(ARM, seed, task=design.task)
+    name = results.run_name(ARM, seed, task=design.task, shard=shard)
     run_reach(config.name, BENCHMARKS[plant], name, run, loop, test_pairs(chain, pairs), controller_description(config, record),
-              max_minutes=max_minutes)
+              shard=shard, max_minutes=max_minutes)
 
 
 def main(config: Config, argv: Optional[List[str]] = None) -> int:
@@ -264,6 +269,7 @@ def main(config: Config, argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--iterations", type=int, default=None, help="rounds of phase 2 (default: the model's own, %d)" % config.iterations)
     parser.add_argument("--pairs", type=int, default=30)
     parser.add_argument("--max-minutes", type=float, default=None)
+    parser.add_argument("--shard", default="0/1", help="reach: i/n, every n-th pair from the i-th on (several Gazebos share the pairs)")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     iterations = config.iterations if args.iterations is None else args.iterations
     if args.command in ("collect", "all"):
@@ -271,7 +277,7 @@ def main(config: Config, argv: Optional[List[str]] = None) -> int:
     if args.command in ("train", "all"):
         train(config, args.plant, args.seed, iterations, args.device)
     if args.command in ("reach", "all"):
-        reach(config, args.plant, args.seed, args.pairs, args.device, args.max_minutes)
+        reach(config, args.plant, args.seed, args.pairs, args.device, args.max_minutes, tuple(int(v) for v in args.shard.split("/")))
     if args.command in ("reach", "summarise", "all"):
         benchmark = BENCHMARKS[args.plant]
         print("wrote", results.write_summary(config.name, benchmark, summary.summarise(config.name, benchmark)))

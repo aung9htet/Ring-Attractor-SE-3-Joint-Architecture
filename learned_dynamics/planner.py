@@ -32,6 +32,8 @@ class Planner:
         self.generator = torch.Generator(device=self.device)
         self.generator.manual_seed(int(seed))
         self.n = int(caps.size)
+        limits = torch.tensor(chain.chain.limits(), device=self.device, dtype=torch.float32)
+        self.lower, self.upper = limits[:, 0], limits[:, 1]
 
     def reset(self) -> None:
         """A new trial: forget the warm start."""
@@ -44,8 +46,17 @@ class Planner:
                 torch.tensor(goal_position, device=self.device, dtype=torch.float32))
 
     def _limits(self, q: torch.Tensor) -> torch.Tensor:
-        limits = torch.tensor(self.chain.chain.limits(), device=self.device, dtype=torch.float32)
-        return torch.minimum(torch.maximum(q, limits[:, 0]), limits[:, 1])
+        return torch.minimum(torch.maximum(q, self.lower), self.upper)
+
+    def _horizon_cost(self, angles: list, goal_r: torch.Tensor, goal_p: torch.Tensor) -> torch.Tensor:
+        """The summed cost of every rollout: the predicted joint angles of all steps are scored in one batch, then added
+        step by step (the same sum, in the same order, as scoring each step on its own)."""
+
+        costs = pose_cost(self.chain, torch.stack(angles), goal_r, goal_p, self.design)
+        total = torch.zeros_like(costs[0])
+        for t in range(costs.shape[0]):
+            total = total + costs[t]
+        return total
 
 
 class RandomShooting(Planner):
@@ -58,11 +69,12 @@ class RandomShooting(Planner):
         goal_r, goal_p = self._goal(goal_rotation, goal_position)
         actions = (torch.rand((self.samples, self.horizon, self.n), device=self.device, generator=self.generator) * 2 - 1) * self.caps
         s = torch.tensor(state, device=self.device, dtype=torch.float32).expand(1, self.samples, -1).contiguous()
-        cost = torch.zeros(self.samples, device=self.device)
+        angles = []
         for t in range(self.horizon):
             s = self.model.step(s, actions[None, :, t], sample=False)
             s = torch.cat([self._limits(s[..., : self.n]), s[..., self.n:]], dim=-1)
-            cost = cost + pose_cost(self.chain, s[0, :, : self.n], goal_r, goal_p, self.design)
+            angles.append(s[0, :, : self.n])
+        cost = self._horizon_cost(angles, goal_r, goal_p)
         return actions[int(torch.argmin(cost)), 0].cpu().numpy().astype(float)
 
 
@@ -90,11 +102,12 @@ class CrossEntropy(Planner):
         index = torch.randperm(rows, device=self.device, generator=self.generator).reshape(members, rows // members)
         sequence = index // self.particles                               # which action sequence each row follows
         s = state.expand(members, rows // members, -1).contiguous()
-        cost = torch.zeros((members, rows // members), device=self.device)
+        angles = []
         for t in range(self.horizon):
             s = self.model.step(s, actions[sequence, t], generator=self.generator, sample=True)
             s = torch.cat([self._limits(s[..., : self.n]), s[..., self.n:]], dim=-1)
-            cost = cost + pose_cost(self.chain, s[..., : self.n], goal_r, goal_p, self.design)
+            angles.append(s[..., : self.n])
+        cost = self._horizon_cost(angles, goal_r, goal_p)
         total = torch.zeros(rows, device=self.device)
         total[index.reshape(-1)] = cost.reshape(-1)
         return total.reshape(self.population, self.particles).mean(1)

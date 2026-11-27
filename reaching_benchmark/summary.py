@@ -8,6 +8,7 @@ adds its own, such as decoded errors and exact-loop twins); :mod:`reaching_bench
 from __future__ import annotations
 
 import os
+import re
 from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
@@ -61,17 +62,30 @@ def reach_entry(rows: List[Dict[str, Any]], design: Dict[str, Any], radius_m: Op
     return entry
 
 
+SHARD = re.compile(r"_shard(\d+)of(\d+)$")
+
+
 def summarise(model: str, benchmark: str) -> Dict[str, Any]:
-    """One entry per run file of ``results/<model>/<benchmark>/``, keyed by the run file's name."""
+    """One entry per run of ``results/<model>/<benchmark>/``, keyed by its run file's name; the shards of one run
+    (``…_shard0of3``, ``…_shard1of3``, …) are put together under the name without the shard."""
 
     from .geometry.chains import get_chain, workspace
 
-    out: Dict[str, Any] = {"model": model, "benchmark": benchmark, "runs": {}}
+    runs: Dict[str, Dict[str, Any]] = {}
     for path, document in results.read_runs(model, benchmark):
-        name = os.path.splitext(os.path.basename(path))[0]
-        run = document["run"]
-        radius = workspace(get_chain(run["arm"])).radius
-        out["runs"][name] = dict(reach_entry(document["rows"], document["design"], radius), run=run,
-                                 controller=document.get("controller"), wall_s=document.get("wall_s"),
-                                 simulated_s=document.get("simulated_s"))
+        name = SHARD.sub("", os.path.splitext(os.path.basename(path))[0])
+        entry = runs.setdefault(name, {"run": dict(document["run"]), "design": document["design"], "controller": document.get("controller"),
+                                       "rows": [], "wall_s": 0.0, "simulated_s": 0.0, "shards": []})
+        entry["rows"] += document["rows"]
+        entry["wall_s"] += float(document.get("wall_s") or 0.0)
+        entry["simulated_s"] += float(document.get("simulated_s") or 0.0)
+        entry["shards"].append(list(document.get("shard", [0, 1])))
+    out: Dict[str, Any] = {"model": model, "benchmark": benchmark, "runs": {}}
+    for name, entry in runs.items():
+        rows = sorted(entry["rows"], key=lambda r: r["index"])
+        if len({r["index"] for r in rows}) != len(rows):
+            raise ValueError("%s/%s %s: a pair appears in two shards" % (model, benchmark, name))
+        radius = workspace(get_chain(entry["run"]["arm"])).radius
+        out["runs"][name] = dict(reach_entry(rows, entry["design"], radius), run=entry["run"], controller=entry["controller"],
+                                 wall_s=entry["wall_s"], simulated_s=entry["simulated_s"], shards=sorted(entry["shards"]))
     return out

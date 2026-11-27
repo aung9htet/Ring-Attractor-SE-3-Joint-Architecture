@@ -192,16 +192,20 @@ See [Running the baselines](#running-the-baselines). Their results appear in `re
 These fill the baseline rows of the paper's Fig. 3b: every model on the same 30 pairs of the 7-DoF TIAGo arm in Gazebo.
 Gazebo takes one run at a time. Estimated times are for this machine.
 
-**Everything in one command**, in the background, with a log to follow:
+**Everything in one command**, in the background, with logs to follow:
 
 ```bash
 nohup docker/run_tiago_baselines.bash > /dev/null 2>&1 &
-tail -f logs/tiago_baselines.log
+tail -f logs/tiago_*.log
 ```
 
-It runs the steps below in order (DLS IK, CCD IK, NN dynamics + MPC, PETS, then the comparison), starting and stopping the
-Gazebo containers itself; the log has one line per trial or training episode and a heartbeat every minute. Run it again
-after a stop and every step goes on where it stopped. The steps one by one:
+It uses the machine fully but changes nothing about how a run is measured (Gazebo's physics settings stay as they were):
+DLS IK and CCD IK, NN dynamics + MPC, and PETS run at the same time, each in a Gazebo of its own; each learned model trains
+in one Gazebo (its rounds depend on each other) and then splits its 30 test reaches over 3 Gazebos (`SHARDS=3`; the
+summary puts them back together); then the comparison. It starts and stops its Gazebo containers (`tiago-bl-*`) itself.
+Each model has its own log (`logs/tiago_reactive.log`, `logs/tiago_mpc_nn_dynamics.log`, `logs/tiago_pets.log`), with one
+line per trial or training episode and a heartbeat every minute. Run it again after a stop and every step goes on where
+it stopped. On this machine it takes about 1 hour (one after the other it took about 8). The steps one by one:
 
 **1. DLS IK and CCD IK** (model image):
 
@@ -222,7 +226,9 @@ docker/run.bash gazebo down rak-gazebo-gpu
 ```
 
 `all` runs the three steps in order; each can be run on its own (`collect`, `train`, `reach`) and each resumes where it
-stopped. Planning takes about 20 ms per tick for NN dynamics + MPC and about 270 ms for PETS on an RTX 4070 Ti.
+stopped; `reach --shard i/n` runs every n-th test pair from the i-th on, so several Gazebos can share them. Planning takes
+about 4 ms per tick for NN dynamics + MPC and about 75 ms for PETS on an RTX 4070 Ti (every predicted step of every rollout
+is scored in one batch).
 
 **3. Side by side:**
 
