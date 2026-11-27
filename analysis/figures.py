@@ -853,28 +853,44 @@ def make_ablation():
             ax.legend(frameon=False, fontsize=5.3, loc="upper right", handlelength=1.2, borderaxespad=.1)
         ax.text(ONSET_S + .15, .03, "joint disabled", transform=ax.get_xaxis_transform(), fontsize=5.3, color="#59646A")
 
-    # c - success per seed and condition, with the reachable ceiling
+    # c - targets reached: the RAK model (mean of the three seeds, whisker = range) beside DLS IK run on the same targets
+    #     with the same joint stopped at the same time and the same 0.3 s lag (its exact-loop twin; one value, since it
+    #     has no kernel seed). Lock and motor silencing leave the stopped joint's request in place, so DLS IK is matched
+    #     uninformed (it keeps asking the joint to move); allocation silencing removes the request, so DLS IK is matched
+    #     informed (it leaves the joint out).
     ax = fig.add_subplot(gs[0, 3])
     successrows = []
+    TWIN = {"intact": "dls", "lock": "dls_lock", "motor": "dls_lock", "allocation": "dls_informed"}
     for i, c in enumerate(("intact",) + CONDITIONS):
-        for j, s in enumerate(seeds):
-            rr = data[(c, s)]
-            sm = success_summary([r["reached"] for r in rr])
-            x = i + (j - 1) * .22
-            lo, hi = np.array(sm["ci"]) * 30
-            ax.errorbar(x, sm["reached"], yerr=[[sm["reached"] - lo], [hi - sm["reached"]]], fmt=MARK[c], color=C[c], markersize=3.4,
-                        capsize=1.5, lw=.8, mfc=C[c])
-            reachable = sum(bool((r.get("reachability") or {}).get("reachable")) for r in rr) if c != "intact" else None
-            if reachable is not None:
-                ax.plot([x - .09, x + .09], [reachable] * 2, color=C[c], lw=1.1)
-            successrows.append([c, s, sm["n"], sm["reached"], *sm["ci"], reachable])
-        ax.text(i, 31.2, SHORT[c], ha="center", fontsize=5.4, color=C[c])
-    ax.plot([], [], color="#59646A", lw=1.1, label="still reachable with the joint\nfrozen (DLS IK check)")
-    ax.set(xticks=range(4), xticklabels=["s1 s2 s3"] * 4, ylabel="Targets reached (of 30)", ylim=(0, 33), xlim=(-.5, 3.5))
-    ax.tick_params(axis="x", labelsize=4.8)
-    ax.tick_params(axis="x", labelsize=5.0, length=0)
-    ax.legend(frameon=False, fontsize=5.2, loc="lower center")
-    panel(ax, "c", "Reaches that succeed", x=-.24)
+        rak = [sum(bool(r["reached"]) for r in data[(c, s)]) for s in seeds]
+        twin_rows = data[(c if c != "intact" else "lock", seeds[0])]
+        dls = sum(bool(r["twins"][TWIN[c]]["reached"]) for r in twin_rows)
+        mean = float(np.mean(rak))
+        ax.bar(i - .2, mean, .36, color=C[c], lw=0)
+        ax.errorbar(i - .2, mean, yerr=[[mean - min(rak)], [max(rak) - mean]], fmt="none", ecolor="#222222", lw=.7, capsize=1.6)
+        ax.bar(i + .2, dls, .36, color="white", edgecolor=C["dls"], hatch="////", lw=.8)
+        ax.text(i - .02, max(rak) + .6, "%.0f" % mean if mean == round(mean) else "%.1f" % mean, ha="right", fontsize=5.0, color=C[c])
+        ax.text(i + .05, dls + .6, "%d" % dls, ha="left", fontsize=5.0, color="#555555")
+        reachable = None
+        if c != "intact":
+            reachable = [sum(bool((r.get("reachability") or {}).get("reachable")) for r in data[(c, s)]) for s in seeds]
+            ax.plot([i - .4, i + .02], [np.mean(reachable)] * 2, color="#222222", lw=1.0, ls=(0, (2, 1)))
+        for s, n in zip(seeds, rak):
+            successrows.append([c, "rak", s, 30, n, None if reachable is None else reachable[seeds.index(s)]])
+        successrows.append([c, "dls_ik_" + TWIN[c].replace("dls_", "").replace("dls", "intact"), "-", 30, dls, None])
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+    handles = [Patch(facecolor="#3A3F44", lw=0, label="RAK model (mean of 3 seeds; whisker: range)"),
+               Patch(facecolor="white", edgecolor=C["dls"], hatch="////", lw=.8, label="DLS IK (same targets, stopped joint, lag)"),
+               Line2D([], [], color="#222222", lw=1.0, ls=(0, (2, 1)), label="still reachable with the joint frozen")]
+    ax.set(xticks=range(4), xticklabels=[SHORT[c] for c in ("intact",) + CONDITIONS], ylabel="Targets reached (of 30)",
+           ylim=(0, 33.5), yticks=range(0, 31, 5), xlim=(-.6, 3.6))
+    for t, c in zip(ax.get_xticklabels(), ("intact",) + CONDITIONS):
+        t.set_color(C[c])
+    ax.tick_params(axis="x", labelsize=5.4, length=0)
+    ax.legend(handles=handles, frameon=False, fontsize=5.0, loc="upper center", bbox_to_anchor=(.38, -.09), ncol=1,
+              borderaxespad=0, handlelength=1.6)
+    panel(ax, "c", "Reaches that succeed:\nRAK model vs DLS IK", x=-.24)
 
     # d - rescue: the error if the other joints had not adjusted (the intact reach's final angles, stopped joint at the
     #     angle where it froze; pure geometry) against the error the reach actually ended with
@@ -972,7 +988,7 @@ def make_ablation():
     save(fig, "fig5_ablation")
     csvout("fig5_intervention_check.csv", ["condition", "time_from_onset_s", "median_abs_requested_turn_rad_per_tick", "fraction_of_reaches_with_written_target"], checkrows)
     csvout("fig5_error_courses.csv", ["condition", "quantity", "time_s", "q25", "median", "q75"], courserows)
-    csvout("fig5_success.csv", ["condition", "kernel_seed", "n", "reached", "wilson_low", "wilson_high", "reachable_witnesses"], successrows)
+    csvout("fig5_success.csv", ["condition", "controller", "kernel_seed", "n", "reached", "reachable_witnesses"], successrows)
     csvout("fig5_absorption.csv", ["condition", "kernel_seed", "target_index", "disabled_joint_one_based", "counterfactual_x_tolerance",
                                    "actual_x_tolerance", "reached", "reachable_witness"], absrows)
     csvout("fig5_diffuse.csv", ["measure", "group", "seed", "value_a", "value_b"], diffrows)
