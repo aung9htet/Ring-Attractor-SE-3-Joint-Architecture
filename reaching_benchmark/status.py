@@ -171,6 +171,7 @@ def render_stuck(root: str, now: Optional[float] = None) -> str:
     now = time.time() if now is None else now
     lines = ["Fig. 5d: one joint stuck, every controller in Gazebo (30 targets each)", ""]
     phase_left = {1: 0.0, 2: 0.0}
+    started = {1: False, 2: False}
     unknown = False
     for label, model, stem, phase in STUCK_PLAN:
         e = stuck_entry(root, model, stem, now)
@@ -185,14 +186,18 @@ def render_stuck(root: str, now: Optional[float] = None) -> str:
             if e["state"] == "stopped":
                 detail += "  (stopped: run the script again to resume)"
         phase_left[phase] = max(phase_left[phase], e["left_s"] if e["state"] != "done" else 0.0)
+        started[phase] = started[phase] or e["state"] != "waiting"
         reached = "reached %2d" % e["reached"] if e["done"] else "          "
         lines.append("%-25s %-8s %s %2d/%d  %s  stuck at %-5s %s" % (label, e["state"], bar(e["done"] / STUCK_PAIRS, 16), e["done"],
                                                                      STUCK_PAIRS, reached, onset, detail))
     lines.append("")
     left = phase_left[1] + phase_left[2]
-    lines.append("phase 1 (RAK models, DLS IK, CCD IK) left: %s; phase 2 (NN dynamics + MPC, PETS) %s" % (
-        clock(phase_left[1]), "left: " + clock(phase_left[2]) if not unknown or phase_left[2] else "starts after phase 1 (about 1 h)"))
-    if not unknown:
+    if not started[1]:
+        lines.append("not started: nohup docker/run_tiago_stuck.bash > /dev/null 2>&1 &  (phase 1 about 1.5 h, phase 2 about 1 h)")
+    else:
+        lines.append("phase 1 (RAK models, DLS IK, CCD IK) left: %s; phase 2 (NN dynamics + MPC, PETS) %s" % (
+            clock(phase_left[1]), "left: " + clock(phase_left[2]) if started[2] else "starts after phase 1 (about 1 h)"))
+    if not unknown and started[1]:
         lines.append("finished at about %s" % time.strftime("%H:%M", time.localtime(now + left)))
     return "\n".join(lines)
 
