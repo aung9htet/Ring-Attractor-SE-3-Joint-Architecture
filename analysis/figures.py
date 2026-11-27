@@ -900,20 +900,36 @@ def make_ablation():
         miss = xs > 1
         counts[c] = (int(miss.sum()), int((miss & (ys <= 1)).sum()), int(((~miss) & (ys > 1)).sum()))
         ax.scatter(xs, ys, s=11, marker=MARK[c], facecolors="none" if c != "motor" else C[c], edgecolors=C[c], color=C[c],
-                   linewidths=.7, alpha=.75, label="%s: %d of the %d reaches the stop alone would have failed were rescued" % (SHORT[c], counts[c][1], counts[c][0]))
-    ax.axhline(1, color="#59646A", lw=.8, ls=":")
-    ax.axvline(1, color="#59646A", lw=.8, ls=":")
-    # 1 = the success limit (5 deg and 5% of reach); below 1 the target is reached
-    ax.text(1.04, 4.2, "success limit", fontsize=5.2, color="#59646A", rotation=90, va="top", ha="left")
-    ax.text(16, 1.06, "success limit", fontsize=5.2, color="#59646A", va="bottom", ha="right")
-    ax.set(xscale="log", yscale="log", xlim=(.2, 20), ylim=(.2, 20),
-           xlabel="Error if the other joints had not adjusted to the stop (error ÷ success limit)",
-           ylabel="Error the reach actually\nended with (error ÷ success limit)")
-    ax.plot([.2, 20], [.2, 20], color="#C9D0D4", lw=.6, zorder=0)
-    ax.text(11, .23, "rescued by the\nother joints", fontsize=5.8, color="#1B5E20", va="bottom", ha="right")
-    ax.text(11, 17, "not rescued", fontsize=5.8, color="#7F1D1D", va="top", ha="right")
-    ax.text(.22, .23, "the stop alone would\nnot fail the reach", fontsize=5.8, color="#55626A", va="bottom")
-    ax.legend(frameon=False, fontsize=5.4, loc="upper left")
+                   linewidths=.7, alpha=.8, label=SHORT[c], zorder=3)
+        totals = (len(xs), int((~miss & (ys <= 1)).sum()), int((miss & (ys > 1)).sum()))
+        counts[c] = counts[c] + totals
+    # the four regions, each saying what a point there means (1 = the success limit on both axes)
+    lo, ylo, hi = .2, .05, 20     # the strip below the points (y < 0.2) holds the labels of the two lower regions
+    from matplotlib.patches import Rectangle
+    regions = [((1, ylo), hi - 1, 1 - ylo, "#DDEFDF"), ((1, 1), hi - 1, hi - 1, "#F6DEDE"),
+               ((lo, ylo), 1 - lo, 1 - ylo, "#EEF1F2"), ((lo, 1), 1 - lo, hi - 1, "#FBEBDB")]
+    for xy, w, h, colour in regions:
+        ax.add_patch(Rectangle(xy, w, h, facecolor=colour, edgecolor="none", zorder=0))
+    ax.axhline(1, color="#59646A", lw=.8, ls=":", zorder=1)
+    ax.axvline(1, color="#59646A", lw=.8, ls=":", zorder=1)
+    by = lambda i: "  ".join("%s %d" % (SHORT[c], counts[c][i]) for c in CONDITIONS)  # noqa: E731
+    ax.text(18, .056, "Rescued: the stuck joint alone would have failed the reach,\nbut the other joints adjusted and it succeeded\n" + by(1),
+            fontsize=5.6, color="#1B5E20", ha="right", va="bottom", linespacing=1.15, zorder=4)
+    ax.text(18, 18, "Failed: the other joints could not make up for it\n" + by(5), fontsize=5.6, color="#7F1D1D", ha="right", va="top",
+            linespacing=1.15, zorder=4)
+    ax.text(.215, .056, "The stuck joint did not matter:\nthe reach succeeded anyway\n" + by(4), fontsize=5.6, color="#46525A", ha="left",
+            va="bottom", linespacing=1.15, zorder=4)
+    ax.text(.215, 18, "Failed although the stuck joint\nalone would not have: none", fontsize=5.6, color="#8A4B08", ha="left", va="top",
+            linespacing=1.15, zorder=4)
+    ax.set(xscale="log", yscale="log", xlim=(lo, hi), ylim=(ylo, hi),
+           xlabel="Hand error if the other joints had not adjusted to the stuck one (1 = success limit: 5° and 40.3 mm)",
+           ylabel="Hand error the reach actually\nended with (1 = success limit)")
+    ax.set_xticks([.3, 1, 3, 10])
+    ax.set_xticklabels(["0.3", "1", "3", "10"])
+    ax.set_yticks([.3, 1, 3, 10])
+    ax.set_yticklabels(["0.3", "1", "3", "10"])
+    ax.minorticks_off()
+    ax.legend(frameon=False, fontsize=5.6, loc="upper left", bbox_to_anchor=(0, .8), handletextpad=.2)
     panel(ax, "d", "One joint stuck at 2 s: do the other joints still rescue the reach?", x=-.09)
 
     # e - 10% of neurons silenced: the hand-pose estimate (held poses) relative to the intact network, and reaching
