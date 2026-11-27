@@ -1027,9 +1027,10 @@ def hand_paths(fig, cell, rows_=6, cols=1):
     paths, export = {}, []
     for key, rs in ctrls:
         r = next(r for r in rs if r["index"] == 0)
-        pp = np.array([position(CHAIN, np.array(q)) for q in [r["start"]] + list(r["q"])]) * 1000
+        # from the first logged sample: in Gazebo the arm is placed only to within a tolerance of the prescribed start
+        pp = np.array([position(CHAIN, np.array(q)) for q in r["q"]]) * 1000
         paths[key] = (r, pp)
-        export += [[key, t, *p] for t, p in zip([0.] + list(r["t"]), pp)]
+        export += [[key, t, *p] for t, p in zip(r["t"], pp)]
     goal = 1000 * np.array(paths["rak"][0]["goal_position"])
     for key, (r, _) in paths.items():           # the same target for every controller
         assert np.allclose(1000 * np.array(r["goal_position"]), goal, atol=.01), key
@@ -1037,7 +1038,7 @@ def hand_paths(fig, cell, rows_=6, cols=1):
     lo, hi = allp.min(0), allp.max(0)
     pad = .06 * (hi - lo)
     lims = list(zip(lo - pad, hi + pad))
-    grid = GridSpecFromSubplotSpec(rows_, cols, subplot_spec=cell, wspace=.0, hspace=.8)
+    grid = GridSpecFromSubplotSpec(rows_, cols, subplot_spec=cell, wspace=.0, hspace=.38)
     last = len(CONTROLLERS) - 1
     for i, (key, label) in enumerate(CONTROLLERS):
         r, pp = paths[key]
@@ -1057,8 +1058,8 @@ def hand_paths(fig, cell, rows_=6, cols=1):
             artist.set_clip_on(False)
         ax.set(xlim=lims[0], ylim=lims[1], zlim=lims[2])
         ax.view_init(elev=23, azim=-55)
-        ax.set_box_aspect((1.7, 1.25, .95), zoom=1.55)   # fill the wide strip each controller gets
-        ax.tick_params(pad=-4, labelsize=4.2, colors="#4A555B")
+        ax.set_box_aspect((1.45, 1.2, 1.05), zoom=1.3)   # fill the slot each controller gets
+        ax.tick_params(pad=-3, labelsize=4.6, colors="#4A555B")
         # axis values once (every panel shares the same axes), on the last panel
         if i == last:
             ax.set_xlabel("x (mm)", fontsize=4.6, labelpad=-9)
@@ -1068,18 +1069,18 @@ def hand_paths(fig, cell, rows_=6, cols=1):
             ax.set_xticklabels([])
             ax.set_yticklabels([])
             ax.set_zticklabels([])
-        above = matplotlib.transforms.offset_copy(ax.transAxes, fig=fig, y=6.4, units="points")
-        ax.text2D(.5, 1.0, SHORT_CTRL[key], transform=above, ha="center", va="bottom", fontsize=5.8,
+        above = matplotlib.transforms.offset_copy(ax.transAxes, fig=fig, y=7.0, units="points")
+        ax.text2D(.5, 1.0, SHORT_CTRL[key], transform=above, ha="center", va="bottom", fontsize=6.4,
                   fontweight="bold", color="#1F2A30" if key == "rak" else colour)
         ax.text2D(.5, 1.0, "path %.2f× straight line" % r["path_ratio"], transform=ax.transAxes, ha="center",
-                  va="bottom", fontsize=5.0, color="#3A454B")
+                  va="bottom", fontsize=5.4, color="#3A454B")
     csvout("fig1_hand_paths_target0.csv", ["controller", "time_s", "x_mm", "y_mm", "z_mm"], export)
 
 
 def make_fig1_hand_paths():
     """Fig. 1a, drawn on its own: the architecture step places it beside the circuit (python -m analysis architecture)."""
-    fig = plt.figure(figsize=(44 / 25.4, 90.4 / 25.4))   # the slot beside the circuit in Fig. 1
-    gs = fig.add_gridspec(1, 1, left=.04, right=.96, bottom=.155, top=.93)
+    fig = plt.figure(figsize=(52.9 / 25.4, 153.1 / 25.4))   # the slot down the left of Fig. 1 (HAND_SLOT_MM)
+    gs = fig.add_gridspec(1, 1, left=.03, right=.97, bottom=.085, top=.96)
     hand_paths(fig, gs[0, 0])
     fig.legend(handles=[Line2D([], [], marker="o", ls="none", markerfacecolor="white", markeredgecolor="#2F3A40", markersize=3, label="start"),
                         Line2D([], [], marker="*", ls="none", color=C["goal"], markersize=5, label="goal"),

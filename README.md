@@ -205,7 +205,7 @@ run), then
 
 ```bash
 docker/run.bash nest -- 'python3 -B -m analysis all'          # under a minute
-python3 -B -m analysis.architecture.render_figure1_b_final    # on the host: PDFs of the circuit schematic (needs Chrome)
+python3 -B -m analysis.architecture.render_figure1_b_final    # on the host: the PDF of Fig. 1 (needs Chrome)
 ```
 
 This writes every figure to `analysis/figures/` (PDF, SVG, PNG) and the numbers behind every panel to

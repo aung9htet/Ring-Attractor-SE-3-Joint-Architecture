@@ -3,6 +3,7 @@
 The SVGs are the figures; this only prints them to vector PDF at their journal size. Run on the host if the image has
 no browser.
 """
+import re
 import shutil
 import subprocess
 import tempfile
@@ -10,17 +11,18 @@ from pathlib import Path
 
 from ..common import FIGURES
 
-SIZES = [("fig1_model", 167)]   # height in mm, width 178 mm
+SIZES = ["fig1_model"]   # 178 mm wide; the height is read from the SVG
 
 
 def main():
     chrome = shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
     if not chrome:
         raise SystemExit("Chrome or Chromium is needed to print the architecture SVGs to PDF (the SVGs are already written).")
-    for name, height in SIZES:
+    for name in SIZES:
         svg = (FIGURES / (name + ".svg")).read_text()
-        html = ("<!doctype html><html><head><meta charset=\"utf-8\"><title>%s</title><style>@page{size:178mm %dmm;margin:0}"
-                "html,body{margin:0;padding:0;width:178mm;height:%dmm}svg{display:block;width:178mm;height:%dmm}</style></head>"
+        height = float(re.search(r'height="([0-9.]+)mm"', svg).group(1))
+        html = ("<!doctype html><html><head><meta charset=\"utf-8\"><title>%s</title><style>@page{size:178mm %gmm;margin:0}"
+                "html,body{margin:0;padding:0;width:178mm;height:%gmm}svg{display:block;width:178mm;height:%gmm}</style></head>"
                 "<body>%s</body></html>") % (name, height, height, height, svg)
         with tempfile.TemporaryDirectory(prefix="architecture_") as folder:
             page = Path(folder) / (name + ".html")

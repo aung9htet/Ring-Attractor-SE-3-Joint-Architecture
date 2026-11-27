@@ -230,12 +230,14 @@ DRAWERS=[tile1,tile2,tile3,tile4,tile5,tile6,
          tile7,tile8,tile9,tile10,tile11,tile12]
 
 
-def draw_strip(c, s):
-    c.line(9,612,991,612,PALE,.9)
+def draw_strip(c, s, cols=6):
+    """The twelve motifs as tiles, ``cols`` per row (from y = 612 down)."""
+    right=9+165*cols-9
+    c.line(9,612,right,612,PALE,.9)
     c.heading(13,631,'f','Population motifs')
-    txt(c,986,631,'Representative circuits, reused across the controller',GREY,anchor='end')
+    txt(c,right-5,631,'Representative circuits, reused across the controller',GREY,anchor='end')
     for index, (name, regions, titles) in enumerate(MOTIFS):
-        col=index%6; row=index//6
+        col=index%cols; row=index//cols
         x=9+165*col; y=643+141*row
         c.group('translate(%s %s)'%(x,y))
         c.rect(0,0,157,132,'#FFFFFF',PALE,.7,rx=3)

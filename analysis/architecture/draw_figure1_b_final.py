@@ -162,7 +162,7 @@ def panel_c(c,s):
  c.text(839,552,'Target circuit repeated for all joints',color=GREY)
  # A vector command belongs to the set of repeated circuits, not only k.
  c.path('M955 445L978 445L978 591L838 591L838 627',CORR,1.4,head='corr')
- c.text(920,577,'Joint targets qᵗᵃʳ',color=CORR)
+ c.text(986,577,'Joint targets qᵗᵃʳ',color=CORR,anchor='end')
  c.rect(736,628,226,72,'#F7F9FA',PALE,.9,rx=6)
  gear(c,838,651,18)
  c.text(847,688,'External joint servo / plant',color=GREY)
@@ -182,8 +182,8 @@ def badge(c,x,y,word,col,size=11.2):
 def overlays(c,s):
  """Predictive encoding (blue, Fig. 4) and the ablation sites (Fig. 5), in the circuit's own coordinates."""
  # predictive encoding: the forward joint rings are written ahead by the commanded velocity...
- label(c,214,399,['written ahead:','qₖ+τₖq̇ₖᶜᵐᵈ'],PRED,size=11.2,weight='bold',anchor='start')
- c.path('M218 388Q202 372 189 351',PRED,1.2,head='pred')
+ label(c,146,398,['written ahead:','qₖ+τₖq̇ₖᶜᵐᵈ'],PRED,size=11.2,weight='bold',anchor='end')
+ c.path('M140 386Q144 370 149 354',PRED,1.2,head='pred')
  # ...and a separate motor ring keeps the measured angle for the target circuit
  mini_ring(c,716,146,15,s['positions'][s['motor_joint']],PRED,recurrent=True)
  c.text(716,150,'qₖ',size=10.6,color=PRED,italic=True)
@@ -222,8 +222,13 @@ def inline_svg(path,x,y,w,h):
  new='<svg x="%s" y="%s" width="%s" height="%s" viewBox="%s" preserveAspectRatio="xMidYMin meet">'%(f(x),f(y),f(w),f(h),box)
  return text.replace(head,new,1)
 
-#: Fig. 1 on a 178 mm wide page: a (hand paths, 44 mm) | b-d (circuit, 134 mm); e (motifs) underneath
-LEFT=247;SCALE=(1000-LEFT-3)/1000;STRIP_Y=598;HEIGHT_MM=167
+#: Fig. 1 on a 178 mm wide page: a (hand paths, 53 mm wide) down the whole left side; on the right the circuit b-d
+#: (scaled to fit) and under it the motifs e as 5 per row
+LEFT=297;SCALE=(1000-LEFT-3)/1000;TOP=26;STRIP_Y=TOP+758*SCALE+8;STRIP_COLS=5
+STRIP_SCALE=(1000-LEFT-3)/(165*STRIP_COLS+9);STRIP_H=(643+141*((12+STRIP_COLS-1)//STRIP_COLS)-9-612)*STRIP_SCALE
+BOTTOM=STRIP_Y+STRIP_H+6;HEIGHT_MM=round(BOTTOM*178/1000+.5)
+#: the slot Fig. 1a is drawn for (python -m analysis figure fig1 reads it)
+HAND_SLOT_MM=(LEFT*178/1000,(BOTTOM-84)*178/1000)
 
 def make():
  ensure_dirs()
@@ -235,9 +240,9 @@ def make():
  label(c,30,57,['Target pair 0,','every controller'],anchor='start',size=14.2,weight='bold')
  hand=FIGURES/'fig1a_hand_paths.svg'
  if not hand.exists():raise SystemExit('draw Fig. 1a first: python3 -m analysis figure fig1')
- c.add(inline_svg(hand,0,84,LEFT,STRIP_Y-84-6))
- c.group('translate(%s 26) scale(%s)'%(f(LEFT+3),f(SCALE)));circuit(c,s,'bcd');c.end()
- c.group('translate(0 %s)'%f(STRIP_Y-612));draw_strip(c,s);c.end()
+ c.add(inline_svg(hand,0,84,LEFT,BOTTOM-84))
+ c.group('translate(%s %s) scale(%s)'%(f(LEFT+3),f(TOP),f(SCALE)));circuit(c,s,'bcd');c.end()
+ c.group('translate(%s %s) scale(%s) translate(0 -612)'%(f(LEFT+3),f(STRIP_Y),f(STRIP_SCALE)));draw_strip(c,s,STRIP_COLS);c.end()
  c.parts=[v.replace('>f</text>','>e</text>').replace('>hₖsₖ</text>','>Joint effect</text>') for v in c.parts]
  c.save(FIGURES/'fig1_model.svg')
  out={'figure':'Fig. 1: a, hand paths of every controller (Gazebo target pair 0); b-d, the circuit; e, population motifs',
