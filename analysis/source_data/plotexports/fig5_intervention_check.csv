@@ -1,4 +1,4 @@
-condition,time_from_onset_s,median_abs_share_rad,fraction_with_written_target
+condition,time_from_onset_s,median_abs_requested_turn_rad_per_tick,fraction_of_reaches_with_written_target
 intact,-1.0,0.1065675,1.0
 intact,-0.8,0.09386749999999999,1.0
 intact,-0.6000000000000001,0.08435875000000001,1.0

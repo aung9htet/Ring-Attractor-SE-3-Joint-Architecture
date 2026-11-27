@@ -801,7 +801,7 @@ def make_ablation():
 
     # a - intervention check in the circuit
     rel = np.arange(-1.0, 6.01, .2)
-    sub = gs[0, 0].subgridspec(2, 1, hspace=.35)
+    sub = gs[0, 0].subgridspec(2, 1, hspace=.6)
     ax1, ax2 = fig.add_subplot(sub[0, 0]), fig.add_subplot(sub[1, 0])
     checkrows = []
     for c in ("intact",) + CONDITIONS:
@@ -815,21 +815,25 @@ def make_ablation():
         shares, written = np.array(shares), np.array(written)
         med = np.nanmedian(shares, axis=0)
         frac = np.mean(written, axis=0)
-        ax1.plot(rel, med * 1000, color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
-        ax2.plot(rel, frac, color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
+        # the cascade's requested turn for the stopped joint (its share s_k, rad per 50 ms tick), in degrees,
+        # and how often a joint target is still written for it, in % of the 90 reaches
+        ax1.plot(rel, np.degrees(med), color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
+        ax2.plot(rel, 100 * frac, color=C[c], lw=.9, marker=MARK[c], markersize=2, markevery=5)
         checkrows += [[c, g, m, f] for g, m, f in zip(rel, med, frac)]
     for ax in (ax1, ax2):
         ax.axvline(0, color="#59646A", lw=.7, ls="--")
         ax.tick_params(labelsize=5.4)
-    ax1.set(ylabel="Share still given\nto stopped joint\n(mrad)", ylim=(0, None), xlim=(-1, 6))
+    ax1.set(ylabel="Requested turn\n(° per tick)", ylim=(0, None), xlim=(-1, 6))
+    ax1.set_title("Circuit still asks it to turn?", loc="left", fontsize=5.8, pad=2)
     ax1.tick_params(labelbottom=False)
     ax1.yaxis.label.set_size(5.8)
-    ax2.set(ylabel="Trials still writing\na target for it\n(fraction)", ylim=(-.05, 1.08), xlabel="Time from onset (s)", xlim=(-1, 6))
+    ax2.set(ylabel="Reaches with\na command (%)", ylim=(-5, 108), yticks=[0, 50, 100], xlabel="Time after the joint stops (s)", xlim=(-1, 6))
+    ax2.set_title("Command still sent to it?", loc="left", fontsize=5.8, pad=2)
     ax2.yaxis.label.set_size(5.6)
     ax1.yaxis.labelpad = 1
     ax2.yaxis.labelpad = 1
     ax1.text(-.5, 1.30, "a", transform=ax1.transAxes, fontweight="bold", fontsize=9)
-    ax1.text(-.3, 1.30, "Did each intervention act?", transform=ax1.transAxes, fontsize=7.5)
+    ax1.text(-.3, 1.30, "What each intervention cuts", transform=ax1.transAxes, fontsize=7.5)
 
     # b - hand error over time
     grid = np.arange(0, LIMIT_S + .001, .1)
@@ -950,7 +954,7 @@ def make_ablation():
     ax.set_yticklabels(["intact", "10% silenced"], fontsize=5.4)
     ax.tick_params(labelsize=5.4)
     save(fig, "fig5_ablation")
-    csvout("fig5_intervention_check.csv", ["condition", "time_from_onset_s", "median_abs_share_rad", "fraction_with_written_target"], checkrows)
+    csvout("fig5_intervention_check.csv", ["condition", "time_from_onset_s", "median_abs_requested_turn_rad_per_tick", "fraction_of_reaches_with_written_target"], checkrows)
     csvout("fig5_error_courses.csv", ["condition", "quantity", "time_s", "q25", "median", "q75"], courserows)
     csvout("fig5_success.csv", ["condition", "kernel_seed", "n", "reached", "wilson_low", "wilson_high", "reachable_witnesses"], successrows)
     csvout("fig5_absorption.csv", ["condition", "kernel_seed", "target_index", "disabled_joint_one_based", "counterfactual_x_tolerance",
