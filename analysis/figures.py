@@ -914,7 +914,7 @@ def make_ablation():
     ax.text(11, 17, "not rescued", fontsize=5.8, color="#7F1D1D", va="top", ha="right")
     ax.text(.22, .23, "the stop alone would\nnot fail the reach", fontsize=5.8, color="#55626A", va="bottom")
     ax.legend(frameon=False, fontsize=5.4, loc="upper left")
-    panel(ax, "d", "Do the other joints make up for the stopped one?", x=-.09)
+    panel(ax, "d", "One joint stuck at 2 s: do the other joints still rescue the reach?", x=-.09)
 
     # e - 10% of neurons silenced: the hand-pose estimate (held poses) relative to the intact network, and reaching
     audit = read(DATA / "sensitivity_metrics.json")
