@@ -853,35 +853,36 @@ def make_ablation():
             ax.legend(frameon=False, fontsize=5.3, loc="upper right", handlelength=1.2, borderaxespad=.1)
         ax.text(ONSET_S + .15, .03, "joint disabled", transform=ax.get_xaxis_transform(), fontsize=5.3, color="#59646A")
 
-    # c - targets reached: the RAK model (mean of the three seeds, whisker = range) beside DLS IK run on the same targets
-    #     with the same joint stopped at the same time and the same 0.3 s lag (its exact-loop twin; one value, since it
-    #     has no kernel seed). Lock and motor silencing leave the stopped joint's request in place, so DLS IK is matched
-    #     uninformed (it keeps asking the joint to move); allocation silencing removes the request, so DLS IK is matched
-    #     informed (it leaves the joint out).
+    # c - targets reached: the RAK model (mean of the three seeds, whisker = range). DLS IK is shown only where it can have
+    #     the same condition: intact, and the lock (the joint stops moving at 2 s and the controller is not told). It is
+    #     each trial's exact-loop twin: same target, joint and onset, the same 0.3 s lag; one value, since it has no kernel
+    #     seed. Motor and allocation silencing remove neurons, which DLS IK does not have.
     ax = fig.add_subplot(gs[0, 3])
     successrows = []
-    TWIN = {"intact": "dls", "lock": "dls_lock", "motor": "dls_lock", "allocation": "dls_informed"}
+    TWIN = {"intact": "dls", "lock": "dls_lock"}
     for i, c in enumerate(("intact",) + CONDITIONS):
         rak = [sum(bool(r["reached"]) for r in data[(c, s)]) for s in seeds]
-        twin_rows = data[(c if c != "intact" else "lock", seeds[0])]
-        dls = sum(bool(r["twins"][TWIN[c]]["reached"]) for r in twin_rows)
         mean = float(np.mean(rak))
-        ax.bar(i - .2, mean, .36, color=C[c], lw=0)
-        ax.errorbar(i - .2, mean, yerr=[[mean - min(rak)], [max(rak) - mean]], fmt="none", ecolor="#222222", lw=.7, capsize=1.6)
-        ax.bar(i + .2, dls, .36, color="white", edgecolor=C["dls"], hatch="////", lw=.8)
-        ax.text(i - .02, max(rak) + .6, "%.0f" % mean if mean == round(mean) else "%.1f" % mean, ha="right", fontsize=5.0, color=C[c])
-        ax.text(i + .05, dls + .6, "%d" % dls, ha="left", fontsize=5.0, color="#555555")
+        x = i - .2 if c in TWIN else i
+        ax.bar(x, mean, .36, color=C[c], lw=0)
+        ax.errorbar(x, mean, yerr=[[mean - min(rak)], [max(rak) - mean]], fmt="none", ecolor="#222222", lw=.7, capsize=1.6)
+        ax.text(x + .16 if c in TWIN else x, max(rak) + .6, "%.0f" % mean if mean == round(mean) else "%.1f" % mean,
+                ha="right" if c in TWIN else "center", fontsize=5.0, color=C[c])
+        if c in TWIN:
+            dls = sum(bool(r["twins"][TWIN[c]]["reached"]) for r in data[("lock", seeds[0])])
+            ax.bar(i + .2, dls, .36, color="white", edgecolor=C["dls"], hatch="////", lw=.8)
+            ax.text(i + .05, dls + .6, "%d" % dls, ha="left", fontsize=5.0, color="#555555")
+            successrows.append([c, "dls_ik", "-", 30, dls, None])
         reachable = None
         if c != "intact":
             reachable = [sum(bool((r.get("reachability") or {}).get("reachable")) for r in data[(c, s)]) for s in seeds]
-            ax.plot([i - .4, i + .02], [np.mean(reachable)] * 2, color="#222222", lw=1.0, ls=(0, (2, 1)))
+            ax.plot([x - .2, x + .2], [np.mean(reachable)] * 2, color="#222222", lw=1.0, ls=(0, (2, 1)))
         for s, n in zip(seeds, rak):
             successrows.append([c, "rak", s, 30, n, None if reachable is None else reachable[seeds.index(s)]])
-        successrows.append([c, "dls_ik_" + TWIN[c].replace("dls_", "").replace("dls", "intact"), "-", 30, dls, None])
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
     handles = [Patch(facecolor="#3A3F44", lw=0, label="RAK model (mean of 3 seeds; whisker: range)"),
-               Patch(facecolor="white", edgecolor=C["dls"], hatch="////", lw=.8, label="DLS IK (same targets, stopped joint, lag)"),
+               Patch(facecolor="white", edgecolor=C["dls"], hatch="////", lw=.8, label="DLS IK (same targets, locked joint, lag)"),
                Line2D([], [], color="#222222", lw=1.0, ls=(0, (2, 1)), label="still reachable with the joint frozen")]
     ax.set(xticks=range(4), xticklabels=[SHORT[c] for c in ("intact",) + CONDITIONS], ylabel="Targets reached (of 30)",
            ylim=(0, 33.5), yticks=range(0, 31, 5), xlim=(-.6, 3.6))
