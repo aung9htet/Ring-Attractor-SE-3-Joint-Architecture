@@ -638,44 +638,11 @@ def make_reaching():
 def make_prediction():
     NO, YES = "Without predictive encoding", "With predictive encoding"
     fig = plt.figure(figsize=(WIDTH, 150 / 25.4))
-    top = fig.add_gridspec(1, 3, left=.03, right=.985, bottom=.585, top=.94, wspace=.42, width_ratios=[1.45, 1.25, .72])
+    top = fig.add_gridspec(1, 2, left=.085, right=.985, bottom=.585, top=.94, wspace=.38, width_ratios=[1.55, .85])
 
-    # a - the two circuits, one above the other
-    ax = fig.add_subplot(top[0, 0])
-    ax.axis("off")
-    ax.text(-.02, 1.07, "a", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(.06, 1.07, "What the encoder changes (schematic)", transform=ax.transAxes, fontsize=7.5)
-    grey, blue = "#9AA5AB", C["lead"]
-    # without
-    ax.text(.0, .93, NO, transform=ax.transAxes, fontsize=6.2, fontweight="bold", color=C["matrix"])
-    box(ax, (.00, .60), .21, .22, "Measured\nangle $q_k$", size=5.4)
-    box(ax, (.31, .60), .24, .22, "Joint ring\nholds $q_k$", size=5.4)
-    box(ax, (.66, .72), .34, .14, "Hand-pose estimate", size=5.4)
-    box(ax, (.66, .54), .34, .14, "Motor side", size=5.4)
-    arrow(ax, (.21, .71), (.31, .71))
-    arrow(ax, (.55, .74), (.66, .79))
-    arrow(ax, (.55, .68), (.66, .61))
-    ax.text(.83, .895, "lags the arm by ≈0.20 s", transform=ax.transAxes, fontsize=5.2, color="#B2182B", ha="center")
-    ax.plot([0, 1], [.47, .47], transform=ax.transAxes, color="#D4DBDF", lw=.6, clip_on=False)
-    # with
-    ax.text(.0, .38, YES, transform=ax.transAxes, fontsize=6.2, fontweight="bold", color=blue)
-    box(ax, (.00, .07), .21, .22, "Measured\nangle $q_k$", size=5.4)
-    box(ax, (.31, .19), .24, .15, "Joint ring holds\n$q_k+\\tau_k\\dot q_k^{\\mathrm{cmd}}$", fc="#E8F0F8", ec=blue, size=5.0)
-    box(ax, (.31, .00), .24, .14, "Motor ring\nholds $q_k$", size=5.2)
-    box(ax, (.66, .20), .34, .14, "Hand-pose estimate", fc="#E8F0F8", ec=blue, size=5.4)
-    box(ax, (.66, .00), .34, .14, "Motor side", size=5.4)
-    arrow(ax, (.21, .21), (.31, .265), color=blue)
-    arrow(ax, (.21, .15), (.31, .07))
-    arrow(ax, (.55, .265), (.66, .27), color=blue)
-    arrow(ax, (.55, .07), (.66, .07))
-    ax.text(.83, .365, "on time with the arm", transform=ax.transAxes, fontsize=5.2, color=blue, ha="center")
-    ax.text(.0, -.08, "Lead $\\tau_k$ = 0.14 + 0.01($n-k$) s, times the commanded joint velocity.\n"
-            "Everything else, including calibration, is identical.", transform=ax.transAxes, fontsize=5.2, color="#38454C",
-            va="top")
-
-    # b - estimation error over time, one shared path at 1 rad/s
+    # a - estimation error over time, one shared path at 1 rad/s
     tr = np.load(DATA / "common_path_traces.npz")
-    sub = top[0, 1].subgridspec(2, 1, hspace=.12, height_ratios=[.32, 1])
+    sub = top[0, 0].subgridspec(2, 1, hspace=.12, height_ratios=[.32, 1])
     axs, ax = fig.add_subplot(sub[0, 0]), fig.add_subplot(sub[1, 0])
     tt = tr["common1_t_s"]
     axs.fill_between(tt, 0, tr["common1_speed_rad_s"], color="#C9D1D5", lw=0)
@@ -687,13 +654,13 @@ def make_prediction():
     ax.set(xlim=(tt[0], tt[-1]), ylim=(0, 29), yticks=[0, 5, 10, 15, 20, 25], xlabel="Time on the replayed path (s)",
            ylabel="Hand-orientation\nestimate error (°)")
     ax.legend(frameon=False, fontsize=5.3, loc="upper left", handlelength=1.4, borderaxespad=.1)
-    axs.text(-.30, 1.30, "b", transform=axs.transAxes, fontweight="bold", fontsize=9)
-    axs.text(-.12, 1.30, "Forward-kinematics error in time", transform=axs.transAxes, fontsize=7.5)
+    axs.text(-.11, 1.30, "a", transform=axs.transAxes, fontweight="bold", fontsize=9)
+    axs.text(-.04, 1.30, "Forward-kinematics error in time", transform=axs.transAxes, fontsize=7.5)
     tracerows = list(zip(tt, tr["common1_speed_rad_s"], tr["common1_plain_orientation_deg"], tr["common1_lead_orientation_deg"]))
 
-    # c - the path of b replayed at three peak speeds: median error while moving, without and with (paired bars)
+    # b - the path of a replayed at three peak speeds: median error while moving, without and with (paired bars)
     from matplotlib.patches import Patch
-    ax = fig.add_subplot(top[0, 2])
+    ax = fig.add_subplot(top[0, 1])
     est = read(RAK / "moving_estimate" / "summary.json")["paths"]
     # every recorded path is exported; the panel shows the path of b, where only the speed changes
     estrows = [[name, est[name]["network_lag_s"], est[name]["sources"]["M0"]["moving_median_deg"],
@@ -711,8 +678,8 @@ def make_prediction():
     ax.set_xlabel("Peak joint speed (rad s$^{-1}$)", fontsize=6)
     ax.legend(handles=[Patch(color=C["matrix"], label="Without"), Patch(color=C["lead"], label="With")],
               frameon=False, loc="upper left", fontsize=5.2, handlelength=1.0, borderaxespad=0)
-    ax.text(-.92, 1.07, "c", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(-.70, 1.07, "Forward-kinematics error by speed", transform=ax.transAxes, fontsize=7.5)
+    ax.text(-.62, 1.07, "b", transform=ax.transAxes, fontweight="bold", fontsize=9)
+    ax.text(-.44, 1.07, "Forward-kinematics error by speed", transform=ax.transAxes, fontsize=7.5)
 
     # d, e - closed-loop reaching in Gazebo: every controller of Fig. 3 on the same 30 targets, paired against the RAK model
     MISS = "#B2182B"
@@ -727,9 +694,9 @@ def make_prediction():
     bottom = fig.add_gridspec(1, 2, left=.13, right=.985, bottom=.115, top=.455, wspace=.06)
     effectrows, summaryrows, success_note = [], [], []
     for j, (field, xlabel, letter, title) in enumerate((
-            ("path_ratio", "Hand path ratio (distance travelled / initial distance; 1 = straight)", "d",
+            ("path_ratio", "Hand path ratio (distance travelled / initial distance; 1 = straight)", "c",
              "How far does the hand travel?"),
-            ("time_to_reach_s", "Time until the hand stays within tolerance (s; missed targets at 25 s)", "e",
+            ("time_to_reach_s", "Time until the hand stays within tolerance (s; missed targets at 25 s)", "d",
              "When does the hand settle?"))):
         ax = fig.add_subplot(bottom[0, j])
 
@@ -828,38 +795,13 @@ def make_ablation():
     data.update({("intact", s): intact_rows(s) for s in seeds})
     for (c, s), rr in data.items():
         assert sorted(int(r["index"]) for r in rr) == list(range(30)), (c, s)
-    fig = plt.figure(figsize=(WIDTH, 148 / 25.4))
-    gs = fig.add_gridspec(3, 3, left=.075, right=.985, bottom=.065, top=.92, hspace=.85, wspace=.50,
-                          height_ratios=[.95, 1, 1])
+    # the interventions themselves are drawn on the circuit in Fig. 1 (badges and dashed outlines)
+    fig = plt.figure(figsize=(WIDTH, 112 / 25.4))
+    gs = fig.add_gridspec(2, 4, left=.09, right=.975, bottom=.09, top=.9, hspace=.62, wspace=.62, width_ratios=[1, 1, 1, 1.35])
 
-    # a - the interventions
-    ax = fig.add_subplot(gs[0, :2])
-    ax.axis("off")
-    ax.text(-.04, 1.30, "a", transform=ax.transAxes, fontweight="bold", fontsize=9)
-    ax.text(.0, 1.30, "Which part of one joint's pathway is removed 2 s into each reach?", transform=ax.transAxes, fontsize=7.5)
-    box(ax, (.00, .52), .17, .28, "Joint-state\nring", fc="#E6F2F2", ec="#087F8C")
-    box(ax, (.22, .52), .19, .28, "Allocation\n(share halves\n$u_k^+, u_k^-$)", fc="#EAF4EC", ec=C["allocation"])
-    box(ax, (.46, .52), .21, .28, "Motor output\n(gain pair +\ntarget ring)", fc="#F8E8F1", ec=C["motor"])
-    box(ax, (.72, .52), .17, .28, "Actuator\n(servo, joint)", fc="#F5EDE3", ec=C["lock"])
-    for x0, x1 in ((.17, .22), (.41, .46), (.67, .72)):
-        arrow(ax, (x0, .66), (x1, .66))
-    ax.add_patch(FancyArrowPatch((.80, .52), (.085, .52), transform=ax.transAxes, arrowstyle="-|>", mutation_scale=7, color="#55626A",
-                                 lw=.8, connectionstyle="arc3,rad=-0.28", clip_on=False))
-    ax.text(.44, .30, "measured angle fed back", fontsize=5.4, color="#55626A", ha="center", transform=ax.transAxes)
-    arrow(ax, (.315, .52), (.315, .40), color=C["allocation"])
-    ax.text(.325, .42, "residual to later joints", fontsize=5.1, color=C["allocation"], va="center", transform=ax.transAxes)
-    for x, c, txt in ((.315, "allocation", "120 neurons silenced:\njoint holds; later joints\nget the whole residual"),
-                      (.565, "motor", "600 neurons silenced:\njoint holds; cascade still\nassigns it a share"),
-                      (.805, "lock", "0 neurons: joint jams;\nnetwork intact and\nunaware")):
-        ax.text(x, .82, "×", color=C[c], fontsize=13, ha="center", va="bottom", transform=ax.transAxes, weight="bold")
-        ax.text(x, .99, txt, color=C[c], fontsize=5.1, ha="center", va="bottom", transform=ax.transAxes, linespacing=1.05)
-    ax.text(0., -.08, "Held fixed: 30 targets; one disabled joint per target (each joint 4-5 times);\n"
-            "onset 2 s; calibration; kernel seeds 1-3. Endpoint: hand pose at the final sample (5° and %.1f mm)." % TOL_MM + "",
-            transform=ax.transAxes, fontsize=5.1, va="top", ha="left", color="#38454C", linespacing=1.15)
-
-    # b - intervention check in the circuit
+    # a - intervention check in the circuit
     rel = np.arange(-1.0, 6.01, .2)
-    sub = gs[0, 2].subgridspec(2, 1, hspace=.35)
+    sub = gs[0, 0].subgridspec(2, 1, hspace=.35)
     ax1, ax2 = fig.add_subplot(sub[0, 0]), fig.add_subplot(sub[1, 0])
     checkrows = []
     for c in ("intact",) + CONDITIONS:
@@ -879,30 +821,30 @@ def make_ablation():
     for ax in (ax1, ax2):
         ax.axvline(0, color="#59646A", lw=.7, ls="--")
         ax.tick_params(labelsize=5.4)
-    ax1.set(ylabel="disabled-joint\n|share| (mrad)", ylim=(0, None), xlim=(-1, 6))
+    ax1.set(ylabel="Share still given\nto stopped joint\n(mrad)", ylim=(0, None), xlim=(-1, 6))
     ax1.tick_params(labelbottom=False)
     ax1.yaxis.label.set_size(5.8)
-    ax2.set(ylabel="fraction with a\nwritten target", ylim=(-.05, 1.08), xlabel="Time from onset (s)", xlim=(-1, 6))
+    ax2.set(ylabel="Trials still writing\na target for it\n(fraction)", ylim=(-.05, 1.08), xlabel="Time from onset (s)", xlim=(-1, 6))
     ax2.yaxis.label.set_size(5.6)
     ax1.yaxis.labelpad = 1
     ax2.yaxis.labelpad = 1
-    ax1.text(-.40, 1.30, "b", transform=ax1.transAxes, fontweight="bold", fontsize=9)
-    ax1.text(-.08, 1.30, "Did the lesion act?", transform=ax1.transAxes, fontsize=7.5)
+    ax1.text(-.5, 1.30, "a", transform=ax1.transAxes, fontweight="bold", fontsize=9)
+    ax1.text(-.3, 1.30, "Did each intervention act?", transform=ax1.transAxes, fontsize=7.5)
 
-    # c - hand error over time
+    # b - hand error over time
     grid = np.arange(0, LIMIT_S + .001, .1)
     courserows = []
     for j, (field, scale, tol, ylabel, letter, title) in enumerate((
-            ("error_reach", RADIUS_MM, TOL_MM, "Hand position error (mm)", "c", "Does the hand still reach the goal?"),
+            ("error_reach", RADIUS_MM, TOL_MM, "Hand position error (mm)", "b", "Does the hand still reach the goal?"),
             ("error_deg", 1., TOL_DEG, "Hand orientation error (°)", "", ""))):
-        ax = fig.add_subplot(gs[1, j])
+        ax = fig.add_subplot(gs[0, 1 + j])
         for c in ("intact",) + CONDITIONS:
             vals = np.array([np.interp(grid, np.asarray(r["t"], float), np.asarray(r[field], float) * scale)
                              for s in seeds for r in data[(c, s)]])
             q25, q50, q75 = np.percentile(vals, [25, 50, 75], axis=0)
             if c in ("intact", "lock"):
                 ax.fill_between(grid, q25, q75, color=C[c], alpha=.12, lw=0)
-            ax.plot(grid, q50, color=C[c], lw=1.0, label=LABEL[c] if c != "intact" else "Intact")
+            ax.plot(grid, q50, color=C[c], lw=1.0, label=SHORT[c])
             courserows += [[c, field, g, a, b, d] for g, a, b, d in zip(grid, q25, q50, q75)]
         ax.axvline(ONSET_S, color="#59646A", lw=.7, ls="--")
         ax.axhline(tol, color="#8A9296", lw=.8, ls=":")
@@ -911,11 +853,11 @@ def make_ablation():
         ax.set_ylim(.5 if field == "error_deg" else 5, None)
         if j == 0:
             panel(ax, letter, title, x=-.19)
-            ax.legend(frameon=False, fontsize=5.3, loc="upper right", handlelength=1.4)
+            ax.legend(frameon=False, fontsize=5.3, loc="upper right", handlelength=1.2, borderaxespad=.1)
         ax.text(ONSET_S + .15, .03, "joint disabled", transform=ax.get_xaxis_transform(), fontsize=5.3, color="#59646A")
 
-    # d - success per seed and condition, with the reachable ceiling
-    ax = fig.add_subplot(gs[1, 2])
+    # c - success per seed and condition, with the reachable ceiling
+    ax = fig.add_subplot(gs[0, 3])
     successrows = []
     for i, c in enumerate(("intact",) + CONDITIONS):
         for j, s in enumerate(seeds):
@@ -929,15 +871,16 @@ def make_ablation():
             if reachable is not None:
                 ax.plot([x - .09, x + .09], [reachable] * 2, color=C[c], lw=1.1)
             successrows.append([c, s, sm["n"], sm["reached"], *sm["ci"], reachable])
-        ax.text(i, 31.2, SHORT[c], ha="center", fontsize=5.6, color=C[c])
+        ax.text(i, 31.2, SHORT[c], ha="center", fontsize=5.4, color=C[c])
     ax.plot([], [], color="#59646A", lw=1.1, label="still reachable with the joint\nfrozen (DLS IK check)")
     ax.set(xticks=range(4), xticklabels=["s1 s2 s3"] * 4, ylabel="Targets reached (of 30)", ylim=(0, 33), xlim=(-.5, 3.5))
+    ax.tick_params(axis="x", labelsize=4.8)
     ax.tick_params(axis="x", labelsize=5.0, length=0)
     ax.legend(frameon=False, fontsize=5.2, loc="lower center")
-    panel(ax, "d", "How many reaches succeed?", x=-.24)
+    panel(ax, "c", "Reaches that succeed", x=-.24)
 
-    # e - absorption: counterfactual (other joints as intact) against actual
-    ax = fig.add_subplot(gs[2, :2])
+    # d - absorption: counterfactual (other joints as intact) against actual
+    ax = fig.add_subplot(gs[1, :3])
     absrows = []
     counts = {}
     for c in CONDITIONS:
@@ -970,10 +913,10 @@ def make_ablation():
     ax.text(11, 17, "not absorbed", fontsize=5.6, color="#7F1D1D", va="top", ha="right")
     ax.text(.22, .23, "freezing alone\nwould not miss", fontsize=5.6, color="#55626A", va="bottom")
     ax.legend(frameon=False, fontsize=5.4, loc="upper left")
-    panel(ax, "e", "Do the remaining joints absorb the lost motion?", x=-.09)
+    panel(ax, "d", "Do the remaining joints absorb the lost motion?", x=-.09)
 
-    # f - diffuse silencing
-    sub = gs[2, 2].subgridspec(2, 1, hspace=.65)
+    # e - diffuse silencing
+    sub = gs[1, 3].subgridspec(2, 1, hspace=.65)
     audit = read(DATA / "sensitivity_metrics.json")
     base = read(RAK / "held_pose" / "summary.json")["arms"]["tiago7"]
     ax = fig.add_subplot(sub[0, 0])
@@ -992,7 +935,7 @@ def make_ablation():
     ax.set(xticks=range(4), xticklabels=[c[1] for c in classes], ylabel="Held-pose\norientation (°)", yscale="log", ylim=(.8, 40))
     ax.tick_params(labelsize=5.4)
     ax.yaxis.label.set_size(5.8)
-    ax.text(-.40, 1.30, "f", transform=ax.transAxes, fontweight="bold", fontsize=9)
+    ax.text(-.55, 1.30, "e", transform=ax.transAxes, fontweight="bold", fontsize=9)
     ax.text(-.08, 1.30, "10% diffuse silencing", transform=ax.transAxes, fontsize=7.5)
     ax = fig.add_subplot(sub[1, 0])
     loss = JL[("loss0.1_all_l1", 1)]["rows"]
@@ -1122,7 +1065,7 @@ def make_supp_joint_loss():
     jm = read(RAK_RESULTS / "joint_map" / "all.json")
     maprows = []
     for j, task in enumerate(("pose", "position")):
-        ax = fig.add_subplot(gs[1, j])
+        ax = fig.add_subplot(gs[0, 1 + j])
         rr = [r for r in jm["rows"] if r["task"] == task and r["onset_s"] == 2.0]
         for i, (rule, colour, marker, label) in enumerate((("reachable", "#9AA5AB", "_", "still reachable"),
                                                            ("cascade_lock", C["lock"], "s", "cascade, uninformed"),
@@ -1231,7 +1174,7 @@ def make_neuron_loss():
         if j == 0:
             ax.legend(frameon=False, loc="upper left", ncol=2, handlelength=1, columnspacing=.8)
         panel(ax, "ab"[j], "Diffuse silencing")
-        ax = fig.add_subplot(gs[1, j])
+        ax = fig.add_subplot(gs[0, 1 + j])
         ax.axhline(bases[quantity], ls=":", color=C["matrix"], lw=1)
         classes = [("rings", "Joint rings"), ("value", "Value populations"), ("sheets", "Sheet family")]
         for i, (name, label) in enumerate(classes):
