@@ -120,7 +120,8 @@ def _plan(name: str, args: Any) -> List[Dict[str, Any]]:
 
 def joint_loss_run(args: Any, condition: str) -> Dict[str, Any]:
     run = {"arm": args.arm or "tiago7", "pairs": args.pairs or 30, "kappa": 1.0, "seed": args.seed, "kind": "near",
-           "condition": condition, "onset_s": float(getattr(args, "onset", None) or JOINT_LOSS_ONSET_S)}
+           "condition": condition,
+           "onset_s": float(JOINT_LOSS_ONSET_S if getattr(args, "onset", None) is None else args.onset)}   # 0 is a valid onset
     if condition == "loss":
         fraction, classes, lesion_seed = float(args.loss), str(args.loss_class), int(args.lesion_seed)
         run.update(loss=fraction, loss_class=classes, lesion_seed=lesion_seed,

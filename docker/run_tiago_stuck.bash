@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Every controller on the TIAGo arm in Gazebo with one joint stuck 2 s into each of the 30 reaches (Fig. 5f), in one
+# Every controller on the TIAGo arm in Gazebo with one joint stuck from the start of each of the 30 reaches (Fig. 5d), in one
 # command, using the machine fully:
 #
 #   nohup docker/run_tiago_stuck.bash > /dev/null 2>&1 &         (start it in the background)
 #   tail -f logs/stuck_*.log                                      (watch it: one line per trial, a heartbeat every minute)
 #   python3 -m reaching_benchmark status --watch 60               (or every run at once, with its bar)
 #
-# The stuck joint is each pair's pre-assigned one (the RAK model's joint-loss joints); from 2 s on its trajectory target
-# stays at its angle then, whatever the controller asks, and the controller is not told. Each is compared with its own
+# The stuck joint is each pair's pre-assigned one (the RAK model's joint-loss joints); from the start of the reach its
+# trajectory target stays at its start angle, whatever the controller asks, and the controller is not told. Sticking it
+# from the start means no controller has done part of the reach before it sticks. Each is compared with its own
 # stored intact Gazebo run (results/<model>/reach_gazebo/). Results go to results/<model>/joint_loss_gazebo/.
 #
 #   phase 1, at the same time:  RAK model, RAK with predictive encoding   each over SHARDS Gazebos   logs/stuck_rak*.log
@@ -57,7 +58,7 @@ sharded() {   # sharded TAG BASE_PORT COMMAND [gazebo options]: COMMAND --shard 
 
 rak() {       # rak TAG BASE_PORT [--variant V]
     local tag=$1 base=$2; shift 2
-    sharded "$tag" "$base" "python3 -B -m ring_attractor_kinematics benchmark joint_loss_gazebo --condition lock --seed 1 --threads $THREADS $*"
+    sharded "$tag" "$base" "python3 -B -m ring_attractor_kinematics benchmark joint_loss_gazebo --condition lock --onset 0 --seed 1 --threads $THREADS $*"
 }
 
 reactive() {

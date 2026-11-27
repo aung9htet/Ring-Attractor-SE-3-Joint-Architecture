@@ -6,7 +6,7 @@
     train       fit the model on every transition so far; with --iterations K, then K rounds of phase 2:
                 MPC episodes on training goals with the current model, add their transitions, refit
     reach       the final model's MPC on the 30 reported pairs (results/<model>/reach_gazebo/ or reach_kinematic/);
-                with --stuck, one joint jammed 2 s into each reach (results/<model>/joint_loss_gazebo/ or joint_loss/)
+                with --stuck, one joint jammed from the start of each reach (results/<model>/joint_loss_gazebo/ or joint_loss/)
     summarise   recompute the reaching summary
     all         collect, train with the configured iterations, reach
 
@@ -275,7 +275,7 @@ def main(config: Config, argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--pairs", type=int, default=30)
     parser.add_argument("--max-minutes", type=float, default=None)
     parser.add_argument("--shard", default="0/1", help="reach: i/n, every n-th pair from the i-th on (several Gazebos share the pairs)")
-    parser.add_argument("--stuck", action="store_true", help="reach: jam one joint per pair 2 s into the reach, the MPC not told "
+    parser.add_argument("--stuck", action="store_true", help="reach: jam one joint per pair from the start of the reach, the MPC not told "
                                                              "(results in joint_loss_gazebo/ or joint_loss/)")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     iterations = config.iterations if args.iterations is None else args.iterations

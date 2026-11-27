@@ -189,7 +189,7 @@ def summarise(name: str = "joint_loss") -> Dict[str, Any]:
                  **group_summary(rows, design, radius_mm)}
         if condition != "intact":
             intact, source = intact_reference(groups, seed, run, design["task"], name)
-            entry["against_intact"] = dict(against_intact(chain, rows, intact, design, radius_mm, float(run.get("onset_s") or 2.0),
+            entry["against_intact"] = dict(against_intact(chain, rows, intact, design, radius_mm, float(2.0 if run.get("onset_s") is None else run["onset_s"]),
                                                           condition in DISABLED), reference=source)
         variant = "" if method == "matrix" else "_" + {"lead": "predictive_encoding"}.get(method, method)
         out["groups"]["%s_seed%d%s" % (condition, seed, variant)] = dict(entry, network_method=method)

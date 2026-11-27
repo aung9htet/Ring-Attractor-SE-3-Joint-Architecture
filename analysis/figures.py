@@ -29,6 +29,8 @@ from reaching_benchmark.geometry.kinematics import position
 from reaching_benchmark.geometry.rotations import from_lift_pitch_yaw, lift_pitch_yaw, rotation_angle, wrap
 from reaching_benchmark.limits import travel, travel_position
 from reaching_benchmark.statistics import mcnemar, paired, censored, success_summary
+from reaching_benchmark.benchmark import STUCK_ONSET_S
+from reaching_benchmark.targets import disabled_joints
 from ring_attractor_kinematics.neurons.ring_layout import RingMap
 
 from .common import DATA, EXPORT, FIGURES as FIG, HASHES, RAK, RESULTS, ensure_dirs, read, relative
@@ -91,14 +93,18 @@ STUCK_RUNS = {"rak": ("ring_attractor_kinematics", "tiago7_seed1", "tiago7_seed1
               "pets": ("pets", "tiago7_seed1", "tiago7_seed1_lock")}
 
 
-def gazebo_run_rows(model, benchmark, stem):
-    """Every trial of one Gazebo run (its shards put back together), or None when it has not been run (or is unfinished)."""
+def gazebo_run_rows(model, benchmark, stem, onset_s=None):
+    """Every trial of one Gazebo run (its shards put back together), or None when it has not been run (or is unfinished).
+    ``onset_s``: only a run whose joint stuck at this time counts."""
 
     out = []
     for path in sorted((RESULTS / model / benchmark).glob(stem + "*.json")):
         rest = path.stem[len(stem):]
         if rest == "" or re.fullmatch(r"_shard\d+of\d+", rest):
-            out += read(path)["rows"]
+            document = read(path)
+            if onset_s is not None and document["run"].get("onset_s") != onset_s:
+                return None
+            out += document["rows"]
     out.sort(key=lambda r: r["index"])
     return out if [r["index"] for r in out] == list(range(30)) else None
 
@@ -107,7 +113,7 @@ def stuck_gazebo(key):
     """(intact rows, stuck-joint rows or None) of one controller on the 30 Gazebo targets."""
 
     model, intact, stuck = STUCK_RUNS[key]
-    return gazebo_run_rows(model, "reach_gazebo", intact), gazebo_run_rows(model, "joint_loss_gazebo", stuck)
+    return gazebo_run_rows(model, "reach_gazebo", intact), gazebo_run_rows(model, "joint_loss_gazebo", stuck, onset_s=STUCK_ONSET_S)
 
 
 def rescue_points(intact_rows, stuck_rows):
@@ -1019,29 +1025,43 @@ def make_ablation():
     for label, rr in (("intact", data[("intact", 1)]), ("whole network 10% silenced", loss)):
         sm = success_summary([r["reached"] for r in rr])
         diffrows.append(["closed_loop", label, 1, sm["reached"], sm["n"]])
-    # d - every controller in Gazebo, the same 30 targets: targets reached intact and with the pre-assigned joint stuck at
-    #     2 s (the lock; the controller not told, so it adjusts on its own)
+    # d - every controller in Gazebo, the same 30 targets, with each pair's pre-assigned joint stuck from the start:
+    #     intact; no correction (the intact reach's final angles with the stuck joint at its start angle: what an IK
+    #     solved once and played out would reach; geometry only); closed loop (the controller not told, adjusting on
+    #     its own)
     ax = fig.add_subplot(row2[0, 1])
     stuckrows = []
+    stuck_joint = disabled_joints(CHAIN, 30)
+    width = .27
     for j, (key, _) in enumerate(CONTROLLERS):
         own_intact, own_stuck = stuck_gazebo(key)
         colour = CTRL_COLOUR[key]
         n_intact = sum(bool(r["reached"]) for r in own_intact)
-        ax.bar(j - .19, n_intact, .36, color="white", edgecolor=colour, hatch="////", lw=.8, zorder=2)
-        ax.text(j - .19, n_intact + .7, "%d" % n_intact, ha="center", fontsize=5.4, color="#59646A")
-        if own_stuck is None:
-            ax.text(j + .19, 1.2, "running", ha="center", va="bottom", rotation=90, fontsize=5.2, color="#59646A")
-            stuckrows.append([key, n_intact, None, None, None])
-            continue
-        n_stuck = sum(bool(r["reached"]) for r in own_stuck)
-        pts = rescue_points(own_intact, own_stuck)
-        rescued = sum(1 for q in pts if q[2] > 1 and q[3] <= 1)
-        ax.bar(j + .19, n_stuck, .36, color=colour, lw=0, zorder=2)
-        ax.text(j + .19, n_stuck + .7, "%d" % n_stuck, ha="center", fontsize=5.4, color=colour, fontweight="bold")
-        stuckrows.append([key, n_intact, n_stuck, rescued, len(pts)])
+        if own_stuck is not None:
+            start = {int(r["index"]): np.asarray(r["q_onset"], float) for r in own_stuck}
+        else:
+            start = {int(r["index"]): np.asarray(r["q"][0], float) for r in own_intact}
+        planned = 0
+        for r in own_intact:
+            k = int(stuck_joint[int(r["index"])])
+            q = np.asarray(r["final_q"], float).copy()
+            q[k] = start[int(r["index"])][k]
+            planned += tolerance_scaled(*pose_error(q, r["goal_lpy"], r["goal_position"])) <= 1
+        bars = [(j - width, n_intact, dict(color="white", edgecolor=colour, hatch="////", lw=.8), "#59646A"),
+                (j, planned, dict(color=colour, alpha=.3, lw=0), "#59646A")]
+        n_stuck = None
+        if own_stuck is not None:
+            n_stuck = sum(bool(r["reached"]) for r in own_stuck)
+            bars.append((j + width, n_stuck, dict(color=colour, lw=0), colour))
+        else:
+            ax.text(j + width, 1.2, "not run yet", ha="center", va="bottom", rotation=90, fontsize=5, color="#59646A")
+        for x, n, style, tc in bars:
+            ax.bar(x, n, width * .92, zorder=2, **style)
+            ax.text(x, n + .7, "%d" % n, ha="center", fontsize=5.0, color=tc, fontweight="bold" if tc == colour else "normal")
+        stuckrows.append([key, n_intact, int(planned), n_stuck])
     ax.set(xticks=range(len(CONTROLLERS)), xticklabels=[SHORT_CTRL[k].replace("predictive enc.", "pred. enc.").replace(" + ", " +\n")
                                                           for k, _ in CONTROLLERS],
-           ylabel="Targets reached (of 30)", ylim=(0, 34), yticks=range(0, 31, 10), xlim=(-.55, len(CONTROLLERS) - .45))
+           ylabel="Targets reached (of 30)", ylim=(0, 38), yticks=range(0, 31, 10), xlim=(-.55, len(CONTROLLERS) - .45))
     for t, (k, _) in zip(ax.get_xticklabels(), CONTROLLERS):
         t.set_color(CTRL_COLOUR[k])
     ax.tick_params(axis="x", labelsize=5.6, length=0)
@@ -1050,11 +1070,13 @@ def make_ablation():
     ax.spines["bottom"].set_color("#9AA0A4")
     from matplotlib.patches import Patch
     ax.legend(handles=[Patch(facecolor="white", edgecolor="#59646A", hatch="////", lw=.8, label="intact"),
-                       Patch(facecolor="#59646A", lw=0, label="one joint stuck at 2 s")],
-              frameon=False, fontsize=5.6, loc="upper right", ncol=2, bbox_to_anchor=(1, 1.13), borderaxespad=0, handlelength=1.4)
-    panel(ax, "d", "Every controller in Gazebo, one joint stuck", x=-.09)
-    csvout("fig5_stuck_all_controllers.csv", ["controller", "reached_intact", "reached_stuck", "rescued_by_other_joints", "stuck_trials"],
+                       Patch(facecolor="#59646A", alpha=.3, lw=0, label="joint stuck, no correction"),
+                       Patch(facecolor="#59646A", lw=0, label="joint stuck, closed loop")],
+              frameon=False, fontsize=5.4, loc="upper center", ncol=3, bbox_to_anchor=(.5, 1.0), borderaxespad=.1, handlelength=1.4,
+              columnspacing=1.2)
+    csvout("fig5_stuck_all_controllers.csv", ["controller", "reached_intact", "reached_no_correction", "reached_stuck_closed_loop"],
            stuckrows)
+    panel(ax, "d", "Every controller in Gazebo, one joint stuck from the start", x=-.09)
     save(fig, "fig5_ablation")
     csvout("fig5_intervention_check.csv", ["condition", "time_from_onset_s", "median_abs_requested_turn_rad_per_tick", "fraction_of_reaches_with_written_target"], checkrows)
     csvout("fig5_error_courses.csv", ["condition", "quantity", "time_s", "q25", "median", "q75"], courserows)

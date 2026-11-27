@@ -1,7 +1,7 @@
-controller,reached_intact,reached_stuck,rescued_by_other_joints,stuck_trials
-rak,28,,,
-rak_pe,27,,,
-dls_ik,30,,,
-ccd_ik,30,,,
-mpc_nn_dynamics,29,,,
-pets,30,,,
+controller,reached_intact,reached_no_correction,reached_stuck_closed_loop
+rak,28,5,
+rak_pe,27,6,
+dls_ik,30,6,
+ccd_ik,30,7,
+mpc_nn_dynamics,29,8,
+pets,30,9,

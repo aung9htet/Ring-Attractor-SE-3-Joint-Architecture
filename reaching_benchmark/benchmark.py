@@ -32,8 +32,9 @@ PLANTS = ("light", "gazebo")
 BENCHMARKS = {"light": "reach_kinematic", "gazebo": "reach_gazebo"}
 #: the benchmark folder of each plant for reaches with one joint stuck (``--stuck``; the RAK model's joint-loss folders)
 STUCK_BENCHMARKS = {"light": "joint_loss", "gazebo": "joint_loss_gazebo"}
-#: when the joint sticks, as in the RAK model's joint-loss benchmark
-STUCK_ONSET_S = 2.0
+#: when the joint sticks: from the start of the reach, so no controller has done part of the reach before it (a faster
+#: controller would otherwise lose less); the RAK model's own joint-loss study (kinematic plant) sticks it at 2 s
+STUCK_ONSET_S = 0.0
 
 
 def make_plant(name: str, chain: Chain) -> Any:
