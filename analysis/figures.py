@@ -876,7 +876,8 @@ def make_ablation():
     ax.legend(frameon=False, fontsize=5.2, loc="lower center")
     panel(ax, "c", "Reaches that succeed", x=-.24)
 
-    # d - absorption: counterfactual (other joints as intact) against actual
+    # d - rescue: the error if the other joints had not adjusted (the intact reach's final angles, stopped joint at the
+    #     angle where it froze; pure geometry) against the error the reach actually ended with
     ax = fig.add_subplot(gs[1, :3])
     absrows = []
     counts = {}
@@ -899,19 +900,19 @@ def make_ablation():
         miss = xs > 1
         counts[c] = (int(miss.sum()), int((miss & (ys <= 1)).sum()), int(((~miss) & (ys > 1)).sum()))
         ax.scatter(xs, ys, s=11, marker=MARK[c], facecolors="none" if c != "motor" else C[c], edgecolors=C[c], color=C[c],
-                   linewidths=.7, alpha=.75, label="%s: %d of %d predicted misses rescued" % (SHORT[c], counts[c][1], counts[c][0]))
+                   linewidths=.7, alpha=.75, label="%s: %d of the %d reaches the stop alone would have failed were rescued" % (SHORT[c], counts[c][1], counts[c][0]))
     ax.axhline(1, color="#59646A", lw=.8, ls=":")
     ax.axvline(1, color="#59646A", lw=.8, ls=":")
     # 1 = the success limit (5 deg and 5% of reach); below 1 the target is reached
     ax.text(1.04, 4.2, "success limit", fontsize=5.2, color="#59646A", rotation=90, va="top", ha="left")
     ax.text(16, 1.06, "success limit", fontsize=5.2, color="#59646A", va="bottom", ha="right")
     ax.set(xscale="log", yscale="log", xlim=(.2, 20), ylim=(.2, 20),
-           xlabel="Predicted miss from the stop alone (error ÷ success limit)",
-           ylabel="Actual miss at the end\nof the reach (error ÷ success limit)")
+           xlabel="Error if the other joints had not adjusted to the stop (error ÷ success limit)",
+           ylabel="Error the reach actually\nended with (error ÷ success limit)")
     ax.plot([.2, 20], [.2, 20], color="#C9D0D4", lw=.6, zorder=0)
     ax.text(11, .23, "rescued by the\nother joints", fontsize=5.8, color="#1B5E20", va="bottom", ha="right")
     ax.text(11, 17, "not rescued", fontsize=5.8, color="#7F1D1D", va="top", ha="right")
-    ax.text(.22, .23, "the stop alone\ncauses no miss", fontsize=5.8, color="#55626A", va="bottom")
+    ax.text(.22, .23, "the stop alone would\nnot fail the reach", fontsize=5.8, color="#55626A", va="bottom")
     ax.legend(frameon=False, fontsize=5.4, loc="upper left")
     panel(ax, "d", "Do the other joints make up for the stopped one?", x=-.09)
 
