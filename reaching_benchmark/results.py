@@ -100,7 +100,7 @@ def read_summary(model: str, benchmark: str) -> Dict[str, Any]:
 def run_name(arm: str, seed: Optional[int], task: Optional[str] = None, kappa: float = 1.0, variant: Optional[str] = None,
              condition: Optional[str] = None, shard: Tuple[int, int] = (0, 1)) -> str:
     """``<arm>[_<task if not pose>][_kappa<κ> if not 1][_seed<s>][_<variant>][_<condition>][_shard<i>of<n> if sharded]``;
-    ``seed=None`` for a controller with nothing random in it (DLS IK, the cascade rule without spikes)."""
+    ``seed=None`` for a controller with nothing random in it (DLS IK, CCD IK)."""
 
     parts = [arm]
     if task and task != "pose":

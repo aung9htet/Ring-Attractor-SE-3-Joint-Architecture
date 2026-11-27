@@ -52,9 +52,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import nest
 import numpy as np
 
-from reaching_benchmark.benchmark import run_reach
-from reaching_benchmark.closed_loop import RuleLoop
-from reaching_benchmark.plants.light_robot import LightRobot
 from reaching_benchmark.results import run_name
 from reaching_benchmark.geometry import kinematics
 from reaching_benchmark.geometry.chains import Chain, get_chain
@@ -66,7 +63,7 @@ from .. import results
 from ..config import IkDesign, default_task
 from ..control.session import DISABLE_CONDITIONS, Disable, PoseIkSession, joint_loss_fields, trial_row
 from ..network.factory import build_pose_ik
-from ..rules.references import GAINS, cascade_steps, exact_targets
+from ..rules.references import exact_targets
 from ..rules.cascade_rule import goal_matrix
 from .command import VARIANT_NAMES
 from .twins import joint_loss_twins, reachable_after, twins
@@ -84,15 +81,9 @@ JOINT_LOSS_BENCHMARKS = ("joint_loss", "joint_loss_gazebo")
 def plan(name: str, args: Any) -> List[Dict[str, Any]]:
     """The runs of one benchmark: arm, pairs, κ, kernel seed, options.  ``--variant predictive_encoding`` runs the new
     method's network, ``--variant observer`` the observer method's (pose tasks only: on a position task it would change
-    nothing), ``--variant no_spikes`` the cascade rule in exact arithmetic with no network (``reach_kinematic`` and
-    ``reach_gazebo``)."""
+    nothing)."""
 
     runs = _plan(name, args)
-    if args.method == "cascade":
-        if name not in ("reach_kinematic", "reach_gazebo"):
-            raise ValueError("--variant no_spikes runs on reach_kinematic and reach_gazebo only")
-        for run in runs:
-            run["method"] = "cascade"
     if args.method in ("lead", "observer"):
         if args.method == "observer":
             runs = [run for run in runs if default_task(get_chain(run["arm"]).n) != "position"]
@@ -118,7 +109,7 @@ def _plan(name: str, args: Any) -> List[Dict[str, Any]]:
                 for c in conditions]
     if name == "reach_gazebo":
         return [{"arm": "tiago7", "pairs": pairs or 30, "kappa": 1.0, "seed": args.seed, "kind": "near", "robot": "gazebo",
-                 "method": "cascade" if args.method == "cascade" else "ring"}]   # lead, observer: below
+                 "method": "ring"}]                                            # lead, observer: below
     if name == "joint_loss":
         return [joint_loss_run(args, condition) for condition in (args.condition.split(",") if args.condition else JOINT_LOSS_CONDITIONS)]
     if name == "joint_loss_gazebo":
@@ -141,12 +132,11 @@ def joint_loss_run(args: Any, condition: str) -> Dict[str, Any]:
 
 def part_name(run: Dict[str, Any], task: str, shard: Tuple[int, int]) -> str:
     """The run file of one run (:func:`reaching_benchmark.results.run_name`): arm, task, κ, seed, then the variant
-    (``predictive_encoding``, ``observer``, ``no_spikes``) and the condition when not the default."""
+    (``predictive_encoding``, ``observer``) and the condition when not the default."""
 
-    exact = run.get("method", "ring") == "cascade"
-    variant = "no_spikes" if exact else VARIANT_NAMES.get(run.get("network_method", "matrix"))
-    return run_name(run["arm"], None if exact else run["seed"], task=task, kappa=run["kappa"], variant=variant,
-                    condition=run.get("condition"), shard=shard)
+    variant = VARIANT_NAMES.get(run.get("network_method", "matrix"))
+    return run_name(run["arm"], run["seed"], task=task, kappa=run["kappa"], variant=variant, condition=run.get("condition"),
+                    shard=shard)
 
 
 def pairs_for(chain: Chain, run: Dict[str, Any]) -> List[PosePair]:
@@ -286,29 +276,7 @@ def run_one(backend: Any, name: str, run: Dict[str, Any], shard: Tuple[int, int]
     progress.close()
 
 
-#: what the cascade rule without spikes reads, is given and learns (stored in its run files)
-NO_SPIKES = {"name": "Cascade rule, no spikes", "reads": "the measured joint angles, every 50 ms tick",
-             "given": "the true geometry: link rotations, joint axes and levers", "learns": "nothing",
-             "internal_model": "none: the RAK model's cascade computed exactly from the measured state, without neurons, "
-                               "delay or noise", "gain": GAINS["cascade"]}
-
-
-def run_no_spikes(name: str, run: Dict[str, Any], shard: Tuple[int, int], max_minutes: Optional[float],
-                  make_robot: Optional[Callable[[Chain], Any]] = None) -> None:
-    """The cascade rule without spikes on the same pairs, through the shared runner (no network is built)."""
-
-    chain = get_chain(run["arm"])
-    design = IkDesign(task=default_task(chain.n), kappa=run["kappa"])
-    robot = make_robot(chain) if make_robot is not None else LightRobot(chain)
-    loop = RuleLoop(chain, design, robot, cascade_steps(chain), GAINS["cascade"])
-    run = {k: v for k, v in run.items() if k != "seed"}
-    run_reach(results.MODEL, name, part_name(run, design.task, shard), run, loop, pairs_for(chain, run), NO_SPIKES, shard, max_minutes)
-
-
 def run_command(args: Any) -> None:
     shard = tuple(int(v) for v in args.shard.split("/"))
     for run in plan(args.name, args):
-        if run.get("method") == "cascade":
-            run_no_spikes(args.name, run, (shard[0], shard[1]), args.max_minutes)
-        else:
-            run_one(nest, args.name, run, (shard[0], shard[1]), args.max_minutes, args.threads)
+        run_one(nest, args.name, run, (shard[0], shard[1]), args.max_minutes, args.threads)

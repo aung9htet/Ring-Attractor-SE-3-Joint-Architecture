@@ -19,10 +19,10 @@ from . import results
 from .geometry.chains import get_chain, workspace
 from .statistics import censored, mcnemar, paired
 
-MODELS = ("ring_attractor_kinematics", "dls_ik", "mpc_nn_dynamics", "pets")
-LABELS = {"ring_attractor_kinematics": "RAK", "dls_ik": "DLS IK", "mpc_nn_dynamics": "NN dynamics + MPC", "pets": "PETS"}
+MODELS = ("ring_attractor_kinematics", "dls_ik", "ccd_ik", "mpc_nn_dynamics", "pets")
+LABELS = {"ring_attractor_kinematics": "RAK", "dls_ik": "DLS IK", "ccd_ik": "CCD IK", "mpc_nn_dynamics": "NN dynamics + MPC", "pets": "PETS"}
 #: the ring-attractor kinematics model's variants (summary group suffix → label)
-RAK_VARIANTS = {"": "RAK", "_lead": "RAK, predictive encoding", "_observer": "RAK, observer", "_cascade": "Cascade rule, no spikes"}
+RAK_VARIANTS = {"": "RAK", "_lead": "RAK, predictive encoding", "_observer": "RAK, observer"}
 REFERENCE = "RAK"
 
 

@@ -8,8 +8,9 @@ result. Everything runs in Docker; every result in `results/` can be produced ag
 
 | Package | Model | What it is |
 |---|---|---|
-| `ring_attractor_kinematics/` | **RAK model** (ring-attractor kinematics) | The spiking network (NEST, leaky integrate-and-fire neurons). Joint angles live as bumps on ring attractors; hand position as packets on three 2-D attractor sheets; populations compose the hand's pose from the joints and compare it with the goal; a *cascade* hands the remaining error down the arm, joint by joint (below). Variants: the default (the turn is read from the hand's late decoded matrix), *predictive encoding* (joint angles written ahead by the commanded velocity), *observer* (a two-chart orientation observer), and *no spikes* (the same cascade in exact arithmetic, no neurons). |
+| `ring_attractor_kinematics/` | **RAK model** (ring-attractor kinematics) | The spiking network (NEST, leaky integrate-and-fire neurons). Joint angles live as bumps on ring attractors; hand position as packets on three 2-D attractor sheets; populations compose the hand's pose from the joints and compare it with the goal; a *cascade*, inspired by cyclic coordinate descent, hands the remaining error down the arm joint by joint (below). Variants: the default (the turn is read from the hand's late decoded matrix), *predictive encoding* (joint angles written ahead by the commanded velocity) and *observer* (a two-chart orientation observer). |
 | `dls_ik/` | **DLS IK** | Standard inverse kinematics by damped least squares: every tick, the smallest joint step that makes the remaining turn and move, from the measured joint angles and the true geometry. Reactive, exact, no neurons, no internal model. |
+| `ccd_ik/` | **CCD IK** (Wang & Chen 1991; Kenwright 2012) | Standard inverse kinematics by cyclic coordinate descent: every tick, from the measured joint angles, each joint in turn from the wrist to the base is turned by the closed-form angle that brings the hand closest to the goal, with the hand's pose recomputed after every joint, until the hand is at the goal; the arm then steps toward that solution. Reactive, exact, no neurons, no internal model. |
 | `mpc_nn_dynamics/` | **NN dynamics + MPC** (Nagabandi et al., ICRA 2018) | A neural-network model of how the arm responds to joint steps, learned from data, with model-predictive control by random shooting. |
 | `pets/` | **PETS** (Chua et al., NeurIPS 2018) | An ensemble of probabilistic neural-network models of the arm's response, learned from data, with model-predictive control by the cross-entropy method over trajectories sampled from the ensemble. |
 | `jacobian_transpose_ik/` | Jacobian transpose | The gradient of the task error; used only as an exact-loop reference beside the RAK model's trials and in the simulator (no benchmark of its own). |
@@ -17,13 +18,17 @@ result. Everything runs in Docker; every result in `results/` can be produced ag
 Shared by all: `reaching_benchmark/` (the task, the arms, the plants, the closed loop, the runner, the results files,
 statistics, progress bars, status and comparison) and, for the two learned models, `learned_dynamics/`.
 
-**What "cascade" means.** The RAK model decides how far each joint moves with a *cascade*: every 50 ms it goes through
-the joints from base to wrist; joint 1 takes the part of the remaining hand error (turn and offset) that its own axis can
-make, capped at its step limit; that part is subtracted from the error; joint 2 takes its share of what joint 1 left;
-and so on to the wrist. In the RAK model spiking populations compute this. **"Cascade rule, no spikes"** computes the
-same equations exactly from the measured joint angles, with no neurons, no estimation lag and no spike noise, so that
-comparing it with the RAK model isolates what the spiking implementation costs, and comparing it with DLS IK isolates the
-algorithm.
+**What "cascade" means, and how it relates to CCD.** The RAK model decides how far each joint moves with a *cascade*:
+every 50 ms it goes through the joints from base to wrist; joint 1 takes the part of the remaining hand error (turn and
+offset) that its own axis can make, capped at its step limit; that part is subtracted from the error; joint 2 takes its
+share of what joint 1 left; and so on to the wrist. Spiking populations compute this. The idea comes from cyclic
+coordinate descent (CCD), the classical inverse-kinematics method that also moves one joint at a time, each correcting
+what the others left. The cascade is a linearised, single-sweep form of it run continuously in closed loop: each joint's
+share comes from its first-order effect (axis and lever) rather than an exact rotation with the pose recomputed, one sweep
+is made per tick rather than sweeps to convergence, every joint moves at once while the loop keeps running, and the sweep
+goes from base to wrist. Standard CCD IK (`ccd_ik/`) is therefore one of the baselines. The exact cascade without neurons
+(`ring_attractor_kinematics/rules/cascade_rule.py`) is kept as the RAK model's exact-loop twin of every trial, not as a
+benchmark of its own.
 
 ## Contents
 
@@ -68,6 +73,7 @@ ring_attractor_kinematics/   the RAK model
   benchmarks/                one module per benchmark, and their summaries
   simulator/                 the browser simulator
 dls_ik/                      rule.py (damped least squares), controller.py, __main__.py
+ccd_ik/                      rule.py (cyclic coordinate descent), controller.py, __main__.py
 jacobian_transpose_ik/       rule.py
 learned_dynamics/            setup (device, determinism), kinematics (PyTorch), data, model, train, planner, controller,
                              protocol (the shared protocol and command line of the two learned baselines)
@@ -100,7 +106,7 @@ docker/run.bash nest --image baselines --cuda -- 'python3 -c "import torch; prin
 ```
 
 What runs where: the RAK model runs in NEST on the CPU (NEST has no GPU back end for this network); Gazebo's physics runs
-on the CPU; DLS IK and the cascade without spikes are negligible; only the two learned baselines' training and planning
+on the CPU; DLS IK and CCD IK need little; only the two learned baselines' training and planning
 run on the GPU.
 
 ## Tests
@@ -175,23 +181,23 @@ Options of `benchmark`: `--variant` (above), `--arm`, `--seed` (NEST kernel seed
 next trial after M minutes), `--threads` (keep 8), and for `joint_loss` `--onset`, `--loss`, `--loss-class`,
 `--lesion-seed`. Running the same command again resumes a run that stopped.
 
-### DLS IK (`results/dls_ik/`), cascade without spikes, NN dynamics + MPC, PETS
+### DLS IK, CCD IK, NN dynamics + MPC, PETS
 
 See [Running the baselines](#running-the-baselines). Their results appear in `results/dls_ik/reach_gazebo/`,
-`results/ring_attractor_kinematics/reach_gazebo/tiago7_no_spikes.json`, `results/mpc_nn_dynamics/` and `results/pets/`
-once run; `results/comparison/reach_gazebo.json` puts every model side by side.
+`results/ccd_ik/reach_gazebo/`, `results/mpc_nn_dynamics/` and `results/pets/` once run;
+`results/comparison/reach_gazebo.json` puts every model side by side.
 
 ## Running the baselines
 
 These fill the baseline rows of the paper's Fig. 3b: every model on the same 30 pairs of the 7-DoF TIAGo arm in Gazebo.
 Gazebo takes one run at a time. Estimated times are for this machine.
 
-**1. DLS IK and the cascade without spikes** (model image):
+**1. DLS IK and CCD IK** (model image):
 
 ```bash
 docker/run.bash gazebo up rak-gazebo
-docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m dls_ik reach --plant gazebo'                                         # ~0.5 h
-docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m ring_attractor_kinematics benchmark reach_gazebo --variant no_spikes'  # ~0.5 h
+docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m dls_ik reach --plant gazebo'    # ~0.5 h
+docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m ccd_ik reach --plant gazebo'    # ~0.5–1 h
 docker/run.bash gazebo down rak-gazebo
 ```
 
@@ -254,13 +260,14 @@ differ, the model and the planner:
 | Controller | Reads every 50 ms | Given | Learns | Internal model |
 |---|---|---|---|---|
 | RAK model | measured joint angles | the arm's geometry, wired into the network; calibrated decoders | nothing during reaching (decoders calibrated offline) | its own population estimate of the hand, which lags the arm by about 0.2 s; the *predictive encoding* variant runs it ahead of the measured state |
-| Cascade rule, no spikes | measured joint angles | the arm's geometry | nothing | none: the RAK model's cascade computed exactly from the measured state |
 | DLS IK | measured joint angles | the arm's geometry (Jacobian) | nothing | none: every step recomputed from the measured state (reactive) |
+| CCD IK | measured joint angles | the arm's geometry (forward kinematics, joint axes and origins) | nothing | none: CCD solved afresh from the measured state every tick (reactive) |
 | NN dynamics + MPC | measured joint angles and velocities | the arm's geometry (for the cost) | the arm's response to joint steps | a learned model, planned 10 ticks ahead (predictive) |
 | PETS | measured joint angles and velocities | the arm's geometry (for the cost) | the arm's response to joint steps, with its uncertainty | a learned ensemble, planned 25 ticks ahead (predictive) |
 
-DLS IK is therefore the accuracy ceiling of a reactive controller, not a like-for-like comparison with the RAK model;
-the learned MPC baselines are the predictive, model-based comparison.
+DLS IK and CCD IK are therefore the accuracy references of reactive controllers (CCD IK the coordinate-wise method the
+cascade draws on), not like-for-like comparisons with the RAK model; the learned MPC baselines are the predictive,
+model-based comparison.
 
 ## Gazebo
 
@@ -291,8 +298,8 @@ results/comparison/<benchmark>.json        every model side by side (python -m r
 
 A run file is named `<arm>[_<task>][_kappa<κ>][_seed<s>][_<variant>][_<condition>][_shard<i>of<n>]`, each part only when it
 is not the default: the task only when not pose, κ only when not 1, the seed only for controllers with something random
-in them (the RAK model's NEST kernel seed; the learned baselines' seed), the variant (`predictive_encoding`, `observer`,
-`no_spikes`), the condition (`push`, `noise`, `lock`, `motor`, `allocation`, `intact`, `loss0.1_all_l1`, …) and the shard
+in them (the RAK model's NEST kernel seed; the learned baselines' seed), the variant (`predictive_encoding`, `observer`),
+the condition (`push`, `noise`, `lock`, `motor`, `allocation`, `intact`, `loss0.1_all_l1`, …) and the shard
 only when a run was split. Examples: `reach_kinematic/tiago7_seed2_predictive_encoding.json`,
 `reach_gain/tiago7_kappa1.5_seed1.json`, `joint_loss/tiago7_seed3_motor.json`, `dls_ik/reach_gazebo/tiago7.json`.
 
@@ -321,8 +328,8 @@ nohup docker/run.bash nest -- 'python3 -B -m ring_attractor_kinematics benchmark
 
 ## The simulator
 
-Set a pose goal in the browser and watch an arm reach it (http://localhost:8765/), with the RAK model, the cascade
-without spikes, DLS IK or the Jacobian transpose:
+Set a pose goal in the browser and watch an arm reach it (http://localhost:8765/), with the RAK model, its cascade in
+exact arithmetic, DLS IK or the Jacobian transpose:
 
 ```bash
 docker/run.bash sim -- 'python3 -B -m ring_attractor_kinematics simulator --chain tiago7'
@@ -346,5 +353,8 @@ docker/run.bash gazebo exec rak-gazebo -- 'python3 -B -m ring_attractor_kinemati
   probabilistic dynamics models. *Advances in Neural Information Processing Systems 31* (2018).
 * Wampler, C. W. Manipulator inverse kinematic solutions based on vector formulations and damped least-squares methods.
   *IEEE Transactions on Systems, Man, and Cybernetics* 16, 93–101 (1986).
+* Wang, L.-C. T. & Chen, C. C. A combined optimization method for solving the inverse kinematics problems of mechanical
+  manipulators. *IEEE Transactions on Robotics and Automation* 7, 489–499 (1991).
+* Kenwright, B. Inverse kinematics: cyclic coordinate descent (CCD). *Journal of Graphics Tools* 16, 177–217 (2012).
 
 The learned baselines are reimplemented here in PyTorch from these papers; their original code is not used.

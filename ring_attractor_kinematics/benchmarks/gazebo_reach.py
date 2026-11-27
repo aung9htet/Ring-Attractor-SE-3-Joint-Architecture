@@ -9,14 +9,11 @@ import nest
 
 from reaching_benchmark.plants.gazebo_robot import GazeboRobot, RosLink
 
-from .reach import plan, run_no_spikes, run_one
+from .reach import plan, run_one
 
 
 def run_command(args: Any) -> None:
     link = RosLink()
     shard = tuple(int(v) for v in args.shard.split("/"))
     for run in plan(args.name, args):
-        if run.get("method") == "cascade":
-            run_no_spikes(args.name, run, (shard[0], shard[1]), args.max_minutes, make_robot=lambda chain: GazeboRobot(chain, link))
-        else:
-            run_one(nest, args.name, run, (shard[0], shard[1]), args.max_minutes, args.threads, make_robot=lambda chain: GazeboRobot(chain, link))
+        run_one(nest, args.name, run, (shard[0], shard[1]), args.max_minutes, args.threads, make_robot=lambda chain: GazeboRobot(chain, link))

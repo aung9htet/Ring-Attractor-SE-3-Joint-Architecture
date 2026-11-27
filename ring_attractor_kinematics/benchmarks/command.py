@@ -28,9 +28,7 @@ twins                recompute the exact-loop twins of every stored trial   benc
 ==================== ===================================================== ==========================================
 
 ``--variant`` picks the model variant: none (the default, the hand's late matrix), ``predictive_encoding`` (joint
-angles written ahead by the commanded velocity), ``observer`` (two-chart orientation observer) or ``no_spikes`` (the
-same cascade rule in exact arithmetic from the measured joint angles, no network built; ``reach_gazebo`` and
-``reach_kinematic`` only).
+angles written ahead by the commanded velocity) or ``observer`` (two-chart orientation observer).
 
 Every long run shows a progress bar (reaching_benchmark/progress.py); ``python -m reaching_benchmark status`` shows every
 run at once.
@@ -59,10 +57,10 @@ MODULES = {"screening": (P + "screening", P + "screening"),
            **{name: (P + "reach", P + "reach_summary") for name in ("reach_kinematic", "reach_pole", "reach_gain", "reach_disturbance")}}
 #: the closed-loop benchmarks whose trials carry exact-loop twins
 CLOSED_LOOP = ("reach_kinematic", "reach_pole", "reach_gain", "reach_disturbance", "reach_gazebo")
-#: ``--variant`` → the code's method alias (network method, or ``cascade`` for the rule without a network)
-VARIANTS = {"predictive_encoding": "lead", "observer": "observer", "no_spikes": "cascade"}
+#: ``--variant`` → the code's network method alias
+VARIANTS = {"predictive_encoding": "lead", "observer": "observer"}
 #: the code's network method alias → the variant name used in run file names
-VARIANT_NAMES = {"lead": "predictive_encoding", "observer": "observer", "cascade": "no_spikes"}
+VARIANT_NAMES = {value: key for key, value in VARIANTS.items()}
 
 
 def add_arguments(parser: argparse.ArgumentParser, command: str) -> None:

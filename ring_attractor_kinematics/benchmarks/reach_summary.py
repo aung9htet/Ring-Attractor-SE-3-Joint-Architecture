@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional, Sequence
 import numpy as np
 
 from reaching_benchmark.statistics import censored, mcnemar, paired, success_summary
-from reaching_benchmark.summary import reach_entry
 
 from .. import results
 from ..rules import observer_rule
@@ -40,8 +39,6 @@ def within_curve(rows: List[Dict[str, Any]], design: Dict[str, Any], source: Opt
 
 
 def summarise_rows(rows: List[Dict[str, Any]], design: Dict[str, Any]) -> Dict[str, Any]:
-    if rows and "twins" not in rows[0]:              # the cascade rule without spikes: the shared fields only
-        return {"trials": len(rows), "network": reach_entry(rows, design), "twins": {}}
     limit = float(design["trial_s"])
     network = {"success": success_summary([r["reached"] for r in rows]),
                "time_median_s": float(np.median(censored([r["time_to_reach_s"] for r in rows], limit))),
@@ -82,12 +79,10 @@ def summarise(name: str) -> Dict[str, Any]:
         key = "%s_%s_k%g%s%s" % (run["arm"], document["design"]["task"], run["kappa"], "_" + run["condition"] if run.get("condition") else "",
                                  "_" + run["method"] if run.get("method", "ring") != "ring" else "") + (
             "_" + run["network_method"] if run.get("network_method", "matrix") != "matrix" else "")
-        group = groups.setdefault(key, {"design": document["design"], "run": run, "rows": [], "seeds": set(),
-                                        "neurons": document.get("neurons", 0), "synapses": document.get("synapses", 0),
-                                        "simulated_s": 0.0, "wall_s": 0.0})
-        seed = run.get("seed", 0)                    # 0: nothing random (the cascade rule without spikes)
-        group["rows"] += [dict(r, seed=seed) for r in document["rows"]]
-        group["seeds"].add(seed)
+        group = groups.setdefault(key, {"design": document["design"], "run": run, "rows": [], "seeds": set(), "neurons": document["neurons"],
+                                        "synapses": document["synapses"], "simulated_s": 0.0, "wall_s": 0.0})
+        group["rows"] += [dict(r, seed=run["seed"]) for r in document["rows"]]
+        group["seeds"].add(run["seed"])
         group["simulated_s"] += document["simulated_s"]
         group["wall_s"] += document["wall_s"]
     out: Dict[str, Any] = {"benchmark": name, "groups": {}}

@@ -1,22 +1,22 @@
 """The shared benchmark and the non-learned baselines, without NEST, ROS or a GPU: the shared limits are the RAK model's,
-DLS IK is the rule it was, the shared runner writes, resumes and summarises, and the comparison pairs every model with
-the RAK model."""
+DLS IK is the rule it was, CCD IK takes the best turn per joint and reaches, the shared runner writes, resumes and
+summarises, and the comparison pairs every model with the RAK model."""
 
-import importlib
 import os
 import tempfile
-import types
 import unittest
 
 import numpy as np
 
+from ccd_ik import rule as ccd_rule
+from ccd_ik.controller import make_loop as make_ccd_loop
 from dls_ik import rule as dls_rule
 from dls_ik.controller import make_loop
 from jacobian_transpose_ik import rule as transpose_rule
 from reaching_benchmark import compare, results, summary
 from reaching_benchmark.benchmark import run_reach, test_pairs
 from reaching_benchmark.geometry import kinematics
-from reaching_benchmark.geometry.chains import get_chain
+from reaching_benchmark.geometry.chains import get_chain, workspace
 from reaching_benchmark.limits import faded, limit_room, step_caps
 from reaching_benchmark.plants.light_robot import LightRobot
 from reaching_benchmark.task import IkDesign, default_task
@@ -121,34 +121,40 @@ class RunnerTest(unittest.TestCase):
         self.assertEqual(table["controllers"][1]["against_rak"]["reached"], [1, 2])
 
 
-class NoSpikesTest(unittest.TestCase):
-    """The cascade rule without spikes through the RAK model's command, its summary and the comparison."""
+class CcdTest(unittest.TestCase):
+    """CCD IK: each joint's closed-form angle is the best one, and it reaches on the kinematic plant."""
 
-    def test_no_spikes_run_summary_and_comparison(self):
-        try:
-            reach = importlib.import_module("ring_attractor_kinematics.benchmarks.reach")
-        except ImportError:
-            self.skipTest("NEST is not installed")
-        reach_summary = importlib.import_module("ring_attractor_kinematics.benchmarks.reach_summary")
-        args = types.SimpleNamespace(pairs=2, arm="tiago7", method="cascade", condition=None, seed=1)
-        runs = reach.plan("reach_kinematic", args)
-        self.assertEqual(reach.part_name(runs[0], "pose", (0, 1)), "tiago7_no_spikes")
-        saved = results.ROOT
-        with tempfile.TemporaryDirectory() as root:
-            results.ROOT = root
-            try:
-                reach.run_no_spikes("reach_kinematic", runs[0], (0, 1), None)
-                document = results.read_run("ring_attractor_kinematics", "reach_kinematic", "tiago7_no_spikes")
-                self.assertNotIn("seed", document["run"])
-                out = reach_summary.summarise("reach_kinematic")
-                results.write_summary("ring_attractor_kinematics", "reach_kinematic", out)
-                table = compare.compare("reach_kinematic")
-            finally:
-                results.ROOT = saved
-        group = out["groups"]["tiago7_pose_k1_cascade"]
-        self.assertEqual(group["network"]["success"]["n"], 2)
-        self.assertEqual([c["label"] for c in table["controllers"]], ["Cascade rule, no spikes"])
+    def test_the_closed_form_angle_is_the_best_turn(self):
+        for name in ("tiago7", "generic7"):
+            chain = get_chain(name)
+            design = IkDesign()
+            radius = workspace(chain).radius
+            rng = np.random.default_rng(11)
+            grid = np.linspace(-np.pi, np.pi, 20001)
+            for _ in range(10):
+                q, goal = chain.random_pose(rng), chain.random_pose(rng)
+                goal_r, goal_p = chain.rotation(goal), kinematics.position(chain, goal)
+                k = int(rng.integers(chain.n))
+                origin = kinematics.joint_origins(chain, q)[k]
 
+                def objective(phi):
+                    moved = q.copy()
+                    moved[k] += phi
+                    return (design.turn_weight * np.trace(goal_r.T @ chain.rotation(moved))
+                            + 2 * design.move_weight / radius ** 2 * (goal_p - origin) @ (kinematics.position(chain, moved) - origin))
+                best = ccd_rule.best_angle(kinematics.joint_axes(chain, q)[k], origin, chain.rotation(q), kinematics.position(chain, q),
+                                           goal_r, goal_p, design, radius)
+                searched = grid[int(np.argmax([objective(phi) for phi in grid]))]
+                self.assertAlmostEqual(float(np.angle(np.exp(1j * (best - searched)))), 0.0, places=3)
+
+    def test_ccd_reaches_on_the_kinematic_plant(self):
+        chain = get_chain("tiago7")
+        design = IkDesign()
+        loop = make_ccd_loop(chain, design, LightRobot(chain))
+        for pair in test_pairs(chain, 3):
+            loop.place(pair.start)
+            trial = loop.reach(pair.goal, pair.goal_position)
+            self.assertTrue(trial.reached(design), "pair %d: %.2f deg, %.4f reach" % (pair.index, trial.final_error_deg, trial.final_error_reach))
 
 if __name__ == "__main__":
     unittest.main()
