@@ -899,21 +899,21 @@ def make_ablation():
         miss = xs > 1
         counts[c] = (int(miss.sum()), int((miss & (ys <= 1)).sum()), int(((~miss) & (ys > 1)).sum()))
         ax.scatter(xs, ys, s=11, marker=MARK[c], facecolors="none" if c != "motor" else C[c], edgecolors=C[c], color=C[c],
-                   linewidths=.7, alpha=.75, label="%s: %d of %d would-miss targets reached" % (SHORT[c], counts[c][1], counts[c][0]))
+                   linewidths=.7, alpha=.75, label="%s: %d of %d predicted misses rescued" % (SHORT[c], counts[c][1], counts[c][0]))
     ax.axhline(1, color="#59646A", lw=.8, ls=":")
     ax.axvline(1, color="#59646A", lw=.8, ls=":")
     # 1 = the success limit (5 deg and 5% of reach); below 1 the target is reached
     ax.text(1.04, 4.2, "success limit", fontsize=5.2, color="#59646A", rotation=90, va="top", ha="left")
     ax.text(16, 1.06, "success limit", fontsize=5.2, color="#59646A", va="bottom", ha="right")
     ax.set(xscale="log", yscale="log", xlim=(.2, 20), ylim=(.2, 20),
-           xlabel="Error if the other joints had moved as in the intact reach (× tolerance)",
-           ylabel="Error the reach ended with,\njoint stopped (× tolerance)")
+           xlabel="Predicted miss from the stop alone (error ÷ success limit)",
+           ylabel="Actual miss at the end\nof the reach (error ÷ success limit)")
     ax.plot([.2, 20], [.2, 20], color="#C9D0D4", lw=.6, zorder=0)
-    ax.text(11, .23, "absorbed: would have\nmissed, was reached", fontsize=5.6, color="#1B5E20", va="bottom", ha="right")
-    ax.text(11, 17, "not absorbed", fontsize=5.6, color="#7F1D1D", va="top", ha="right")
-    ax.text(.22, .23, "freezing alone\nwould not miss", fontsize=5.6, color="#55626A", va="bottom")
+    ax.text(11, .23, "rescued by the\nother joints", fontsize=5.8, color="#1B5E20", va="bottom", ha="right")
+    ax.text(11, 17, "not rescued", fontsize=5.8, color="#7F1D1D", va="top", ha="right")
+    ax.text(.22, .23, "the stop alone\ncauses no miss", fontsize=5.8, color="#55626A", va="bottom")
     ax.legend(frameon=False, fontsize=5.4, loc="upper left")
-    panel(ax, "d", "Do the remaining joints absorb the lost motion?", x=-.09)
+    panel(ax, "d", "Do the other joints make up for the stopped one?", x=-.09)
 
     # e - 10% of neurons silenced: the hand-pose estimate (held poses) relative to the intact network, and reaching
     audit = read(DATA / "sensitivity_metrics.json")
