@@ -899,31 +899,27 @@ def make_ablation():
             ax.legend(frameon=False, fontsize=5.3, loc="upper right", handlelength=1.2, borderaxespad=.1)
         ax.text(ONSET_S + .15, .03, "joint disabled", transform=ax.get_xaxis_transform(), fontsize=5.3, color="#59646A")
 
-    # c - targets reached by the RAK model in each condition (bar: mean of the three seeds; whisker: range), and how many
-    #     targets DLS IK with the joint held fixed could still reach from the trial's own frozen state (dashed)
+    # c - targets reached by the RAK model in each condition (bar: mean of the three seeds; whisker: range over seeds)
     ax = fig.add_subplot(gs[0, 3])
     successrows = []
     for i, c in enumerate(("intact",) + CONDITIONS):
         rak = [sum(bool(r["reached"]) for r in data[(c, s)]) for s in seeds]
         mean = float(np.mean(rak))
-        ax.bar(i, mean, .6, color=C[c], lw=0)
-        ax.errorbar(i, mean, yerr=[[mean - min(rak)], [max(rak) - mean]], fmt="none", ecolor="#222222", lw=.7, capsize=1.6)
-        ax.text(i, max(rak) + .6, "%.0f" % mean if mean == round(mean) else "%.1f" % mean, ha="center", fontsize=5.2, color=C[c])
-        reachable = None
-        if c != "intact":
-            reachable = [sum(bool((r.get("reachability") or {}).get("reachable")) for r in data[(c, s)]) for s in seeds]
-            ax.plot([i - .36, i + .36], [np.mean(reachable)] * 2, color="#222222", lw=1.0, ls=(0, (2, 1)))
+        ax.bar(i, mean, .64, color=C[c], lw=0, zorder=2)
+        ax.errorbar(i, mean, yerr=[[mean - min(rak)], [max(rak) - mean]], fmt="none", ecolor="#222222", lw=.7, capsize=2, zorder=3)
+        ax.text(i, max(rak) + .8, "%.0f" % mean if mean == round(mean) else "%.1f" % mean, ha="center", fontsize=5.8,
+                color=C[c], fontweight="bold")
+        reachable = [sum(bool((r.get("reachability") or {}).get("reachable")) for r in data[(c, s)]) for s in seeds] if c != "intact" else None
         for s, n in zip(seeds, rak):
             successrows.append([c, s, 30, n, None if reachable is None else reachable[seeds.index(s)]])
-    handles = [Line2D([], [], color="#222222", lw=1.0, ls=(0, (2, 1)), label="still reachable with the joint frozen"),
-               Line2D([], [], color="#222222", lw=.7, marker="_", markersize=4, label="range over seeds 1–3")]
     ax.set(xticks=range(4), xticklabels=[SHORT[c] for c in ("intact",) + CONDITIONS], ylabel="Targets reached (of 30)",
-           ylim=(0, 33.5), yticks=range(0, 31, 5), xlim=(-.6, 3.6))
+           ylim=(0, 34), yticks=range(0, 31, 10), xlim=(-.55, 3.55))
+    ax.yaxis.grid(True, color="#E3E6E8", lw=.6, zorder=0)
+    ax.set_axisbelow(True)
     for t, c in zip(ax.get_xticklabels(), ("intact",) + CONDITIONS):
         t.set_color(C[c])
-    ax.tick_params(axis="x", labelsize=5.4, length=0)
-    ax.legend(handles=handles, frameon=False, fontsize=5.0, loc="upper center", bbox_to_anchor=(.45, -.09), ncol=1,
-              borderaxespad=0, handlelength=1.6)
+    ax.tick_params(axis="x", labelsize=5.6, length=0)
+    ax.spines["bottom"].set_color("#9AA0A4")
     panel(ax, "c", "Reaches that succeed", x=-.24)
 
     # d - rescue: the error if the other joints had not adjusted (the intact reach's final angles, stopped joint at the
