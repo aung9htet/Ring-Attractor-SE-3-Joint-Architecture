@@ -1,0 +1,643 @@
+{
+ "config": {
+  "activation": "swish",
+  "batch": 256,
+  "episodes_per_iteration": 3,
+  "epochs": 25,
+  "hidden": 200,
+  "horizon": 25,
+  "iterations": 10,
+  "label": "PETS",
+  "layers": 4,
+  "learning_rate": 0.001,
+  "members": 5,
+  "name": "pets",
+  "planner": "cem",
+  "planner_settings": {
+   "alpha": 0.1,
+   "elites": 40,
+   "iterations": 5,
+   "particles": 20,
+   "population": 400
+  },
+  "probabilistic": true,
+  "random_episode_s": 10.0,
+  "random_episodes": 20,
+  "reference": "Chua et al., NeurIPS 2018",
+  "weight_decay": 5e-05
+ },
+ "device": {
+  "cuda": "12.1",
+  "deterministic": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti",
+  "seed": 1,
+  "torch": "2.4.1+cu121"
+ },
+ "iterations": [
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 20,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.290341,
+    "train_loss": [
+     2.526347,
+     2.123539,
+     1.794746,
+     1.479696,
+     1.274786,
+     1.142283,
+     1.076393,
+     1.016676,
+     0.957759,
+     0.910983,
+     0.869834,
+     0.82296,
+     0.786566,
+     0.777109,
+     0.724892,
+     0.700819,
+     0.68204,
+     0.638968,
+     0.607637,
+     0.577606,
+     0.558415,
+     0.521355,
+     0.504972,
+     0.500959,
+     0.458822
+    ],
+    "train_loss_last": 0.458822,
+    "transitions": 4000
+   },
+   "iteration": 0
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 23,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.235297,
+    "train_loss": [
+     2.49174,
+     2.056534,
+     1.698952,
+     1.364665,
+     1.159064,
+     1.036344,
+     0.954556,
+     0.893363,
+     0.834495,
+     0.784239,
+     0.735489,
+     0.691589,
+     0.649927,
+     0.606393,
+     0.5741,
+     0.53521,
+     0.501322,
+     0.465588,
+     0.434682,
+     0.404573,
+     0.372555,
+     0.345405,
+     0.317274,
+     0.285688,
+     0.260925
+    ],
+    "train_loss_last": 0.260925,
+    "transitions": 4446
+   },
+   "iteration": 1,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    20,
+    21,
+    22
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 26,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.300414,
+    "train_loss": [
+     2.484814,
+     2.021637,
+     1.683562,
+     1.401793,
+     1.298901,
+     1.185087,
+     1.127687,
+     1.063199,
+     1.051128,
+     1.023847,
+     0.986321,
+     0.948252,
+     0.981893,
+     0.917763,
+     0.888302,
+     0.897895,
+     0.869963,
+     0.822758,
+     0.81822,
+     0.808462,
+     0.806043,
+     0.730068,
+     0.722544,
+     0.695126,
+     0.72146
+    ],
+    "train_loss_last": 0.72146,
+    "transitions": 4837
+   },
+   "iteration": 2,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    23,
+    24,
+    25
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 29,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.225407,
+    "train_loss": [
+     2.469763,
+     1.953691,
+     1.522726,
+     1.19133,
+     1.044238,
+     0.951314,
+     0.878142,
+     0.814501,
+     0.75959,
+     0.706919,
+     0.658724,
+     0.612378,
+     0.572818,
+     0.536136,
+     0.500059,
+     0.467422,
+     0.431853,
+     0.403105,
+     0.371834,
+     0.340667,
+     0.306034,
+     0.275175,
+     0.242646,
+     0.212955,
+     0.182237
+    ],
+    "train_loss_last": 0.182237,
+    "transitions": 5285
+   },
+   "iteration": 3,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    26,
+    27,
+    28
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 32,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.226552,
+    "train_loss": [
+     2.445595,
+     1.898054,
+     1.438705,
+     1.151327,
+     1.022474,
+     0.930218,
+     0.85423,
+     0.787691,
+     0.72558,
+     0.671661,
+     0.626132,
+     0.583187,
+     0.535259,
+     0.492155,
+     0.458087,
+     0.420498,
+     0.382673,
+     0.343564,
+     0.309851,
+     0.27124,
+     0.24393,
+     0.213146,
+     0.179998,
+     0.153323,
+     0.117616
+    ],
+    "train_loss_last": 0.117616,
+    "transitions": 5604
+   },
+   "iteration": 4,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    29,
+    30,
+    31
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 35,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.23144,
+    "train_loss": [
+     2.429824,
+     1.83697,
+     1.338759,
+     1.10269,
+     0.975025,
+     0.889209,
+     0.812123,
+     0.750616,
+     0.691995,
+     0.640307,
+     0.596762,
+     0.557014,
+     0.511688,
+     0.47119,
+     0.430902,
+     0.394208,
+     0.3601,
+     0.324039,
+     0.288522,
+     0.254977,
+     0.222019,
+     0.194828,
+     0.162399,
+     0.138269,
+     0.113887
+    ],
+    "train_loss_last": 0.113887,
+    "transitions": 6053
+   },
+   "iteration": 5,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    32,
+    33,
+    34
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 38,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.212097,
+    "train_loss": [
+     2.403424,
+     1.783103,
+     1.291565,
+     1.05838,
+     0.93343,
+     0.841549,
+     0.762004,
+     0.701232,
+     0.645105,
+     0.592547,
+     0.543423,
+     0.49542,
+     0.452047,
+     0.414042,
+     0.372094,
+     0.336429,
+     0.301718,
+     0.268176,
+     0.232473,
+     0.201602,
+     0.174186,
+     0.143659,
+     0.112117,
+     0.093209,
+     0.063695
+    ],
+    "train_loss_last": 0.063695,
+    "transitions": 6505
+   },
+   "iteration": 6,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    35,
+    36,
+    37
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 41,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.198489,
+    "train_loss": [
+     2.390589,
+     1.741012,
+     1.237938,
+     1.01938,
+     0.895549,
+     0.802518,
+     0.724796,
+     0.66194,
+     0.60353,
+     0.54726,
+     0.50156,
+     0.450598,
+     0.4067,
+     0.367506,
+     0.324154,
+     0.288114,
+     0.250525,
+     0.214914,
+     0.180371,
+     0.154697,
+     0.125412,
+     0.098144,
+     0.067327,
+     0.040558,
+     0.019032
+    ],
+    "train_loss_last": 0.019032,
+    "transitions": 6920
+   },
+   "iteration": 7,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    38,
+    39,
+    40
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 44,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.19792,
+    "train_loss": [
+     2.363452,
+     1.673569,
+     1.199447,
+     1.001088,
+     0.880356,
+     0.78448,
+     0.708334,
+     0.643219,
+     0.577317,
+     0.520304,
+     0.467011,
+     0.419819,
+     0.378251,
+     0.334235,
+     0.297213,
+     0.253917,
+     0.220255,
+     0.193047,
+     0.158326,
+     0.127156,
+     0.099558,
+     0.073239,
+     0.045305,
+     0.011966,
+     -0.007492
+    ],
+    "train_loss_last": -0.007492,
+    "transitions": 7466
+   },
+   "iteration": 8,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    41,
+    42,
+    43
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 47,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.201028,
+    "train_loss": [
+     2.34109,
+     1.622607,
+     1.131238,
+     0.940512,
+     0.818572,
+     0.720905,
+     0.64883,
+     0.582632,
+     0.516963,
+     0.46245,
+     0.408165,
+     0.356648,
+     0.308605,
+     0.267394,
+     0.229513,
+     0.193248,
+     0.157507,
+     0.126394,
+     0.094738,
+     0.072277,
+     0.040189,
+     0.01355,
+     -0.014187,
+     -0.047183,
+     -0.070401
+    ],
+    "train_loss_last": -0.070401,
+    "transitions": 7864
+   },
+   "iteration": 9,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    44,
+    45,
+    46
+   ]
+  },
+  {
+   "fit": {
+    "device": {
+     "cuda": "12.1",
+     "deterministic": true,
+     "device": "cuda",
+     "gpu": "NVIDIA GeForce RTX 4070 Ti",
+     "seed": 1,
+     "torch": "2.4.1+cu121"
+    },
+    "episodes": 50,
+    "epochs": 25,
+    "holdout_mse_normalised": 0.185169,
+    "train_loss": [
+     2.311385,
+     1.548292,
+     1.109112,
+     0.9185,
+     0.794974,
+     0.705536,
+     0.629027,
+     0.555302,
+     0.488526,
+     0.423551,
+     0.366671,
+     0.31677,
+     0.27351,
+     0.227539,
+     0.194366,
+     0.16236,
+     0.129268,
+     0.093138,
+     0.063576,
+     0.037686,
+     0.011667,
+     -0.01803,
+     -0.046501,
+     -0.073228,
+     -0.101007
+    ],
+    "train_loss_last": -0.101007,
+    "transitions": 8394
+   },
+   "iteration": 10,
+   "reached_on_training_goals": [
+    true,
+    true,
+    true
+   ],
+   "training_pairs": [
+    47,
+    48,
+    49
+   ]
+  }
+ ],
+ "model": "pets",
+ "phase1": {
+  "episode_s": 10.0,
+  "episodes": 20,
+  "plant": "gazebo",
+  "seed": 1
+ },
+ "transitions": 8394,
+ "wall_s": 1093.292657
+}

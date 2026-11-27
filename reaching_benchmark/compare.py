@@ -43,7 +43,11 @@ def entries(benchmark: str) -> List[Dict[str, Any]]:
         budget = None
         if os.path.exists(training):
             with open(training, encoding="utf-8") as stream:
-                budget = {k: v for k, v in json.load(stream).items() if k in ("transitions", "episodes", "wall_s", "iterations", "device")}
+                record = json.load(stream)
+            last = (record.get("iterations") or [{}])[-1].get("fit", {})
+            budget = {"transitions": record.get("transitions"), "episodes": last.get("episodes"),
+                      "iterations": max(len(record.get("iterations") or []) - 1, 0), "wall_s": record.get("wall_s"),
+                      "device": record.get("device")}
         if model == "ring_attractor_kinematics":
             for key, group in sorted(summary.get("groups", {}).items()):
                 suffix = key[len("%s_%s_k%g" % (group["arm"], group["task"], group["kappa"])):]
