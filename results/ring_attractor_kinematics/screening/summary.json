@@ -1,0 +1,3241 @@
+{
+ "arms": [
+  "tiago7",
+  "generic7"
+ ],
+ "gate": {
+  "finalists": [
+   "M4",
+   "M5",
+   "MQ",
+   "MB"
+  ],
+  "nominal": [
+   0.3,
+   0.8,
+   1.0
+  ],
+  "rule": {
+   "faster": 0.15,
+   "fewer_reached": 2,
+   "less_error": 0.25,
+   "longer_path": 0.1
+  },
+  "sources": {
+   "M2": {
+    "against": [
+     {
+      "better": false,
+      "faster": -0.017544,
+      "less_error": -0.319886,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        0.62996,
+        1.16365
+       ],
+       "median_difference": 0.817995,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       4.399285,
+       3.33308
+      ],
+      "n": 60,
+      "passes": false,
+      "path_ratio_median": [
+       1.590025,
+       1.54106
+      ],
+      "reached": [
+       59,
+       59
+      ],
+      "reference": "M0",
+      "source": "M2",
+      "time": {
+       "ci": [
+        -0.05,
+        0.0
+       ],
+       "median_difference": 0.0,
+       "n": 60,
+       "p": 0.018427
+      },
+      "time_median_s": [
+       4.35,
+       4.275
+      ]
+     },
+     {
+      "better": false,
+      "faster": 0.107692,
+      "less_error": -1.851014,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 1,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        2.09852,
+        3.78455
+       ],
+       "median_difference": 2.778915,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       4.399285,
+       1.54306
+      ],
+      "n": 60,
+      "passes": false,
+      "path_ratio_median": [
+       1.590025,
+       1.512805
+      ],
+      "reached": [
+       59,
+       60
+      ],
+      "reference": "M1",
+      "source": "M2",
+      "time": {
+       "ci": [
+        -0.6,
+        -0.325
+       ],
+       "median_difference": -0.475,
+       "n": 60,
+       "p": 1e-06
+      },
+      "time_median_s": [
+       4.35,
+       4.875
+      ]
+     }
+    ],
+    "passes": false
+   },
+   "M3": {
+    "against": [
+     {
+      "better": false,
+      "faster": -0.005848,
+      "less_error": -0.852983,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        2.09389,
+        3.36561
+       ],
+       "median_difference": 2.552005,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       6.17614,
+       3.33308
+      ],
+      "n": 60,
+      "passes": false,
+      "path_ratio_median": [
+       1.51651,
+       1.54106
+      ],
+      "reached": [
+       59,
+       59
+      ],
+      "reference": "M0",
+      "source": "M3",
+      "time": {
+       "ci": [
+        -0.075,
+        0.0
+       ],
+       "median_difference": -0.05,
+       "n": 60,
+       "p": 0.126164
+      },
+      "time_median_s": [
+       4.3,
+       4.275
+      ]
+     },
+     {
+      "better": false,
+      "faster": 0.117949,
+      "less_error": -3.002527,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 1,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        3.5588,
+        6.05637
+       ],
+       "median_difference": 4.64981,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       6.17614,
+       1.54306
+      ],
+      "n": 60,
+      "passes": false,
+      "path_ratio_median": [
+       1.51651,
+       1.512805
+      ],
+      "reached": [
+       59,
+       60
+      ],
+      "reference": "M1",
+      "source": "M3",
+      "time": {
+       "ci": [
+        -0.55,
+        -0.3
+       ],
+       "median_difference": -0.45,
+       "n": 60,
+       "p": 1.1e-05
+      },
+      "time_median_s": [
+       4.3,
+       4.875
+      ]
+     }
+    ],
+    "passes": false
+   },
+   "M4": {
+    "against": [
+     {
+      "better": true,
+      "faster": -0.076023,
+      "less_error": 0.831306,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 1,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -3.76287,
+        -2.37451
+       ],
+       "median_difference": -2.648705,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.56227,
+       3.33308
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.48365,
+       1.54106
+      ],
+      "reached": [
+       60,
+       59
+      ],
+      "reference": "M0",
+      "source": "M4",
+      "time": {
+       "ci": [
+        0.1,
+        0.4
+       ],
+       "median_difference": 0.25,
+       "n": 60,
+       "p": 1e-06
+      },
+      "time_median_s": [
+       4.6,
+       4.275
+      ]
+     },
+     {
+      "better": true,
+      "faster": 0.05641,
+      "less_error": 0.635614,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -1.031936,
+        -0.923735
+       ],
+       "median_difference": -0.995535,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.56227,
+       1.54306
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.48365,
+       1.512805
+      ],
+      "reached": [
+       60,
+       60
+      ],
+      "reference": "M1",
+      "source": "M4",
+      "time": {
+       "ci": [
+        -0.25,
+        -0.05
+       ],
+       "median_difference": -0.15,
+       "n": 60,
+       "p": 0.001349
+      },
+      "time_median_s": [
+       4.6,
+       4.875
+      ]
+     }
+    ],
+    "passes": true
+   },
+   "M5": {
+    "against": [
+     {
+      "better": true,
+      "faster": -0.076023,
+      "less_error": 0.836156,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 1,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -3.97159,
+        -2.43298
+       ],
+       "median_difference": -2.707615,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.546105,
+       3.33308
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.483645,
+       1.54106
+      ],
+      "reached": [
+       60,
+       59
+      ],
+      "reference": "M0",
+      "source": "M5",
+      "time": {
+       "ci": [
+        0.1,
+        0.45
+       ],
+       "median_difference": 0.3,
+       "n": 60,
+       "p": 0.0
+      },
+      "time_median_s": [
+       4.6,
+       4.275
+      ]
+     },
+     {
+      "better": true,
+      "faster": 0.05641,
+      "less_error": 0.64609,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -1.041588,
+        -0.937847
+       ],
+       "median_difference": -1.00529,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.546105,
+       1.54306
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.483645,
+       1.512805
+      ],
+      "reached": [
+       60,
+       60
+      ],
+      "reference": "M1",
+      "source": "M5",
+      "time": {
+       "ci": [
+        -0.25,
+        -0.05
+       ],
+       "median_difference": -0.125,
+       "n": 60,
+       "p": 0.004883
+      },
+      "time_median_s": [
+       4.6,
+       4.875
+      ]
+     }
+    ],
+    "passes": true
+   },
+   "MB": {
+    "against": [
+     {
+      "better": true,
+      "faster": -0.076023,
+      "less_error": 0.807693,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 1,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -3.8884,
+        -2.31446
+       ],
+       "median_difference": -2.6143,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.640975,
+       3.33308
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.488365,
+       1.54106
+      ],
+      "reached": [
+       60,
+       59
+      ],
+      "reference": "M0",
+      "source": "MB",
+      "time": {
+       "ci": [
+        0.1,
+        0.4
+       ],
+       "median_difference": 0.275,
+       "n": 60,
+       "p": 0.0
+      },
+      "time_median_s": [
+       4.6,
+       4.275
+      ]
+     },
+     {
+      "better": true,
+      "faster": 0.05641,
+      "less_error": 0.584608,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -0.947039,
+        -0.851025
+       ],
+       "median_difference": -0.91913,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.640975,
+       1.54306
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.488365,
+       1.512805
+      ],
+      "reached": [
+       60,
+       60
+      ],
+      "reference": "M1",
+      "source": "MB",
+      "time": {
+       "ci": [
+        -0.225,
+        -0.05
+       ],
+       "median_difference": -0.125,
+       "n": 60,
+       "p": 0.003224
+      },
+      "time_median_s": [
+       4.6,
+       4.875
+      ]
+     }
+    ],
+    "passes": true
+   },
+   "MQ": {
+    "against": [
+     {
+      "better": true,
+      "faster": -0.076023,
+      "less_error": 0.837272,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 1,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -3.9843,
+        -2.42012
+       ],
+       "median_difference": -2.69934,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.542385,
+       3.33308
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.483465,
+       1.54106
+      ],
+      "reached": [
+       60,
+       59
+      ],
+      "reference": "M0",
+      "source": "MQ",
+      "time": {
+       "ci": [
+        0.1,
+        0.45
+       ],
+       "median_difference": 0.3,
+       "n": 60,
+       "p": 0.0
+      },
+      "time_median_s": [
+       4.6,
+       4.275
+      ]
+     },
+     {
+      "better": true,
+      "faster": 0.05641,
+      "less_error": 0.6485,
+      "matched": true,
+      "mcnemar": {
+       "only_first": 0,
+       "only_second": 0,
+       "p": 1.0
+      },
+      "moving_error": {
+       "ci": [
+        -1.04051,
+        -0.93433
+       ],
+       "median_difference": -1.00715,
+       "n": 60,
+       "p": 0.0
+      },
+      "moving_error_median_deg": [
+       0.542385,
+       1.54306
+      ],
+      "n": 60,
+      "passes": true,
+      "path_ratio_median": [
+       1.483465,
+       1.512805
+      ],
+      "reached": [
+       60,
+       60
+      ],
+      "reference": "M1",
+      "source": "MQ",
+      "time": {
+       "ci": [
+        -0.225,
+        -0.05
+       ],
+       "median_difference": -0.125,
+       "n": 60,
+       "p": 0.005218
+      },
+      "time_median_s": [
+       4.6,
+       4.875
+      ]
+     }
+    ],
+    "passes": true
+   }
+  }
+ },
+ "pairs": 30,
+ "share_noise_rad": 0.01,
+ "table": [
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 2.514655,
+   "path_ratio_median": 1.524205,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.475
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.699415,
+   "path_ratio_median": 1.76601,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.1
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.49495,
+   "path_ratio_median": 2.019315,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.5
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 3.706955,
+   "path_ratio_median": 1.6717,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.45
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.17855,
+   "path_ratio_median": 2.016055,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.075
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.92153,
+   "path_ratio_median": 2.38775,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.525
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 3.33308,
+   "path_ratio_median": 1.54106,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.275
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.805195,
+   "path_ratio_median": 1.864105,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.0
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.57607,
+   "path_ratio_median": 2.225725,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.675
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.11535,
+   "path_ratio_median": 1.703565,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.325
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.28126,
+   "path_ratio_median": 2.118325,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.025
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 3.005445,
+   "path_ratio_median": 2.591985,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.7
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.62221,
+   "path_ratio_median": 1.586965,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.15
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.95546,
+   "path_ratio_median": 2.028825,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.3
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.752775,
+   "path_ratio_median": 2.64342,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.1
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.455985,
+   "path_ratio_median": 1.76034,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.225
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.39647,
+   "path_ratio_median": 2.273985,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.275
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 3.133795,
+   "path_ratio_median": 2.961835,
+   "source": "M0",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.125
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.36211,
+   "path_ratio_median": 1.50131,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.85
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.479565,
+   "path_ratio_median": 1.721025,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.5
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.553745,
+   "path_ratio_median": 2.0256,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.85
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 2.85017,
+   "path_ratio_median": 1.630605,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.875
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.00723,
+   "path_ratio_median": 1.966305,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.425
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.94423,
+   "path_ratio_median": 2.421965,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.85
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.54306,
+   "path_ratio_median": 1.512805,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.875
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.739085,
+   "path_ratio_median": 1.79159,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.525
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.976615,
+   "path_ratio_median": 2.27046,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.975
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 3.025245,
+   "path_ratio_median": 1.65657,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.925
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.28551,
+   "path_ratio_median": 2.082795,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.5
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 3.4633,
+   "path_ratio_median": 2.874325,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.95
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.83292,
+   "path_ratio_median": 1.52645,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.875
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.18912,
+   "path_ratio_median": 1.934085,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.6
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 3.558675,
+   "path_ratio_median": 5.34023,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.778212,
+     0.942323
+    ],
+    "n": 60,
+    "rate": 0.883333,
+    "reached": 53
+   },
+   "time_median_s": 5.3
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 3.337585,
+   "path_ratio_median": 1.69871,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.9
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.663785,
+   "path_ratio_median": 2.378035,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.6
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 5.268395,
+   "path_ratio_median": 6.11925,
+   "source": "M1",
+   "success": {
+    "ci": [
+     0.778212,
+     0.942323
+    ],
+    "n": 60,
+    "rate": 0.883333,
+    "reached": 53
+   },
+   "time_median_s": 5.525
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 3.479655,
+   "path_ratio_median": 1.55694,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.425
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.194475,
+   "path_ratio_median": 1.85194,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.15
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.900775,
+   "path_ratio_median": 2.171765,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.475
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 3.479655,
+   "path_ratio_median": 1.55694,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.425
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.194475,
+   "path_ratio_median": 1.85194,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.15
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.900775,
+   "path_ratio_median": 2.171765,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.475
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.399285,
+   "path_ratio_median": 1.590025,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.35025,
+   "path_ratio_median": 1.98698,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.15
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.04236,
+   "path_ratio_median": 2.42851,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.399285,
+   "path_ratio_median": 1.590025,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.35025,
+   "path_ratio_median": 1.98698,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.15
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.04236,
+   "path_ratio_median": 2.42851,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 5.347795,
+   "path_ratio_median": 1.64864,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.4
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.510795,
+   "path_ratio_median": 2.16842,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.475
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.373185,
+   "path_ratio_median": 2.967615,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.05
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 5.347795,
+   "path_ratio_median": 1.64864,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.4
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.510795,
+   "path_ratio_median": 2.16842,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.475
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.373185,
+   "path_ratio_median": 2.967615,
+   "source": "M2",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.05
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.875625,
+   "path_ratio_median": 1.481505,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.425
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.08777,
+   "path_ratio_median": 1.72148,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.15
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.805755,
+   "path_ratio_median": 2.03361,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.925
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 4.779875,
+   "path_ratio_median": 1.509975,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.425
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.62147,
+   "path_ratio_median": 1.78294,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.2
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.45728,
+   "path_ratio_median": 2.107935,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.95
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 6.17614,
+   "path_ratio_median": 1.51651,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.3
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.736775,
+   "path_ratio_median": 1.857675,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.425
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.02241,
+   "path_ratio_median": 2.344835,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.45
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 5.97121,
+   "path_ratio_median": 1.55364,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.4
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.010505,
+   "path_ratio_median": 1.91966,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.4
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.695955,
+   "path_ratio_median": 2.44681,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.475
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 7.228965,
+   "path_ratio_median": 1.57775,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.5
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 3.099585,
+   "path_ratio_median": 2.074875,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.975
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.648085,
+   "path_ratio_median": 2.90707,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 5.475
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 7.02885,
+   "path_ratio_median": 1.60303,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 2.588815,
+   "path_ratio_median": 2.141435,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.925
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 2.34506,
+   "path_ratio_median": 3.103555,
+   "source": "M3",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 5.525
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.4986,
+   "path_ratio_median": 1.460075,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.625
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.501875,
+   "path_ratio_median": 1.684415,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.325
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.487005,
+   "path_ratio_median": 1.896195,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.97389,
+   "path_ratio_median": 1.48903,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.675
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.96422,
+   "path_ratio_median": 1.72563,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.96162,
+   "path_ratio_median": 1.94241,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.56227,
+   "path_ratio_median": 1.48365,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.53817,
+   "path_ratio_median": 1.75337,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.50235,
+   "path_ratio_median": 2.033125,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.7
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.00745,
+   "path_ratio_median": 1.50134,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.00242,
+   "path_ratio_median": 1.804725,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.98605,
+   "path_ratio_median": 2.096115,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.725
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.602295,
+   "path_ratio_median": 1.51184,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.425
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.558325,
+   "path_ratio_median": 1.843405,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.516985,
+   "path_ratio_median": 2.197335,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.95
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.09281,
+   "path_ratio_median": 1.53813,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.425
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.057395,
+   "path_ratio_median": 1.89823,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.018065,
+   "path_ratio_median": 2.27636,
+   "source": "M4",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.975
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.503355,
+   "path_ratio_median": 1.46007,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.625
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.50717,
+   "path_ratio_median": 1.68055,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.325
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.49495,
+   "path_ratio_median": 1.89354,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.972225,
+   "path_ratio_median": 1.48903,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.65
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.98594,
+   "path_ratio_median": 1.71171,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.985715,
+   "path_ratio_median": 1.942505,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.8
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.546105,
+   "path_ratio_median": 1.483645,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.54168,
+   "path_ratio_median": 1.735615,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.51564,
+   "path_ratio_median": 2.020365,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.7
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.0073,
+   "path_ratio_median": 1.501335,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.024575,
+   "path_ratio_median": 1.790695,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.017485,
+   "path_ratio_median": 2.077465,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.725
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.595165,
+   "path_ratio_median": 1.511825,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.475
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.571785,
+   "path_ratio_median": 1.82971,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.526555,
+   "path_ratio_median": 2.179765,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.95
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.08001,
+   "path_ratio_median": 1.539345,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.5
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.067955,
+   "path_ratio_median": 1.886275,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.375
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.03612,
+   "path_ratio_median": 2.256065,
+   "source": "M5",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.975
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.507145,
+   "path_ratio_median": 1.46,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.625
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.507955,
+   "path_ratio_median": 1.681595,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.325
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.497265,
+   "path_ratio_median": 1.89523,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.96709,
+   "path_ratio_median": 1.489225,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.65
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.97975,
+   "path_ratio_median": 1.711525,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.983675,
+   "path_ratio_median": 1.94115,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.775
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.542385,
+   "path_ratio_median": 1.483465,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.540685,
+   "path_ratio_median": 1.737095,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.518375,
+   "path_ratio_median": 2.01976,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.725
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.028445,
+   "path_ratio_median": 1.50134,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.02382,
+   "path_ratio_median": 1.7918,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.016845,
+   "path_ratio_median": 2.078885,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.725
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.59507,
+   "path_ratio_median": 1.511685,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.475
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.57404,
+   "path_ratio_median": 1.830535,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.52627,
+   "path_ratio_median": 2.180265,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.975
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.08327,
+   "path_ratio_median": 1.539415,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.5
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.06382,
+   "path_ratio_median": 1.88635,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.375
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.034445,
+   "path_ratio_median": 2.25567,
+   "source": "MQ",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.0
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.4996,
+   "path_ratio_median": 1.458745,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.625
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.49526,
+   "path_ratio_median": 1.683105,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.325
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.492835,
+   "path_ratio_median": 1.896275,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.8
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.96041,
+   "path_ratio_median": 1.49413,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.65
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.972215,
+   "path_ratio_median": 1.717395,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.2,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.97369,
+   "path_ratio_median": 1.9375,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.8
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.640975,
+   "path_ratio_median": 1.488365,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 4.6
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.65456,
+   "path_ratio_median": 1.758465,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.624845,
+   "path_ratio_median": 2.04844,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.725
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.20467,
+   "path_ratio_median": 1.530765,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.625
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.265205,
+   "path_ratio_median": 1.84432,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.35
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.3,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.233345,
+   "path_ratio_median": 2.20215,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.75
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 0.876925,
+   "path_ratio_median": 1.53649,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.525
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 0.95743,
+   "path_ratio_median": 1.90521,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.375
+  },
+  {
+   "cue_noise_deg": 0.8,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 0.948885,
+   "path_ratio_median": 2.28296,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 2.95
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.0,
+   "moving_error_median_deg": 1.638695,
+   "path_ratio_median": 1.64547,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.911449,
+     0.997052
+    ],
+    "n": 60,
+    "rate": 0.983333,
+    "reached": 59
+   },
+   "time_median_s": 4.55
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 1.5,
+   "moving_error_median_deg": 1.85172,
+   "path_ratio_median": 2.02427,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.425
+  },
+  {
+   "cue_noise_deg": 1.6,
+   "delay_s": 0.4,
+   "kappa": 2.0,
+   "moving_error_median_deg": 1.84781,
+   "path_ratio_median": 2.54155,
+   "source": "MB",
+   "success": {
+    "ci": [
+     0.939828,
+     1.0
+    ],
+    "n": 60,
+    "rate": 1.0,
+    "reached": 60
+   },
+   "time_median_s": 3.15
+  }
+ ]
+}

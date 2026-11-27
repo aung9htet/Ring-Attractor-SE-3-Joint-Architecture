@@ -1,0 +1,23 @@
+{
+  "figure": "Fig. 1: a, hand paths of every controller (Gazebo target pair 0); b-d, the circuit; e, population motifs",
+  "dimensions_mm": [
+    178,
+    169
+  ],
+  "minimum_label_pt": 4.995212598425197,
+  "panels": {
+    "a": "Target pair 0, every controller (fig1a_hand_paths.svg)",
+    "b": "Joint-state and pose representation",
+    "c": "Pose-error and correction allocation",
+    "d": "Joint-target generation and feedback",
+    "e": "Population motifs"
+  },
+  "overlays": {
+    "predictive_encoding": "blue (Fig. 4): forward rings hold q_k + tau_k qdot_k^cmd; a separate motor ring keeps the measured angle for the target circuit",
+    "ablations": "solid badges in the Fig. 5 colours, and dashed outlines around what each removes: lock, the actuator; motor, the gain pair and target ring; allocation, the u+/u- correction pairs; diffuse 10% silencing applies to every population (key only)",
+    "motif_numbers": "grey numbers on the circuit name the motif tiles of panel e"
+  },
+  "geometry": "pinned TIAGo pose pair: analysis/source_data/figure1_snapshot.json",
+  "diagram_convention": "arrows carry named neural signals; a grey brace groups independent joint channels; gain input ports represent grouped projections",
+  "activity": "all circuit activity glyphs are schematic; measured activity is in Figure 2"
+}

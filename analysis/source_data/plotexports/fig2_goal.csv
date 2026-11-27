@@ -1,0 +1,2 @@
+source,pair_index,goal_x_mm,goal_y_mm,goal_z_mm,goal_x_scaled,goal_z_scaled,joint4_end_of_reach_rad,joint4_end_of_reach_index
+results/raw/reach/tiago7_pose_k1_seed1_0of1.json,0,384.01,-52.38,376.03,0.2841599450552092,0.6540916135676402,1.22347,112.31081543188517

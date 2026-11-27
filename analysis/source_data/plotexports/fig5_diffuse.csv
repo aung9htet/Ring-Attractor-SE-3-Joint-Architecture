@@ -1,0 +1,15 @@
+measure,group,seed,value_a,value_b
+held_pose_10pct,all,1,21.339145000000002,307.7967087
+held_pose_10pct,all,2,25.651395,294.3529368
+held_pose_10pct,all,3,21.749585,364.718211
+held_pose_10pct,rings,1,2.858485,96.45110670000001
+held_pose_10pct,rings,2,2.853465,97.52676960000001
+held_pose_10pct,rings,3,3.692985,104.56893720000001
+held_pose_10pct,value,1,16.29325,314.99599559999996
+held_pose_10pct,value,2,19.87542,288.4226904
+held_pose_10pct,value,3,19.33175,355.2709095
+held_pose_10pct,sheets,1,1.242755,86.3551845
+held_pose_10pct,sheets,2,1.242755,87.5557371
+held_pose_10pct,sheets,3,1.242755,89.2437624
+closed_loop,intact,1,30,30
+closed_loop,whole network 10% silenced,1,0,30

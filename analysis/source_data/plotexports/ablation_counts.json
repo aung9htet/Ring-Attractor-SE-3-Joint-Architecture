@@ -1,0 +1,20 @@
+{
+  "absorption_pooled_seeds": {
+    "lock": {
+      "would_miss": 64,
+      "absorbed": 34,
+      "harmed_although_counterfactual_within": 0
+    },
+    "motor": {
+      "would_miss": 63,
+      "absorbed": 32,
+      "harmed_although_counterfactual_within": 0
+    },
+    "allocation": {
+      "would_miss": 65,
+      "absorbed": 35,
+      "harmed_although_counterfactual_within": 0
+    }
+  },
+  "definition": "Counterfactual: the intact reach's final joint angles at the same seed and target, with the disabled joint put back at the angle where this trial froze it. Tolerance-scaled error = max(orientation/5 deg, position/40.29 mm)."
+}

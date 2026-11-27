@@ -1,0 +1,16 @@
+{
+  "purpose": "illustrative forward replay, not a benchmark",
+  "arm": "tiago7",
+  "selection": "target pair 0 (lowest index) of the RAK model's kinematic reach, kernel seed 1; fixed before inspection",
+  "source": "results/ring_attractor_kinematics/reach_kinematic/tiago7_seed1.json",
+  "source_sha256": "d18f2a4704af075dc9a0a1c929c87783dbee0aac867f83d26a0600ead256091e",
+  "replay_network": "ForwardNetwork",
+  "replay_kernel_seed": 11,
+  "threads": 8,
+  "tick_ms": 50,
+  "warmup_s": 2.0,
+  "replay_s": 8.0,
+  "time_points": 161,
+  "interpolation": "linear interpolation of the stored joint path (stored every 200 ms)",
+  "neurons": 24028
+}

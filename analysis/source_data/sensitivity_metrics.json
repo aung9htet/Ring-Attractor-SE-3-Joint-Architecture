@@ -1,0 +1,723 @@
+{
+  "baseline_file": "results/ring_attractor_kinematics/held_pose/tiago7.json",
+  "baseline": {
+    "poses": 30,
+    "orientation_median_deg": 1.242755,
+    "position_median_reach": 0.014335,
+    "position_median_mm": 11.550282900000001
+  },
+  "runs": [
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.05_all_l1.json",
+      "lesion": {
+        "fraction": 0.05,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 1,
+        "silenced": 1189,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 70
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 764
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 355
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 10.519175,
+      "position_median_reach": 0.25079,
+      "position_median_mm": 202.0715346,
+      "paired_orientation_difference_median_deg": 9.404130000000002,
+      "paired_position_difference_median_reach": 0.23825000000000002
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.05_all_l2.json",
+      "lesion": {
+        "fraction": 0.05,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 2,
+        "silenced": 1189,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 70
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 764
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 355
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 10.888449999999999,
+      "position_median_reach": 0.23451499999999997,
+      "position_median_mm": 188.95811609999998,
+      "paired_orientation_difference_median_deg": 9.25291,
+      "paired_position_difference_median_reach": 0.21889999999999998
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.05_all_l3.json",
+      "lesion": {
+        "fraction": 0.05,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 3,
+        "silenced": 1189,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 70
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 764
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 355
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 9.649055,
+      "position_median_reach": 0.23403000000000002,
+      "position_median_mm": 188.5673322,
+      "paired_orientation_difference_median_deg": 8.274645,
+      "paired_position_difference_median_reach": 0.21525
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_all_l1.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 1,
+        "silenced": 2378,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 140
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 1528
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 710
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 21.339145000000002,
+      "position_median_reach": 0.38200500000000004,
+      "position_median_mm": 307.7967087,
+      "paired_orientation_difference_median_deg": 20.101485,
+      "paired_position_difference_median_reach": 0.37009000000000003
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_all_l2.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 2,
+        "silenced": 2378,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 140
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 1528
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 710
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 25.651395,
+      "position_median_reach": 0.36532,
+      "position_median_mm": 294.3529368,
+      "paired_orientation_difference_median_deg": 24.475315,
+      "paired_position_difference_median_reach": 0.356515
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_all_l3.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 3,
+        "silenced": 2378,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 140
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 1528
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 710
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 21.749585,
+      "position_median_reach": 0.45265,
+      "position_median_mm": 364.718211,
+      "paired_orientation_difference_median_deg": 21.059845000000003,
+      "paired_position_difference_median_reach": 0.43532000000000004
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_rings_l1.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "rings"
+        ],
+        "lesion_seed": 1,
+        "silenced": 140,
+        "of": 1400,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 140
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 2.858485,
+      "position_median_reach": 0.119705,
+      "position_median_mm": 96.45110670000001,
+      "paired_orientation_difference_median_deg": 1.5695299999999999,
+      "paired_position_difference_median_reach": 0.10463
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_rings_l2.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "rings"
+        ],
+        "lesion_seed": 2,
+        "silenced": 140,
+        "of": 1400,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 140
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 2.853465,
+      "position_median_reach": 0.12104000000000001,
+      "position_median_mm": 97.52676960000001,
+      "paired_orientation_difference_median_deg": 1.5762450000000001,
+      "paired_position_difference_median_reach": 0.105155
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_rings_l3.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "rings"
+        ],
+        "lesion_seed": 3,
+        "silenced": 140,
+        "of": 1400,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 140
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 3.692985,
+      "position_median_reach": 0.12978,
+      "position_median_mm": 104.56893720000001,
+      "paired_orientation_difference_median_deg": 2.491045,
+      "paired_position_difference_median_reach": 0.117445
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_sheets_l1.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "sheets"
+        ],
+        "lesion_seed": 1,
+        "silenced": 710,
+        "of": 7108,
+        "network_neurons": 24208,
+        "by_class": {
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 710
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 1.242755,
+      "position_median_reach": 0.10717499999999999,
+      "position_median_mm": 86.3551845,
+      "paired_orientation_difference_median_deg": 0.0,
+      "paired_position_difference_median_reach": 0.090165
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_sheets_l2.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "sheets"
+        ],
+        "lesion_seed": 2,
+        "silenced": 710,
+        "of": 7108,
+        "network_neurons": 24208,
+        "by_class": {
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 710
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 1.242755,
+      "position_median_reach": 0.108665,
+      "position_median_mm": 87.5557371,
+      "paired_orientation_difference_median_deg": 0.0,
+      "paired_position_difference_median_reach": 0.09079999999999999
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_sheets_l3.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "sheets"
+        ],
+        "lesion_seed": 3,
+        "silenced": 710,
+        "of": 7108,
+        "network_neurons": 24208,
+        "by_class": {
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 710
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 1.242755,
+      "position_median_reach": 0.11076,
+      "position_median_mm": 89.2437624,
+      "paired_orientation_difference_median_deg": 0.0,
+      "paired_position_difference_median_reach": 0.09335
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_value_l1.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "value"
+        ],
+        "lesion_seed": 1,
+        "silenced": 1528,
+        "of": 15280,
+        "network_neurons": 24208,
+        "by_class": {
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 1528
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 16.29325,
+      "position_median_reach": 0.39093999999999995,
+      "position_median_mm": 314.99599559999996,
+      "paired_orientation_difference_median_deg": 15.575500000000002,
+      "paired_position_difference_median_reach": 0.37410999999999994
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_value_l2.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "value"
+        ],
+        "lesion_seed": 2,
+        "silenced": 1528,
+        "of": 15280,
+        "network_neurons": 24208,
+        "by_class": {
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 1528
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 19.87542,
+      "position_median_reach": 0.35796,
+      "position_median_mm": 288.4226904,
+      "paired_orientation_difference_median_deg": 18.32363,
+      "paired_position_difference_median_reach": 0.34325
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.1_value_l3.json",
+      "lesion": {
+        "fraction": 0.1,
+        "classes": [
+          "value"
+        ],
+        "lesion_seed": 3,
+        "silenced": 1528,
+        "of": 15280,
+        "network_neurons": 24208,
+        "by_class": {
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 1528
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 19.33175,
+      "position_median_reach": 0.440925,
+      "position_median_mm": 355.2709095,
+      "paired_orientation_difference_median_deg": 17.99214,
+      "paired_position_difference_median_reach": 0.42531
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.2_all_l1.json",
+      "lesion": {
+        "fraction": 0.2,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 1,
+        "silenced": 4758,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 280
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 3056
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 1422
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 91.94248999999999,
+      "position_median_reach": 0.61223,
+      "position_median_mm": 493.29820020000005,
+      "paired_orientation_difference_median_deg": 90.77274,
+      "paired_position_difference_median_reach": 0.59938
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.2_all_l2.json",
+      "lesion": {
+        "fraction": 0.2,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 2,
+        "silenced": 4758,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 280
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 3056
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 1422
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 64.833635,
+      "position_median_reach": 0.62052,
+      "position_median_mm": 499.9777848,
+      "paired_orientation_difference_median_deg": 63.34416,
+      "paired_position_difference_median_reach": 0.605275
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.2_all_l3.json",
+      "lesion": {
+        "fraction": 0.2,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 3,
+        "silenced": 4758,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 280
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 3056
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 1422
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 71.81257,
+      "position_median_reach": 0.588035,
+      "position_median_mm": 473.80332089999996,
+      "paired_orientation_difference_median_deg": 71.06307999999999,
+      "paired_position_difference_median_reach": 0.5748199999999999
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.3_all_l1.json",
+      "lesion": {
+        "fraction": 0.3,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 1,
+        "silenced": 7136,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 420
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 4584
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 2132
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 112.819465,
+      "position_median_reach": 0.68302,
+      "position_median_mm": 550.3365348,
+      "paired_orientation_difference_median_deg": 111.45132999999998,
+      "paired_position_difference_median_reach": 0.673315
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.3_all_l2.json",
+      "lesion": {
+        "fraction": 0.3,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 2,
+        "silenced": 7136,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 420
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 4584
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 2132
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 108.56752,
+      "position_median_reach": 0.59655,
+      "position_median_mm": 480.664197,
+      "paired_orientation_difference_median_deg": 107.25704999999999,
+      "paired_position_difference_median_reach": 0.5803750000000001
+    },
+    {
+      "file": "results/ring_attractor_kinematics/held_pose_neuron_loss/tiago7_loss0.3_all_l3.json",
+      "lesion": {
+        "fraction": 0.3,
+        "classes": [
+          "rings",
+          "value",
+          "sheets"
+        ],
+        "lesion_seed": 3,
+        "silenced": 7136,
+        "of": 23788,
+        "network_neurons": 24208,
+        "by_class": {
+          "rings": {
+            "populations": 7,
+            "neurons": 1400,
+            "silenced": 420
+          },
+          "value": {
+            "populations": 103,
+            "neurons": 15280,
+            "silenced": 4584
+          },
+          "sheets": {
+            "populations": 7,
+            "neurons": 7108,
+            "silenced": 2132
+          }
+        },
+        "how": "threshold raised to 1e+12 mV from the build on (no input makes the neuron fire); never restored"
+      },
+      "poses": 30,
+      "orientation_median_deg": 122.151995,
+      "position_median_reach": 0.67685,
+      "position_median_mm": 545.3651189999999,
+      "paired_orientation_difference_median_deg": 120.84506,
+      "paired_position_difference_median_reach": 0.667915
+    }
+  ],
+  "aggregation": "each mask's median over the same 30 poses; masks are never pooled into 90 poses"
+}

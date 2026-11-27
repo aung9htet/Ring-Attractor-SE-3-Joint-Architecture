@@ -1,0 +1,13 @@
+condition,kernel_seed,n,reached,reachable_witnesses
+intact,1,30,30,
+intact,2,30,29,
+intact,3,30,29,
+lock,1,30,20,25
+lock,2,30,20,25
+lock,3,30,20,25
+motor,1,30,20,25
+motor,2,30,19,25
+motor,3,30,20,25
+allocation,1,30,21,25
+allocation,2,30,20,25
+allocation,3,30,19,25

@@ -1,0 +1,87 @@
+{
+ "benchmark": "cost",
+ "rows": [
+  {
+   "arm": "tiago4",
+   "forward": {
+    "neurons": 14968,
+    "speed": 1.61287,
+    "spikes_per_s": 332197.0,
+    "synapses": 13232810
+   },
+   "joints": 4,
+   "lead": {
+    "neurons": 36716,
+    "speed": 0.42137,
+    "spikes_per_s": 814159.5,
+    "synapses": 31495699
+   },
+   "pose_ik": {
+    "neurons": 35916,
+    "speed": 0.51233,
+    "spikes_per_s": 809933.0,
+    "synapses": 31333299
+   },
+   "task": "position"
+  },
+  {
+   "arm": "tiago7",
+   "forward": {
+    "neurons": 24208,
+    "speed": 0.77495,
+    "spikes_per_s": 724899.0,
+    "synapses": 15217557
+   },
+   "joints": 7,
+   "lead": {
+    "neurons": 70436,
+    "speed": 0.14785,
+    "spikes_per_s": 2118582.0,
+    "synapses": 38826074
+   },
+   "observer": {
+    "neurons": 92916,
+    "speed": 0.09545,
+    "spikes_per_s": 2874653.0,
+    "synapses": 43961052
+   },
+   "pose_ik": {
+    "neurons": 69036,
+    "speed": 0.17999,
+    "spikes_per_s": 2111963.0,
+    "synapses": 38541874
+   },
+   "task": "pose"
+  },
+  {
+   "arm": "generic7",
+   "forward": {
+    "neurons": 24208,
+    "speed": 0.76081,
+    "spikes_per_s": 731843.5,
+    "synapses": 15183957
+   },
+   "joints": 7,
+   "lead": {
+    "neurons": 73376,
+    "speed": 0.13771,
+    "spikes_per_s": 2270231.5,
+    "synapses": 39092109
+   },
+   "observer": {
+    "neurons": 95856,
+    "speed": 0.09469,
+    "spikes_per_s": 3022664.0,
+    "synapses": 44227087
+   },
+   "pose_ik": {
+    "neurons": 71976,
+    "speed": 0.16701,
+    "spikes_per_s": 2260143.0,
+    "synapses": 38807909
+   },
+   "task": "pose"
+  }
+ ],
+ "threads": 8
+}
