@@ -1,0 +1,5 @@
+event,time_s,definition
+encoded_goal_arrival,0.8,"recomputed from prescribed start and goal with the session travel rules (1 rad/s per Euler component, 0.3 reach/s)"
+first_sustained_entry,5.65,first logged sample after which both errors stay within tolerance to the end (time_to_reach_s)
+termination,19.15,2 s quiet window after goal arrival (settled_s) or 25 s limit
+final_sample_success,1,success assessed at the final sample

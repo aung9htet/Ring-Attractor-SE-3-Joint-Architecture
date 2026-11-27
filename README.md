@@ -37,15 +37,16 @@ benchmark of its own.
 3. [Tests](#tests)
 4. [The reaching task](#the-reaching-task) (what every controller is measured on)
 5. [Results: how each one was produced](#results-how-each-one-was-produced)
-6. [Running the baselines (to fill Fig. 3b)](#running-the-baselines)
-7. [The learned baselines: protocol and settings](#the-learned-baselines-protocol-and-settings)
-8. [What each controller reads, is given and learns](#what-each-controller-reads-is-given-and-learns)
-9. [Gazebo](#gazebo)
-10. [Result files](#result-files)
-11. [Watching runs](#watching-runs)
-12. [The simulator](#the-simulator)
-13. [Code conventions](#code-conventions)
-14. [Licences and references](#licences-and-references)
+6. [Figures and analysis](#figures-and-analysis) (the paper's figures from `results/`; details in `analysis/README.md`)
+7. [Running the baselines (to fill Fig. 3b)](#running-the-baselines)
+8. [The learned baselines: protocol and settings](#the-learned-baselines-protocol-and-settings)
+9. [What each controller reads, is given and learns](#what-each-controller-reads-is-given-and-learns)
+10. [Gazebo](#gazebo)
+11. [Result files](#result-files)
+12. [Watching runs](#watching-runs)
+13. [The simulator](#the-simulator)
+14. [Code conventions](#code-conventions)
+15. [Licences and references](#licences-and-references)
 
 ## Layout
 
@@ -82,6 +83,7 @@ tests/                       unittest; tests that need NEST, ROS or PyTorch skip
 docker/                      run.bash (every container), image.env (pinned images), Dockerfile.baselines
 gazebo/                      the Gazebo world
 results/                     every run and summary, one folder per model and benchmark (see Result files)
+analysis/                    the paper's figures from results/: python -m analysis; figures/ and source_data/ are its output
 ```
 
 ## Install
@@ -194,6 +196,21 @@ next trial after M minutes), `--threads` (keep 8), and for `joint_loss` `--onset
 See [Running the baselines](#running-the-baselines). Their results appear in `results/dls_ik/reach_gazebo/`,
 `results/ccd_ik/reach_gazebo/`, `results/mpc_nn_dynamics/` and `results/pets/` once run;
 `results/comparison/reach_gazebo.json` puts every model side by side.
+
+## Figures and analysis
+
+Every figure of the paper is drawn from `results/` by the `analysis/` package, so the work is in two steps: run the
+models (the commands above and in [Running the baselines](#running-the-baselines); the repository already holds every
+run), then
+
+```bash
+docker/run.bash nest -- 'python3 -B -m analysis all'          # under a minute
+python3 -B -m analysis.architecture.render_figure1_b_final    # on the host: PDFs of the circuit schematic (needs Chrome)
+```
+
+This writes every figure to `analysis/figures/` (PDF, SVG, PNG) and the numbers behind every panel to
+`analysis/source_data/plotexports/`. One figure: `python3 -B -m analysis figure fig3`; every figure's name, inputs and
+what to run first: `python3 -B -m analysis list` and [analysis/README.md](analysis/README.md).
 
 ## Running the baselines
 

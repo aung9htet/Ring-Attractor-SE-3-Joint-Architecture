@@ -1,0 +1,4 @@
+arm,reach_mm,position_tolerance_mm,orientation_tolerance_deg,requested
+tiago7,805.7433990406902,40.28716995203451,5.0,position and orientation
+tiago4,609.7433990406901,30.487169952034506,,position
+generic7,1400.0,69.99999999999999,5.0,position and orientation

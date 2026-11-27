@@ -1,0 +1,19 @@
+{
+  "selected": "refined Option B",
+  "dimensions_mm": [
+    178,
+    135
+  ],
+  "minimum_label_pt": 6.0548031496062995,
+  "panels": {
+    "a": "Joint-state and pose representation",
+    "b": "Pose-error and correction allocation",
+    "c": "Joint-target generation and feedback"
+  },
+  "geometry": "pinned TIAGo pose pair: analysis/source_data/figure1_snapshot.json",
+  "diagram_convention": "arrows carry named neural signals; a grey brace groups independent joint channels; gain input ports represent grouped projections",
+  "shared_state": "panel c enlarges the same joint k state ring shown in a; not an additional baseline ring",
+  "feedforward": "joint-target ring has no attractor recurrence; q_tar is decoded centroid over three windows",
+  "local_feedback": "sheet activity-level feedback is separate from anchoring and external plant feedback",
+  "activity": "all Figure 1 activity glyphs are schematic; measured activity is in Figure 2"
+}

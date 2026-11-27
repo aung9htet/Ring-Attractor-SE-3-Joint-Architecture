@@ -1,0 +1,52 @@
+{
+  "source": "results/ring_attractor_kinematics/moving_estimate/common{0.25,0.5,1}.json",
+  "orientation_estimate": "recorded forward-network tool matrix, nearest proper rotation (SVD), against the supplied joints",
+  "moving": "max |q[t] - q[t-1]| / 0.05 s > 0.05 rad/s",
+  "paths": {
+    "common0.25": {
+      "speed_rad_s": 0.25,
+      "ticks": 2441,
+      "moving_ticks": 1767,
+      "plain": {
+        "median_deg": 2.238246956923702,
+        "moving_median_deg": 2.8936919421236516,
+        "moving_p90_deg": 4.92705848763075
+      },
+      "lead": {
+        "median_deg": 1.226901525906908,
+        "moving_median_deg": 1.2785725475614005,
+        "moving_p90_deg": 2.180930283729523
+      }
+    },
+    "common0.5": {
+      "speed_rad_s": 0.5,
+      "ticks": 1253,
+      "moving_ticks": 986,
+      "plain": {
+        "median_deg": 3.586995656681012,
+        "moving_median_deg": 4.786734181573675,
+        "moving_p90_deg": 9.296909920709801
+      },
+      "lead": {
+        "median_deg": 1.302135127568758,
+        "moving_median_deg": 1.3385939381783722,
+        "moving_p90_deg": 2.4533223322263864
+      }
+    },
+    "common1": {
+      "speed_rad_s": 1.0,
+      "ticks": 660,
+      "moving_ticks": 529,
+      "plain": {
+        "median_deg": 6.719554735489111,
+        "moving_median_deg": 8.44509548845448,
+        "moving_p90_deg": 17.88177872034059
+      },
+      "lead": {
+        "median_deg": 1.591876292089879,
+        "moving_median_deg": 1.8008724388859052,
+        "moving_p90_deg": 3.5910236788440515
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+path,network_lag_s,without_moving_median_deg,with_moving_median_deg
+speed0.25,0.2,3.710371,1.339469
+speed0.5,0.2,4.737762,1.414121
+speed1,0.2,9.002151,1.893375
+pole,0.2,4.963157,1.252177
+common0.25,0.2,2.893692,1.278573
+common0.5,0.2,4.786734,1.338594
+common1,0.2,8.445095,1.800872
