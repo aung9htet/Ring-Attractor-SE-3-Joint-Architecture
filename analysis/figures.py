@@ -843,12 +843,16 @@ def make_ablation():
         assert sorted(int(r["index"]) for r in rr) == list(range(30)), (c, s)
     # the interventions themselves are drawn on the circuit in Fig. 1 (badges and dashed outlines)
     fig = plt.figure(figsize=(WIDTH, 151 / 25.4))
-    gs = fig.add_gridspec(3, 4, left=.09, right=.975, bottom=.065, top=.94, hspace=.72, wspace=.62, width_ratios=[1, 1, 1, 1.35],
-                          height_ratios=[1, 1.2, .9])
+    # rows: a, b (the stopped joint); c, d (targets reached: the RAK model's conditions, every controller with a joint
+    # stuck); e, f (rescue by the other joints; 10% of neurons silenced)
+    rows = fig.add_gridspec(3, 1, left=.09, right=.975, bottom=.06, top=.925, hspace=.66, height_ratios=[1, 1, 1.25])
+    row1 = rows[0].subgridspec(1, 3, wspace=.5)
+    row2 = rows[1].subgridspec(1, 2, wspace=.28, width_ratios=[1, 2.6])
+    row3 = rows[2].subgridspec(1, 2, wspace=.3, width_ratios=[3.5, 1.2])
 
     # a - intervention check in the circuit
     rel = np.arange(-1.0, 6.01, .2)
-    ax1 = fig.add_subplot(gs[0, 0])
+    ax1 = fig.add_subplot(row1[0, 0])
     checkrows = []
     for c in ("intact",) + CONDITIONS:
         shares, written = [], []
@@ -872,7 +876,7 @@ def make_ablation():
             xlabel="Time after the joint stops (s)")
     ax1.yaxis.label.set_size(5.8)
     ax1.yaxis.labelpad = 1
-    panel(ax1, "a", "Is the stopped joint\nstill asked to turn?", x=-.42)
+    panel(ax1, "a", "Is the stopped joint\nstill asked to turn?", x=-.3)
 
     # b - hand error over time
     grid = np.arange(0, LIMIT_S + .001, .1)
@@ -880,7 +884,7 @@ def make_ablation():
     for j, (field, scale, tol, ylabel, letter, title) in enumerate((
             ("error_reach", RADIUS_MM, TOL_MM, "Hand position error (mm)", "b", "Does the hand still reach the goal?"),
             ("error_deg", 1., TOL_DEG, "Hand orientation error (°)", "", ""))):
-        ax = fig.add_subplot(gs[0, 1 + j])
+        ax = fig.add_subplot(row1[0, 1 + j])
         for c in ("intact",) + CONDITIONS:
             vals = np.array([np.interp(grid, np.asarray(r["t"], float), np.asarray(r[field], float) * scale)
                              for s in seeds for r in data[(c, s)]])
@@ -891,7 +895,7 @@ def make_ablation():
             courserows += [[c, field, g, a, b, d] for g, a, b, d in zip(grid, q25, q50, q75)]
         ax.axvline(ONSET_S, color="#59646A", lw=.7, ls="--")
         ax.axhline(tol, color="#8A9296", lw=.8, ls=":")
-        ax.set(xlabel="Time (s)", ylabel=ylabel, xlim=(0, 15), ylim=(0, None))
+        ax.set(xlabel="Time (s)", ylabel=ylabel, xlim=(0, 15), ylim=(0, None), xticks=[0, 5, 10, 15])
         ax.set_yscale("log")
         ax.set_ylim(.5 if field == "error_deg" else 5, None)
         if j == 0:
@@ -900,7 +904,7 @@ def make_ablation():
         ax.text(ONSET_S + .15, .03, "joint disabled", transform=ax.get_xaxis_transform(), fontsize=5.3, color="#59646A")
 
     # c - targets reached by the RAK model in each condition (bar: mean of the three seeds; whisker: range over seeds)
-    ax = fig.add_subplot(gs[0, 3])
+    ax = fig.add_subplot(row2[0, 0])
     successrows = []
     for i, c in enumerate(("intact",) + CONDITIONS):
         rak = [sum(bool(r["reached"]) for r in data[(c, s)]) for s in seeds]
@@ -924,7 +928,7 @@ def make_ablation():
 
     # d - rescue: the error if the other joints had not adjusted (the intact reach's final angles, stopped joint at the
     #     angle where it froze; pure geometry) against the error the reach actually ended with
-    ax = fig.add_subplot(gs[1, :3])
+    ax = fig.add_subplot(row3[0, 0])
     absrows = []
     counts = {}
     for c in CONDITIONS:
@@ -976,12 +980,12 @@ def make_ablation():
     ax.set_yticklabels(["0.3", "1", "3", "10"])
     ax.minorticks_off()
     ax.legend(frameon=False, fontsize=5.6, loc="upper left", bbox_to_anchor=(0, .8), handletextpad=.2)
-    panel(ax, "d", "One joint stuck at 2 s: do the other joints still rescue the reach?", x=-.09)
+    panel(ax, "e", "One joint stuck at 2 s: do the other joints still rescue the reach?", x=-.09)
 
     # e - 10% of neurons silenced: the hand-pose estimate (held poses) relative to the intact network, and reaching
     audit = read(DATA / "sensitivity_metrics.json")
     base = audit["baseline"]          # intact network, the same 30 held poses
-    ax = fig.add_subplot(gs[1, 3])
+    ax = fig.add_subplot(row3[0, 1])
     #: silenced groups, named and numbered as the motifs of Fig. 1e
     classes = [("all", "whole\nnetwork"), ("rings", "joint\nrings\n(1)"), ("value", "pose\ncalc.\n(3)"), ("sheets", "position\nsheets\n(4–6)")]
     diffrows = []
@@ -1009,60 +1013,48 @@ def make_ablation():
                        Line2D([], [], marker="s", ls="none", markerfacecolor="none", color=C["diffuse"], markersize=3.4, label="position")],
               frameon=False, fontsize=5.2, loc="upper center", ncol=2, handletextpad=.2,
               columnspacing=1.2, borderaxespad=0)
-    panel(ax, "e", "10% of neurons silenced", x=-.42)
+    panel(ax, "f", "10% of neurons silenced", x=-.42)
     # reaching with the whole network 10% silenced (0 of 30; every target in the supplement): data only
     loss = JL[("loss0.1_all_l1", 1)]["rows"]
     for label, rr in (("intact", data[("intact", 1)]), ("whole network 10% silenced", loss)):
         sm = success_summary([r["reached"] for r in rr])
         diffrows.append(["closed_loop", label, 1, sm["reached"], sm["n"]])
-    # f - every controller in Gazebo with one joint stuck at 2 s (the lock; no neurons silenced), each against its own
-    #     intact run on the same 30 targets: the same axes and regions as d
-    from matplotlib.patches import Rectangle
-    sub = gs[2, :].subgridspec(1, len(CONTROLLERS), wspace=.12)
-    flo, fylo, fhi = .1, .1, 30
+    # d - every controller in Gazebo, the same 30 targets: targets reached intact and with the pre-assigned joint stuck at
+    #     2 s (the lock; the controller not told, so it adjusts on its own)
+    ax = fig.add_subplot(row2[0, 1])
     stuckrows = []
     for j, (key, _) in enumerate(CONTROLLERS):
-        ax = fig.add_subplot(sub[0, j])
-        for xy, w, h, colour in [((1, fylo), fhi - 1, 1 - fylo, "#DDEFDF"), ((1, 1), fhi - 1, fhi - 1, "#F6DEDE"),
-                                 ((flo, fylo), 1 - flo, 1 - fylo, "#EEF1F2"), ((flo, 1), 1 - flo, fhi - 1, "#FBEBDB")]:
-            ax.add_patch(Rectangle(xy, w, h, facecolor=colour, edgecolor="none", zorder=0))
-        ax.axhline(1, color="#59646A", lw=.6, ls=":", zorder=1)
-        ax.axvline(1, color="#59646A", lw=.6, ls=":", zorder=1)
         own_intact, own_stuck = stuck_gazebo(key)
+        colour = CTRL_COLOUR[key]
+        n_intact = sum(bool(r["reached"]) for r in own_intact)
+        ax.bar(j - .19, n_intact, .36, color="white", edgecolor=colour, hatch="////", lw=.8, zorder=2)
+        ax.text(j - .19, n_intact + .7, "%d" % n_intact, ha="center", fontsize=5.4, color="#59646A")
         if own_stuck is None:
-            ax.text(.5, .5, "not run yet", transform=ax.transAxes, ha="center", va="center", fontsize=5.6, color="#59646A")
-            title = SHORT_CTRL[key]
-        else:
-            pts = rescue_points(own_intact, own_stuck)
-            xs, ys = np.array([q[2] for q in pts]), np.array([q[3] for q in pts])
-            ax.scatter(np.clip(xs, flo * 1.1, fhi / 1.1), np.clip(ys, fylo * 1.1, fhi / 1.1), s=8, marker=CTRL_MARK[key],
-                       color=CTRL_COLOUR[key], linewidths=0, alpha=.85, zorder=3)
-            n = {"rescued": int(((xs > 1) & (ys <= 1)).sum()), "failed": int(((xs > 1) & (ys > 1)).sum()),
-                 "unaffected": int(((xs <= 1) & (ys <= 1)).sum()), "worse": int(((xs <= 1) & (ys > 1)).sum())}
-            for (tx, ty, ha, va, colour), v in zip(((.97, .03, "right", "bottom", "#1B5E20"), (.97, .97, "right", "top", "#7F1D1D"),
-                                                    (.03, .03, "left", "bottom", "#46525A"), (.03, .97, "left", "top", "#8A4B08")),
-                                                   n.values()):
-                ax.text(tx, ty, str(v), transform=ax.transAxes, ha=ha, va=va, fontsize=6, color=colour, fontweight="bold", zorder=4)
-            reached_intact = sum(bool(r["reached"]) for r in own_intact)
-            title = "%s: %d/30 (intact %d)" % (SHORT_CTRL[key], sum(q[4] for q in pts), reached_intact)
-            stuckrows += [[key, *q[:4], int(q[4])] for q in pts]
-        ax.set(xscale="log", yscale="log", xlim=(flo, fhi), ylim=(fylo, fhi))
-        ax.set_xticks([.3, 1, 3, 10])
-        ax.set_xticklabels(["0.3", "1", "3", "10"])
-        ax.set_yticks([.3, 1, 3, 10])
-        ax.set_yticklabels(["0.3", "1", "3", "10"] if j == 0 else [])
-        ax.minorticks_off()
-        ax.tick_params(labelsize=5.2)
-        ax.set_title(title, fontsize=5.8, color=CTRL_COLOUR[key], pad=3, linespacing=1.1)
-        if j == 0:
-            ax.set_ylabel("Error after the other\njoints corrected", fontsize=5.8)
-            ax.text(-.42, 1.2, "f", transform=ax.transAxes, fontweight="bold", fontsize=9, va="bottom")
-            ax.text(-.02, 1.2, "Every controller in Gazebo, one joint stuck at 2 s (targets reached, stuck and intact): regions and axes as in d",
-                    transform=ax.transAxes, fontsize=7.5, va="bottom")
-    fig.text(.53, .008, "Error if the other joints kept their normal path (1 = success limit), each controller against its own intact run",
-             ha="center", fontsize=6.4)
-    csvout("fig5_stuck_all_controllers.csv", ["controller", "target_index", "stuck_joint_zero_based", "error_if_others_kept_path_x_limit",
-                                               "error_after_correction_x_limit", "reached"], stuckrows)
+            ax.text(j + .19, 1.2, "running", ha="center", va="bottom", rotation=90, fontsize=5.2, color="#59646A")
+            stuckrows.append([key, n_intact, None, None, None])
+            continue
+        n_stuck = sum(bool(r["reached"]) for r in own_stuck)
+        pts = rescue_points(own_intact, own_stuck)
+        rescued = sum(1 for q in pts if q[2] > 1 and q[3] <= 1)
+        ax.bar(j + .19, n_stuck, .36, color=colour, lw=0, zorder=2)
+        ax.text(j + .19, n_stuck + .7, "%d" % n_stuck, ha="center", fontsize=5.4, color=colour, fontweight="bold")
+        stuckrows.append([key, n_intact, n_stuck, rescued, len(pts)])
+    ax.set(xticks=range(len(CONTROLLERS)), xticklabels=[SHORT_CTRL[k].replace("predictive enc.", "pred. enc.").replace(" + ", " +\n")
+                                                          for k, _ in CONTROLLERS],
+           ylabel="Targets reached (of 30)", ylim=(0, 34), yticks=range(0, 31, 10), xlim=(-.55, len(CONTROLLERS) - .45))
+    for t, (k, _) in zip(ax.get_xticklabels(), CONTROLLERS):
+        t.set_color(CTRL_COLOUR[k])
+    ax.tick_params(axis="x", labelsize=5.6, length=0)
+    ax.yaxis.grid(True, color="#E3E6E8", lw=.6, zorder=0)
+    ax.set_axisbelow(True)
+    ax.spines["bottom"].set_color("#9AA0A4")
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(facecolor="white", edgecolor="#59646A", hatch="////", lw=.8, label="intact"),
+                       Patch(facecolor="#59646A", lw=0, label="one joint stuck at 2 s")],
+              frameon=False, fontsize=5.6, loc="upper right", ncol=2, bbox_to_anchor=(1, 1.13), borderaxespad=0, handlelength=1.4)
+    panel(ax, "d", "Every controller in Gazebo, one joint stuck", x=-.09)
+    csvout("fig5_stuck_all_controllers.csv", ["controller", "reached_intact", "reached_stuck", "rescued_by_other_joints", "stuck_trials"],
+           stuckrows)
     save(fig, "fig5_ablation")
     csvout("fig5_intervention_check.csv", ["condition", "time_from_onset_s", "median_abs_requested_turn_rad_per_tick", "fraction_of_reaches_with_written_target"], checkrows)
     csvout("fig5_error_courses.csv", ["condition", "quantity", "time_s", "q25", "median", "q75"], courserows)

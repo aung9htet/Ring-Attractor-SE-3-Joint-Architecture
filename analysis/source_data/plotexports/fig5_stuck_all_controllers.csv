@@ -1,1 +1,7 @@
-controller,target_index,stuck_joint_zero_based,error_if_others_kept_path_x_limit,error_after_correction_x_limit,reached
+controller,reached_intact,reached_stuck,rescued_by_other_joints,stuck_trials
+rak,28,,,
+rak_pe,27,,,
+dls_ik,30,,,
+ccd_ik,30,,,
+mpc_nn_dynamics,29,,,
+pets,30,,,

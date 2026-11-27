@@ -4,7 +4,7 @@
   "analysis/source_data/illustrative_activity.npz": "4e5149fadb2226ef7cdaa6897f1022d7812065df10ae82f8250a27f74ff3e9ec",
   "analysis/source_data/sensitivity_metrics.json": "4a66fb6fe88e437ed994e7b040b36de7b028c5e7bb7ecda59867393d48227b9c",
   "results/ccd_ik/reach_gazebo/tiago7.json": "58acfd7a5cf0bfd097b3bbb5daff13ac52af8a4359e0587090c01a1eeb1d6155",
-  "results/dls_ik/joint_loss_gazebo/tiago7_lock.json": "47c668cb522486dcdc579f0b739f73b34e875c07a66c52524eda5549b4fdb507",
+  "results/dls_ik/joint_loss_gazebo/tiago7_lock.json": "4fabfedfba8e5c6911aa8434ec2fb558a706fb38b8942a94e5fc023a2c351440",
   "results/dls_ik/reach_gazebo/tiago7.json": "8bf8232186225d3faa00ab2ebad41500b94bfd7db062bd4aeb85944b7cbdc516",
   "results/mpc_nn_dynamics/reach_gazebo/tiago7_seed1_shard0of3.json": "1b03e7f51a27d67322a719004ca71f455bf3be2a5cbbfa56c210eb75635221f3",
   "results/mpc_nn_dynamics/reach_gazebo/tiago7_seed1_shard1of3.json": "cc7de0d1a5e6e2af78f512665e850c88a4a4f297cfcf7bb87da4da437ff989b2",
